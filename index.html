@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-4TRnLUP+7Lbjvrc9cOlqzxKM1WAVal7gfD9pJC4fIFo=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-/LDatOPRzmM3tF9C7VeU5cro1/OMTwLZMdlGEq8MV1Y=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#086570">
 <link rel="manifest" href="manifest.webmanifest">
@@ -6904,7 +6904,7 @@ const ACT = {
   moveinpick: async () => { let h; try { h = await window.showDirectoryPicker({ id: 'pipetree-team', mode: 'readwrite', startIn: 'documents' }); } catch (e) { return; }
     MOVEIN = h; MODAL = { kind: 'movein', busy: true, folder: h.name }; render(); const L = await moveInScan(h); MODAL = { kind: 'movein', list: L, folder: h.name }; render(); },
   moveinuse: async el => { const x = MODAL && MODAL.list && MODAL.list[+el.dataset.i]; if (!x || !MOVEIN) return; const picked = MOVEIN;
-    await restoreData(x.data, 'your Nimble folder'); const lead = (S.settings.teamRole || '') === 'lead', h = lead ? picked : (x.team ? x.dir : picked);
+    const keepLock = S.settings.lock, keepTerms = S.settings.termsOk; await restoreData(x.data, 'your Nimble folder'); if (keepLock) S.settings.lock = keepLock; if (keepTerms) S.settings.termsOk = keepTerms; LOCKED = false; const lead = (S.settings.teamRole || '') === 'lead', h = lead ? picked : (x.team ? x.dir : picked);
     S.settings.movedIn = TODAY; persistNow(); if ((S.settings.teamRole || '')) { await kvSet('teamDir', h); TEAM.handle = h; TEAM.state = 'on'; await syncTeam(true); }
     MODAL = null; render(); toast(`Welcome back, ${firstName(S.settings.userName || '')}. ${recCount(S)} records moved in${S.settings.teamRole ? ` and connected to “${h.name}”` : ''}.`, true); },
   moveinstart: () => { S = upgrade(blank()); persistNow(); render(); },
