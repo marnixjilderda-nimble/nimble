@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-YLbQoQIEG5I/A6O0He0l02Er0RhULAm4fLK4LtDi4RY=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-4TRnLUP+7Lbjvrc9cOlqzxKM1WAVal7gfD9pJC4fIFo=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#086570">
 <link rel="manifest" href="manifest.webmanifest">
@@ -6218,6 +6218,12 @@ function ctxHTML() {
 }
 
 function welcomeHTML() {
+  if (WEB && FS_OK) return `<div class="welcome glass"><div class="logo" style="margin:0;font-size:34px">${LOGO}</div>
+    <h1 style="margin-top:24px">Welcome to Nimble.</h1>
+    <p class="sub">Already using Nimble? Bring everything over from your Nimble folder in OneDrive, in one go.</p>
+    <button class="btn primary big" data-act="moveinstart" style="margin:16px 0 10px">Bring my data from my Nimble folder</button>
+    <p class="small muted">New to Nimble? Open the link from your welcome email instead. Everything stays on your computer and in your own OneDrive.</p>
+    <button class="btn quiet" data-act="fresh">Start empty instead</button></div>`;
   return `<div class="welcome glass"><div class="logo" style="margin:0;font-size:34px">${LOGO}</div>
     <h1 style="margin-top:24px">Who needs you today.</h1>
     <p class="sub">Load your pipeline file. Exports from the old Copilot dashboard work too, and get cleaned up on the way in.</p>
@@ -6901,6 +6907,7 @@ const ACT = {
     await restoreData(x.data, 'your Nimble folder'); const lead = (S.settings.teamRole || '') === 'lead', h = lead ? picked : (x.team ? x.dir : picked);
     S.settings.movedIn = TODAY; persistNow(); if ((S.settings.teamRole || '')) { await kvSet('teamDir', h); TEAM.handle = h; TEAM.state = 'on'; await syncTeam(true); }
     MODAL = null; render(); toast(`Welcome back, ${firstName(S.settings.userName || '')}. ${recCount(S)} records moved in${S.settings.teamRole ? ` and connected to “${h.name}”` : ''}.`, true); },
+  moveinstart: () => { S = upgrade(blank()); persistNow(); render(); },
   webreload: () => { persistNow(); setTimeout(() => location.reload(), 150); },
   moveinskip: () => { S.settings.movedIn = TODAY; save(); MODAL = null; render(); },
   oddsp: el => { MODAL.why = (document.getElementById('odds_why') || {}).value; MODAL.p = +el.dataset.v; render(); },
@@ -7269,7 +7276,7 @@ const ACT = {
   import: () => document.getElementById('filepick').click(),
   restoreopen: () => openRestore(),
   restorepick: el => { const x = MODAL && MODAL.list && MODAL.list[+el.dataset.i]; if (!x) return; confirmBox(`Restore the copy from ${new Date(x.at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}?`, `It has ${x.n} records; you have ${recCount(S)} now. What you have now is kept as a safety copy first.`, 'Restore', () => restoreData(x.data, x.where)); },
-  fresh: () => { S = upgrade(blank()); commit(); },
+  fresh: () => { S = upgrade(blank()); if (WEB) S.settings.movedIn = TODAY; commit(); },
   wipe: () => confirmBox('Delete all data?', 'This removes everything from this browser. A safety copy is kept in your connected folders, and you can download a backup first.', 'Delete everything', async () => { await safetyCopy('before-delete-all'); clearTimeout(saveTimer); saveTimer = null; localStorage.removeItem(KEY); localStorage.removeItem(OLDKEY); kvSet('state', null).catch(() => { }); S = null; DRAWER = null; VIEW = 'today'; }, true)
 };
 let PDF_TARGET = null;
