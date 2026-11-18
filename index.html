@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-UBJWmHZLHndMX6zQBJAgSdhQCdG9soz6eiCZiRKGjLc=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-GdeiAKiW+O6D6USFCJdQKK8XzI08ligb1eHzDXeVl4E=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#086570">
 <link rel="manifest" href="manifest.webmanifest">
@@ -38,6 +38,14 @@
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
 body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--body),system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+.tbar{display:none}
+@media (display-mode: window-controls-overlay){
+  .tbar{display:flex;align-items:center;position:fixed;z-index:60;top:env(titlebar-area-y,0);left:env(titlebar-area-x,0);width:env(titlebar-area-width,100%);height:env(titlebar-area-height,32px);-webkit-app-region:drag;app-region:drag;pointer-events:none}
+  .shell{padding-top:env(titlebar-area-height,32px)}
+  .rail{top:0;margin-top:calc(-1 * env(titlebar-area-height,32px));padding-top:calc(20px + env(titlebar-area-height,32px));height:calc(100vh / var(--z,1))}
+  .shell.rc .rail{padding-top:calc(18px + env(titlebar-area-height,32px))}
+  .drawer,.aipanel{top:env(titlebar-area-height,32px)!important;max-height:calc(100vh - env(titlebar-area-height,32px))}
+}
 button,input,select,textarea{font:inherit;color:inherit}
 a{color:var(--cl)}
 :focus-visible{outline:2px solid var(--cl);outline-offset:2px;border-radius:6px}
@@ -8947,6 +8955,16 @@ document.getElementById('wallpick').addEventListener('change', e => {
 
 addEventListener('pagehide', () => { if (saveTimer) persistNow(); });
 document.addEventListener('fullscreenchange', () => { if (S) render(); });
+(function () {
+  const bar = document.createElement('div'); bar.className = 'tbar'; bar.setAttribute('aria-hidden', 'true'); document.body.appendChild(bar);
+  let meta = document.querySelector('meta[name="theme-color"]');
+  if (!meta) { meta = document.createElement('meta'); meta.name = 'theme-color'; document.head.appendChild(meta); }
+  const probe = document.createElement('i'); probe.style.cssText = 'position:fixed;width:0;height:0;background:var(--bg)'; document.body.appendChild(probe);
+  const cv = document.createElement('canvas'); cv.width = cv.height = 1; const cx = cv.getContext('2d', { willReadFrequently: true });
+  const sync = () => { try { const c = getComputedStyle(probe).backgroundColor; if (!c) return; cx.clearRect(0, 0, 1, 1); cx.fillStyle = '#000'; cx.fillRect(0, 0, 1, 1); cx.fillStyle = c; cx.fillRect(0, 0, 1, 1);
+    const d = cx.getImageData(0, 0, 1, 1).data; meta.content = '#' + [d[0], d[1], d[2]].map(v => v.toString(16).padStart(2, '0')).join(''); } catch (e) {} };
+  new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'style'] }); setTimeout(sync, 0);
+})();
 if (HOSTED) { let appTheme = document.documentElement.dataset.theme; new MutationObserver(() => { const v = document.documentElement.dataset.theme; if (v === 'dark' || v === 'light' || !v) { if (appTheme) document.documentElement.dataset.theme = appTheme; } else appTheme = v; }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] }); }
 document.addEventListener('visibilitychange', () => { if (document.hidden && saveTimer) persistNow(); });
 (async () => {
