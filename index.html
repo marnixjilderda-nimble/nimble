@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-xSnlbOivBh7yLU7pPy1qX9mp7OVIU5H3gdH8LvOM1wA=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-mLVvY+ZSKmv86ncEjpVw4nyz1un8n4mwF6JgOJvCNb8=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -9019,7 +9019,10 @@ document.addEventListener('fullscreenchange', () => { if (S) render(); });
       const go = img => { const iw = img.naturalWidth, ih = img.naturalHeight; if (!iw) return; const sc = Math.max(W / iw, H / ih), ox = (iw * sc - W) / 2, oy = (ih * sc - H) / 2;
         const sx = (x0 + ox) / sc, sy = oy / sc, sw = Math.max(1, (W - x0) / sc), sh = Math.max(1, h0 / sc); big.width = 24; big.height = 4; bx.drawImage(img, sx, sy, sw, sh, 0, 0, 24, 4);
         const px = bx.getImageData(0, 0, 24, 4).data; let R = 0, G = 0, B = 0; for (let i = 0; i < px.length; i += 4) { R += px[i]; G += px[i + 1]; B += px[i + 2]; } const k = px.length / 4; R /= k; G /= k; B /= k;
-        const [vr, vg, vb, va] = dark ? [6, 10, 24, .42] : [246, 248, 252, .55]; const m = v => Math.round(v), hex = [R * (1 - va) + vr * va, G * (1 - va) + vg * va, B * (1 - va) + vb * va].map(v => m(v).toString(16).padStart(2, '0')).join('');
+        const [vr, vg, vb, va] = dark ? [6, 10, 24, .42] : [246, 248, 252, .55]; let px3 = [R * (1 - va) + vr * va, G * (1 - va) + vg * va, B * (1 - va) + vb * va];
+        /* then the menu's glass on top, so the corner looks like one of Nimble's panes */
+        const c2 = getComputedStyle(probe2).backgroundColor; if (c2) { cx.clearRect(0, 0, 1, 1); cx.fillStyle = c2; cx.fillRect(0, 0, 1, 1); const q = cx.getImageData(0, 0, 1, 1).data, ra = q[3] / 255; px3 = px3.map((v, i) => v * (1 - ra) + q[i] * ra); }
+        const m = v => Math.round(v), hex = px3.map(v => m(v).toString(16).padStart(2, '0')).join('');
         meta.content = tintHex = '#' + hex; tintKey = key; };
       if (key === tintKey) { if (tintHex) meta.content = tintHex; return; }
       if (tintImg && tintImg.src === im.src && tintImg.complete) { go(tintImg); return; }
