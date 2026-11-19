@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-RMZz1zNdO4hwj0ReDztkxwQ2ctXJPq91qYkx6sp2gCs=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-BcZ+nHMDOkLWh3/WCf0+JhTrdLezOq+UQ+/k2MHtR8o=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -9005,7 +9005,23 @@ document.addEventListener('fullscreenchange', () => { if (S) render(); });
   const probe = document.createElement('i'); probe.style.cssText = 'position:fixed;width:0;height:0;background:var(--bg)'; document.body.appendChild(probe); const probe2 = document.createElement('i'); probe2.style.cssText = 'position:fixed;width:0;height:0;background:var(--rail)'; document.body.appendChild(probe2);
   const cv = document.createElement('canvas'); cv.width = cv.height = 1; const cx = cv.getContext('2d', { willReadFrequently: true });
   const sync = () => { try { const c = getComputedStyle(probe).backgroundColor; if (!c) return; cx.clearRect(0, 0, 1, 1); cx.fillStyle = '#000'; cx.fillRect(0, 0, 1, 1); cx.fillStyle = c; cx.fillRect(0, 0, 1, 1); const c2 = getComputedStyle(probe2).backgroundColor; if (c2) { cx.fillStyle = c2; cx.fillRect(0, 0, 1, 1); }
-    const d = cx.getImageData(0, 0, 1, 1).data; meta.content = '#' + [d[0], d[1], d[2]].map(v => v.toString(16).padStart(2, '0')).join(''); } catch (e) {} };
+    const d = cx.getImageData(0, 0, 1, 1).data; meta.content = '#' + [d[0], d[1], d[2]].map(v => v.toString(16).padStart(2, '0')).join(''); } catch (e) {} wallTint(); };
+  /* with a photo wallpaper, give the window buttons' corner the colour of the photo right behind it */
+  let tintKey = '', tintImg = null, tintHex = ''; const big = document.createElement('canvas'), bx = big.getContext('2d', { willReadFrequently: true });
+  const wallTint = () => { try { const wl = document.querySelectorAll('#wall .w'), w = wl[wl.length - 1]; const im = w && w.querySelector('img'); if (!im || !im.src) return;
+      const veil = w.querySelector('.veil'), dark = !veil || veil.classList.contains('dark'), wco = navigator.windowControlsOverlay;
+      const r = wco && wco.visible ? wco.getTitlebarAreaRect() : null, W = innerWidth, H = innerHeight, x0 = r && r.width ? r.x + r.width : W * 0.86, h0 = r && r.height ? r.height : 34;
+      const key = im.src + '|' + W + 'x' + H + '|' + Math.round(x0) + '|' + dark;
+      const go = img => { const iw = img.naturalWidth, ih = img.naturalHeight; if (!iw) return; const sc = Math.max(W / iw, H / ih), ox = (iw * sc - W) / 2, oy = (ih * sc - H) / 2;
+        const sx = (x0 + ox) / sc, sy = oy / sc, sw = Math.max(1, (W - x0) / sc), sh = Math.max(1, h0 / sc); big.width = 24; big.height = 4; bx.drawImage(img, sx, sy, sw, sh, 0, 0, 24, 4);
+        const px = bx.getImageData(0, 0, 24, 4).data; let R = 0, G = 0, B = 0; for (let i = 0; i < px.length; i += 4) { R += px[i]; G += px[i + 1]; B += px[i + 2]; } const k = px.length / 4; R /= k; G /= k; B /= k;
+        const [vr, vg, vb, va] = dark ? [6, 10, 24, .42] : [246, 248, 252, .55]; const m = v => Math.round(v), hex = [R * (1 - va) + vr * va, G * (1 - va) + vg * va, B * (1 - va) + vb * va].map(v => m(v).toString(16).padStart(2, '0')).join('');
+        meta.content = tintHex = '#' + hex; tintKey = key; };
+      if (key === tintKey) { if (tintHex) meta.content = tintHex; return; }
+      if (tintImg && tintImg.src === im.src && tintImg.complete) { go(tintImg); return; }
+      const im2 = new Image(); im2.crossOrigin = 'anonymous'; im2.onload = () => { tintImg = im2; try { go(im2); } catch (e) { } }; im2.src = im.src; } catch (e) { } };
+  addEventListener('resize', () => { tintKey = ''; wallTint(); }); try { navigator.windowControlsOverlay && navigator.windowControlsOverlay.addEventListener('geometrychange', () => { tintKey = ''; wallTint(); }); } catch (e) { }
+  new MutationObserver(() => setTimeout(wallTint, 2500)).observe(document.getElementById('wall') || document.body, { childList: true });
   new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'style'] }); setTimeout(sync, 0);
 })();
 if (HOSTED) { let appTheme = document.documentElement.dataset.theme; new MutationObserver(() => { const v = document.documentElement.dataset.theme; if (v === 'dark' || v === 'light' || !v) { if (appTheme) document.documentElement.dataset.theme = appTheme; } else appTheme = v; }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] }); }
