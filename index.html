@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-xATeoSs8GlJN5VuwwMgJWGqbmVUXrOZmQjXDZxmmjZc=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-CrAvjnQ3CiVihioZsjD9IQYZ2PNnFI+mCCONt09z9FI=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1911,7 +1911,7 @@ async function load() {
   try { if (pick) S = upgrade(JSON.parse(pick)); } catch (e) { S = null; }
   if (S && S.settings.ui) { VIEW = params.get('view') || S.settings.ui.view || 'today'; SEL = { ...SEL, ...(S.settings.ui.sel || {}), sub: null }; }
   if (params.get('view')) VIEW = params.get('view');
-  if (S && S.settings.lock && S.settings.lock.hash) LOCKED = true;
+  if (S && S.settings.lock && S.settings.lock.hash) { let keep = false; try { keep = +sessionStorage.getItem('ptUpd') > Date.now(); sessionStorage.removeItem('ptUpd'); } catch (e) { } LOCKED = !keep; }
 }
 let saveTimer = null, saveWarned = false;
 /* signature of the real data (ignores which page you are on, save times etc.) so sync can tell real edits apart */
@@ -6957,7 +6957,7 @@ const ACT = {
     S.settings.movedIn = TODAY; persistNow(); if ((S.settings.teamRole || '')) { await kvSet('teamDir', h); TEAM.handle = h; TEAM.state = 'on'; await syncTeam(true); }
     MODAL = null; render(); toast(`Welcome back, ${firstName(S.settings.userName || '')}. ${recCount(S)} records moved in${S.settings.teamRole ? ` and connected to “${h.name}”` : ''}.`, true); },
   moveinstart: () => { S = upgrade(blank()); persistNow(); render(); },
-  webreload: () => { persistNow(); setTimeout(() => location.reload(), 150); },
+  webreload: () => { persistNow(); try { if (!LOCKED) sessionStorage.setItem('ptUpd', String(Date.now() + 60000)); } catch (e) { } setTimeout(() => location.reload(), 300); },
   moveinskip: () => { S.settings.movedIn = TODAY; save(); MODAL = null; render(); },
   oddsp: el => { MODAL.why = (document.getElementById('odds_why') || {}).value; MODAL.p = +el.dataset.v; render(); },
   oddsst: el => { MODAL.why = (document.getElementById('odds_why') || {}).value; MODAL.st = el.dataset.v; render(); },
@@ -9025,8 +9025,13 @@ setInterval(() => { if (TEAM.state === 'on') syncTeam(true); }, 2 * 60 * 1000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden && TEAM.state === 'on' && (!TEAM.loadedAt || Date.now() - TEAM.loadedAt > 30000)) syncTeam(true); });
 let WEBNEW = false;
 if (WEB) { try { if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js'); } catch (e) { }
-  const chk = async () => { try { const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); if (j && j.v && j.v !== APP_V && !WEBNEW) { WEBNEW = true; render(); } } catch (e) { } };
-  setInterval(chk, 10 * 60 * 1000); document.addEventListener('visibilitychange', () => { if (!document.hidden) chk(); }); setTimeout(chk, 20000); }
+  /* a new version updates itself while Nimble is open, at a quiet moment: nothing open, nothing being typed, no click for a while */
+  const quiet = () => !MODAL && !DRAWER && !VIEWAS && !JUMP && !teamBusy && !(document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) || document.activeElement && document.activeElement.isContentEditable) && (document.hidden || Date.now() - LAST_ACT > 45000);
+  const upd = () => { if (!WEBNEW) return; try { if (Date.now() - (+sessionStorage.getItem('ptUpdAt') || 0) < 10 * 60000) return; } catch (e) { } if (!S || LOCKED || quiet()) { try { if (S) persistNow(); } catch (e) { } try { if (S && !LOCKED) sessionStorage.setItem('ptUpd', String(Date.now() + 60000)); sessionStorage.setItem('ptUpdDone', '1'); sessionStorage.setItem('ptUpdAt', String(Date.now())); } catch (e) { } WEBNEW = false; setTimeout(() => location.reload(), 300); } };
+  const chk = async () => { try { const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); if (j && j.v && j.v !== APP_V && !WEBNEW) { WEBNEW = true; render(); upd(); } } catch (e) { } };
+  setInterval(upd, 15000);
+  try { if (sessionStorage.getItem('ptUpdDone')) { sessionStorage.removeItem('ptUpdDone'); setTimeout(() => toast('Nimble updated itself to the newest version', true), 1500); } } catch (e) { }
+  setInterval(chk, 3 * 60 * 1000); document.addEventListener('visibilitychange', () => { if (!document.hidden) chk(); }); setTimeout(chk, 20000); }
 /* a new day while Nimble stays open: move "today" along, so "in 2 days" counts from the real today */
 function dayCheck(quiet) { if (FIXED_DAY) return false; const n = localISO(new Date()); if (n === TODAY) return false; const was = TODAY; TODAY = n; OB_CACHE = null;
   if (!S) return true; try { sweepStaleTasks(); } catch (e) { } try { noWeekendTasks(); } catch (e) { } try { coachTick(); } catch (e) { } save();
