@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-xxr+i+ksrOTjkTzdYpt8ktEVgNWUDuzg3J2MKraBE6o=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-zJer8MHqpIKJJcx1sJCv2acfnHBxHYUms8KSHTF8zZk=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -259,6 +259,8 @@ h2 .count{font-size:14px;color:var(--muted);font-weight:600;font-family:var(--bo
 .emptyrole h2{font-size:22px}
 .crole{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
 .crole .t{grid-column:1/-1}
+html.pdragging,html.pdragging *{cursor:grabbing!important;user-select:none!important}
+html.pdragging.pdno,html.pdragging.pdno *{cursor:no-drop!important}
 .crole:last-child{border-bottom:0}
 .crole .t{min-width:0}
 .crole .t button{border:0;background:none;padding:0;font-weight:650;cursor:pointer;color:var(--ink);text-align:left;font-size:14px;display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1801,7 +1803,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:6129f47434*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:c882fb6bdc*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -8878,6 +8880,39 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && ['pt_text', 'pn_text', 'pm_name'].includes(document.activeElement.id) && PROJ) ACT[{ pt_text: 'ptaskadd', pn_text: 'pnoteadd', pm_name: 'pmemadd' }[document.activeElement.id]]({ dataset: { id: PROJ } });
   if (e.key === 'Enter' && document.activeElement.id === 'tagin') { const el = document.activeElement, v = el.value.trim(), p = MP.get(el.dataset.p); if (v && p) { p.tags = [...new Set([...(p.tags || []), v])]; commit(); const n = document.getElementById('tagin'); n && n.focus(); } }
 });
+/* ===== drag & drop without the operating system =====
+   Windows can refuse drops inside an installed app (the red no-entry sign). So Nimble drives every in-page drag itself
+   with the mouse, and plays the same dragstart / dragover / drop / dragend events to the same handlers as before.
+   Dropping files from the desktop (CVs, PDFs) still uses the normal browser drop. */
+const PDRAG = { on: false, el: null, x: 0, y: 0, dt: null, ghost: null, over: null, ok: false, last: null, scrollT: null };
+function pdEvent(type, target, x, y) { const e = new DragEvent(type, { bubbles: true, cancelable: true, clientX: x, clientY: y, dataTransfer: PDRAG.dt }); e.__shim = true; target.dispatchEvent(e); return e; }
+window.addEventListener('dragstart', e => { if (!e.__shim && e.target && e.target.closest && e.target.closest('[draggable="true"]')) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+document.addEventListener('pointerdown', e => { if (e.button !== 0 || e.pointerType === 'touch') return; const el = e.target.closest && e.target.closest('[draggable="true"]'); if (!el || e.target.closest('input,textarea,select,[contenteditable="true"]')) return;
+  PDRAG.el = el; PDRAG.x = e.clientX; PDRAG.y = e.clientY; PDRAG.on = false; }, true);
+document.addEventListener('pointermove', e => { if (!PDRAG.el) return;
+  if (!PDRAG.on) { if (Math.abs(e.clientX - PDRAG.x) + Math.abs(e.clientY - PDRAG.y) < 6) return; if (!(e.buttons & 1)) { PDRAG.el = null; return; }
+    PDRAG.on = true; PDRAG.dt = new DataTransfer(); const st = pdEvent('dragstart', PDRAG.el, PDRAG.x, PDRAG.y); if (st.defaultPrevented) { PDRAG.el = null; PDRAG.on = false; return; }
+    const r = PDRAG.el.getBoundingClientRect(), z = window.UIZ || 1, g = PDRAG.el.cloneNode(true); g.removeAttribute('id'); g.className += ' pdghost'; g.style.cssText = `position:fixed;left:${r.left / z}px;top:${r.top / z}px;width:${r.width / z}px;pointer-events:none;z-index:9999;opacity:.85;transform:rotate(1.5deg);box-shadow:0 12px 30px rgba(0,0,0,.25)`;
+    PDRAG.gx = PDRAG.x - r.left; PDRAG.gy = PDRAG.y - r.top; document.body.appendChild(g); PDRAG.ghost = g; document.documentElement.classList.add('pdragging'); }
+  e.preventDefault(); const z = window.UIZ || 1; PDRAG.ghost.style.left = (e.clientX - PDRAG.gx) / z + 'px'; PDRAG.ghost.style.top = (e.clientY - PDRAG.gy) / z + 'px';
+  const t = document.elementFromPoint(e.clientX, e.clientY); if (!t) return;
+  if (t !== PDRAG.over) { if (PDRAG.over) pdEvent('dragleave', PDRAG.over, e.clientX, e.clientY); pdEvent('dragenter', t, e.clientX, e.clientY); PDRAG.over = t; }
+  const ov = pdEvent('dragover', t, e.clientX, e.clientY); PDRAG.ok = ov.defaultPrevented; PDRAG.last = [e.clientX, e.clientY];
+  document.documentElement.classList.toggle('pdno', !PDRAG.ok);
+  /* scroll the page or the list under the mouse when you reach an edge */
+  const edge = 60, H = innerHeight; let dy = e.clientY < edge ? -(edge - e.clientY) / 3 : e.clientY > H - edge ? (e.clientY - (H - edge)) / 3 : 0;
+  clearInterval(PDRAG.scrollT); if (dy) { const sp = (() => { for (let p = t; p; p = p.parentElement) { const o = getComputedStyle(p).overflowY; if ((o === 'auto' || o === 'scroll') && p.scrollHeight > p.clientHeight) return p; } return document.scrollingElement; })(); PDRAG.scrollT = setInterval(() => sp.scrollBy(0, dy), 16); }
+}, true);
+function pdEnd(e, cancel) { if (!PDRAG.el) return; const was = PDRAG.on, el = PDRAG.el; PDRAG.el = null; clearInterval(PDRAG.scrollT); if (!was) return;
+  PDRAG.on = false; if (PDRAG.ghost) PDRAG.ghost.remove(); PDRAG.ghost = null; document.documentElement.classList.remove('pdragging', 'pdno');
+  const x = e ? e.clientX : (PDRAG.last || [0, 0])[0], y = e ? e.clientY : (PDRAG.last || [0, 0])[1], t = document.elementFromPoint(x, y);
+  if (!cancel && t) { const ov = pdEvent('dragover', t, x, y); if (ov.defaultPrevented) pdEvent('drop', t, x, y); else if (PDRAG.over) pdEvent('dragleave', PDRAG.over, x, y); }
+  pdEvent('dragend', el.isConnected ? el : document.body, x, y); PDRAG.over = null;
+  /* the mouse-up after a drag must not also count as a click */
+  const eat = ev => { ev.stopPropagation(); ev.preventDefault(); }; window.addEventListener('click', eat, { capture: true, once: true }); setTimeout(() => window.removeEventListener('click', eat, true), 50); }
+document.addEventListener('pointerup', e => pdEnd(e, false), true);
+document.addEventListener('pointercancel', () => pdEnd(null, true), true);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && PDRAG.on) pdEnd(null, true); }, true);
 /* board drag & drop */
 let TDRAG = null;
 function treeSiblings(kind, par) {
