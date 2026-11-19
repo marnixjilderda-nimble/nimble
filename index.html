@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-CrAvjnQ3CiVihioZsjD9IQYZ2PNnFI+mCCONt09z9FI=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-RMZz1zNdO4hwj0ReDztkxwQ2ctXJPq91qYkx6sp2gCs=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -38,9 +38,9 @@
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
 body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--body),system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
-.tbar{display:none}
+.wcobar{display:none}
 @media (display-mode: window-controls-overlay){
-  .tbar{display:flex;align-items:center;position:fixed;z-index:60;top:env(titlebar-area-y,0);left:env(titlebar-area-x,0);width:env(titlebar-area-width,100%);height:env(titlebar-area-height,32px);-webkit-app-region:drag;app-region:drag;pointer-events:none;background:transparent;padding-left:14px;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--muted)}
+  .wcobar{display:block;position:fixed;z-index:60;top:env(titlebar-area-y,0);left:env(titlebar-area-x,0);width:env(titlebar-area-width,100%);height:env(titlebar-area-height,32px);-webkit-app-region:drag;app-region:drag;pointer-events:none;background:transparent;padding-left:14px;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--muted)}
   html body .shell{padding-top:env(titlebar-area-height,32px)}
   html body .shell .rail{top:0;margin-top:calc(-1 * env(titlebar-area-height,32px));padding-top:calc(20px + env(titlebar-area-height,32px));height:calc(100vh / var(--z,1))}
   html body .shell.rc .rail{padding-top:calc(18px + env(titlebar-area-height,32px))}
@@ -8998,7 +8998,7 @@ document.getElementById('wallpick').addEventListener('change', e => {
 addEventListener('pagehide', () => { if (saveTimer) persistNow(); });
 document.addEventListener('fullscreenchange', () => { if (S) render(); });
 (function () {
-  const bar = document.createElement('div'); bar.className = 'tbar'; bar.setAttribute('aria-hidden', 'true'); document.body.appendChild(bar);
+  const bar = document.createElement('div'); bar.className = 'wcobar'; bar.setAttribute('aria-hidden', 'true'); document.body.appendChild(bar);
   try { const wco = navigator.windowControlsOverlay; if (wco && !wco.visible && matchMedia('(display-mode: standalone)').matches && !localStorage.getItem('wcoTip')) setTimeout(() => { if (!wco.visible && typeof toast === 'function') { toast('Tip: click the small ˄ next to minimise for a cleaner, see-through top bar', true); try { localStorage.setItem('wcoTip', '1'); } catch (e) { } } }, 4000); } catch (e) { }
   let meta = document.querySelector('meta[name="theme-color"]');
   if (!meta) { meta = document.createElement('meta'); meta.name = 'theme-color'; document.head.appendChild(meta); }
