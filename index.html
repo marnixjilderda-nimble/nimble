@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-7uBHE5uR6y0gZCAbdNkZYZ+75RHMjZd9uQw79Uoz13c=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-doudg8rLaPXVoqDdQpEzNBR2rqvvCQByvJd2SNPPvec=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -4800,15 +4800,16 @@ function peerShare(base) { const me = myUid(), peers = TEAM.hubPeers || []; base
 async function leaveTeamDir() { await kvSet('teamDir', null); TEAM.handle = null; TEAM.state = 'off'; TEAM.folder = []; rebuildMembers(); render(); }
 function mySnapshot() { const d = JSON.parse(JSON.stringify(S)); d.settings.wallImage = null; const w = fileWhere(); return { kind: 'pipetree-team', member: S.settings.userName || 'Me', userId: S.settings.userId, publishedAt: new Date().toISOString(), v: APP_V, sharedSeen: (TEAM.shared && TEAM.shared.at) || '', sharedRoles: ((TEAM.shared && TEAM.shared.roles) || []).length, openedFrom: w.nice + (w.path ? ' › ' + w.path.split('/').pop() : ''), openedCopy: !!w.copy || !w.inOneDrive, data: d }; }
 let teamTimer = null, teamBusy = false;
-function scheduleTeam() { if (TEAM.state !== 'on') return; clearTimeout(teamTimer); teamTimer = setTimeout(() => syncTeam(false), 4000); }
+function scheduleTeam() { if (TEAM.state !== 'on') return; clearTimeout(teamTimer); teamTimer = setTimeout(() => syncTeam(false), 1000); }
 async function syncTeam(readAll) {
-  if (!TEAM.handle || TEAM.state !== 'on' || !S || teamBusy || VIEWAS) return; teamBusy = true;
+  if (!TEAM.handle || TEAM.state !== 'on' || !S || teamBusy || VIEWAS) return; teamBusy = true; const sig0 = teamViewSig();
   try {
     const dir = TEAM.handle, folder = []; TEAM.dirs = [];
     let remoteProjects = null;
     const role = S.settings.teamRole || '';
     let invite = null; const mgrIn = []; let pool = null, shared = null;
     for await (const [n, h] of dir.entries()) {
+      if (h.kind === 'file' && role !== 'lead' && n.startsWith('pipetree-for-')) { try { const id4 = myUid().slice(-4); if (n === `pipetree-for-${id4}-shared.json`) { const j = JSON.parse(await (await h.getFile()).text()); if (!shared || (j.at || '') > (shared.at || '')) shared = j; } else if (n.startsWith(`pipetree-for-${id4}-from-`)) mgrIn.push(JSON.parse(await (await h.getFile()).text())); } catch (e) { } continue; }
       if (h.kind === 'file' && role !== 'lead') { try { if (n === 'pipetree-version.json') checkVersion(JSON.parse(await (await h.getFile()).text())); else if (n === 'pipetree-shared-settings.json') applyTeamSettings(JSON.parse(await (await h.getFile()).text())); else if (n === 'pipetree-invite.json') invite = JSON.parse(await (await h.getFile()).text()); else if (/^pipetree-from-.+\.json$/.test(n)) mgrIn.push(JSON.parse(await (await h.getFile()).text())); else if (n === 'pipetree-pool.json') pool = JSON.parse(await (await h.getFile()).text()); else if (n === 'pipetree-shared.json') shared = JSON.parse(await (await h.getFile()).text()); } catch (e) { } }
       if (h.kind === 'directory' && role === 'lead') { (TEAM.dirs = TEAM.dirs || []).push(n); try { for await (const [n2, h2] of h.entries()) { if (h2.kind === 'file' && n2 === 'pipetree-invite.json') { try { const j = JSON.parse(await (await h2.getFile()).text()), iv = (S.settings.invites || []).find(x => x.id === j.id); if (iv && iv.folder !== n) { iv.folder = n; save(); } } catch (e) { } } if (h2.kind === 'file' && /^pipetree-team-.+\.json$/.test(n2)) { try { const j = JSON.parse(await (await h2.getFile()).text()); if (j.kind === 'pipetree-team') folder.push({ ...j, folder: n }); } catch (e) { } }
         if (h2.kind === 'directory' && /nimble|pipetree/i.test(n2)) { const p2 = n + '/' + n2; try { for await (const [n3, h3] of h2.entries()) { if (h3.kind !== 'file') continue; if (n3 === 'pipetree-invite.json') { try { const j = JSON.parse(await (await h3.getFile()).text()), iv = (S.settings.invites || []).find(x => x.id === j.id); if (iv && iv.folder !== p2) { iv.parent = n; iv.folder = p2; save(); } } catch (e) { } } if (/^pipetree-team-.+\.json$/.test(n3)) { try { const j = JSON.parse(await (await h3.getFile()).text()); if (j.kind === 'pipetree-team') folder.push({ ...j, folder: p2 }); } catch (e) { } } } } catch (e) { } } } } catch (e) { } continue; }
@@ -4818,13 +4819,14 @@ async function syncTeam(readAll) {
     }
     TEAM.folder = folder;
     if (remoteProjects) mergeProjects(remoteProjects);
+    if (role !== 'lead' && !TEAM.hub && folder.some(f => f.userId && f.userId !== myUid())) { TEAM.hub = dir; TEAM.hubState = 'on'; TEAM.hubAuto = true; }
     if (role !== 'lead') { if (invite && invite.kind === 'pipetree-invite') applyInvite(invite); for (const f of mgrIn) if (f && f.kind === 'pipetree-mgr') mergeMgr(f); if (pool && pool.kind === 'pipetree-pool') TEAM.pool = pool; if (shared) { TEAM.leadShared = shared; applyShared(shared); }
       if (TEAM.hub && TEAM.hubState === 'on') { try { TEAM.hubPeers = await hubRead(); applyShared(peerShare(TEAM.leadShared || TEAM.shared)); TEAM.hubErr = ''; } catch (e) { TEAM.hubErr = e.message || 'failed'; if (e.name === 'NotAllowedError') TEAM.hubState = 'needs-permission'; } } }
-    const w = async (name, obj) => { const fh = await dir.getFileHandle(name, { create: true }); const wr = await fh.createWritable(); await wr.write(JSON.stringify(obj)); await wr.close(); };
+    const w = async (name, obj) => { if (sameAsWritten('own/' + name, obj)) return; const fh = await dir.getFileHandle(name, { create: true }); const wr = await fh.createWritable(); await wr.write(JSON.stringify(obj)); await wr.close(); };
     if (role !== 'lead') { const mine = folder.find(f => f.userId === S.settings.userId) || (folder.length === 1 ? folder[0] : null);
       if (mine && shrinks(mine.data, S) && S.settings.shrinkOk !== TODAY) { await putJSON(await bkDir(dir, 'safety'), `nimble-kept-${TODAY}-${String(Date.now()).slice(-6)}.json`, mine.data); S.settings.shrinkOk = TODAY; teamBusy = false; if (!MODAL) openRestore(`This Nimble has ${recCount(S)} records, but your folder has ${recCount(mine.data)} from ${esc(fmtDate((mine.publishedAt || '').slice(0, 10)) || 'earlier')}. Nimble did <b>not</b> overwrite it. Restore it below.`); return; }
       await w(`pipetree-team-${slug(S.settings.userName)}-${S.settings.userId.slice(-4)}.json`, mySnapshot()); TEAM.sharedAt = new Date();
-      if (TEAM.hub && TEAM.hubState === 'on') { try { const fh = await TEAM.hub.getFileHandle(`pipetree-team-${slug(S.settings.userName)}-${S.settings.userId.slice(-4)}.json`, { create: true }), wr = await fh.createWritable(); await wr.write(JSON.stringify({ ...mySnapshot(), via: 'hub' })); await wr.close(); TEAM.hubAt = new Date(); } catch (e) { TEAM.hubErr = e.message || 'failed'; if (e.name === 'NotAllowedError') TEAM.hubState = 'needs-permission'; } } await dailyCopy(dir, '', S.settings.userName || 'me', mySnapshot().data); }
+      if (TEAM.hub && TEAM.hubState === 'on' && !sameAsWritten('hub/me', { ...mySnapshot(), via: 'hub' })) { try { const fh = await TEAM.hub.getFileHandle(`pipetree-team-${slug(S.settings.userName)}-${S.settings.userId.slice(-4)}.json`, { create: true }), wr = await fh.createWritable(); await wr.write(JSON.stringify({ ...mySnapshot(), via: 'hub' })); await wr.close(); TEAM.hubAt = new Date(); } catch (e) { TEAM.hubErr = e.message || 'failed'; if (e.name === 'NotAllowedError') TEAM.hubState = 'needs-permission'; } } await dailyCopy(dir, '', S.settings.userName || 'me', mySnapshot().data); }
     else { if (recCount(S) > 0) await w(`pipetree-team-${slug(S.settings.userName || 'lead')}-${S.settings.userId.slice(-4)}.json`, mySnapshot()); await dailyCopy(dir, slug(S.settings.userName || 'lead'), S.settings.userName || 'lead', JSON.parse(JSON.stringify(S))); for (const f of folder) if (f.data) await dailyCopy(dir, slug(f.member || f.folder || 'member'), f.member || 'member', f.data); }
     await w('pipetree-projects.json', { kind: 'pipetree-projects', updatedAt: new Date().toISOString(), projects: S.projects });
     if (role === 'lead') { rebuildMembers(); try { mgrAck(); } catch (e) { } await leadPublish(dir); }
@@ -4833,8 +4835,28 @@ async function syncTeam(readAll) {
     rebuildMembers();
   } catch (e) { TEAM.err = e.message || 'failed'; if (e.name === 'NotAllowedError') TEAM.state = 'needs-permission'; }
   teamBusy = false;
-  if (['team', 'projects'].includes(VIEW) && !MODAL && !/INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '')) render();
+  const changed = teamViewSig() !== sig0; WATCH.sig = ''; watchTeam(true);
+  if ((changed || ['team', 'projects'].includes(VIEW)) && !MODAL && !(typeof PDRAG !== 'undefined' && PDRAG.on) && !/INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '')) render();
 }
+/* what the screen shows from the team: when this changes after a sync, redraw at once */
+function teamViewSig() { try { const sh = TEAM.shared || {}; return [S.apps.length, S.apps.reduce((n, a) => n + a.stage.length + (a.since || '').length + (a.cOwnerId || '').length + (a.outcome || '').length, 0), (S.inNotes || []).length, S.tasks.length, JSON.stringify(sh.roles || []).length, JSON.stringify(sh.all || []).length, TEAM.members.map(m => m.publishedAt).join()].join('|'); } catch (e) { return ''; } }
+/* near-instant team updates: every few seconds, look at the dates of the files colleagues write; when one changed, sync now */
+const WATCH = { sig: '', busy: false };
+/* write a team file only when its content really changed (times aside), or every 10 minutes as a sign of life. Stops two Nimbles from waking each other up forever. */
+const WRITTEN = new Map();
+function sameAsWritten(key, obj) { const body = JSON.stringify(obj, (k, v) => ['at', 'publishedAt', 'updatedAt', 'sharedSeen', 'hubAt'].includes(k) ? undefined : v), prev = WRITTEN.get(key), now = Date.now();
+  if (prev && prev.body === body && now - prev.t < 10 * 60000) return true; WRITTEN.set(key, { body, t: now }); return false; }
+async function watchTeam(baseline) { if (WATCH.busy || TEAM.state !== 'on' || !TEAM.handle || !S || VIEWAS || teamBusy) return; WATCH.busy = true;
+  try { const me = myUid().slice(-4), mine = n => n.endsWith('-' + me + '.json'), parts = [], lead = isLead();
+    const scan = async (dir, pre, test) => { for await (const [n, h] of dir.entries()) { if (h.kind !== 'file' || !test(n)) continue; try { const f = await h.getFile(); parts.push(pre + n + ':' + f.lastModified + ':' + f.size); } catch (e) { } } };
+    if (lead) { await scan(TEAM.handle, '/', n => /^pipetree-team-.+\.json$/.test(n) && !mine(n));
+      for await (const [n, h] of TEAM.handle.entries()) { if (h.kind !== 'directory' || /^(backups|safety)$/i.test(n)) continue; await scan(h, n + '/', x => /^pipetree-team-.+\.json$/.test(x));
+        try { for await (const [n2, h2] of h.entries()) if (h2.kind === 'directory' && /nimble|pipetree/i.test(n2)) await scan(h2, n + '/' + n2 + '/', x => /^pipetree-team-.+\.json$/.test(x)); } catch (e) { } } }
+    else await scan(TEAM.handle, '/', n => /^pipetree-(shared|from-.+|pool|version|shared-settings)\.json$/.test(n) || n.startsWith('pipetree-for-' + me + '-'));
+    if (TEAM.hub && TEAM.hubState === 'on') await scan(TEAM.hub, 'hub/', n => /^pipetree-team-.+\.json$/.test(n) && !mine(n));
+    const sig = parts.sort().join('|'); if (baseline || !WATCH.sig) WATCH.sig = sig; else if (sig !== WATCH.sig) { WATCH.sig = sig; WATCH.busy = false; await syncTeam(true); return; } } catch (e) { }
+  WATCH.busy = false; }
+setInterval(() => watchTeam(false), 4000);
 function mergeProjects(remote) {
   const byId = new Map(S.projects.map(p => [p.id, p]));
   for (const r of remote) { const l = byId.get(r.id); if (!l || (r.updatedAt || '') > (l.updatedAt || '')) byId.set(r.id, r); }
@@ -5062,6 +5084,15 @@ function sharedHTML() { const me = myUid(), cards = togetherCards(), lead = isLe
     ${cards.length ? `<div class="wt-tools"><span class="small muted">Click a role for the details. Drag ⋮⋮ to change the order.</span><button class="btn sm quiet" data-act="wtall" data-v="open">Open all</button><button class="btn sm quiet" data-act="wtall" data-v="close">Close all</button>${(S.settings.wtOrder || []).length ? '<button class="btn sm quiet" data-act="wtreset">Automatic order</button>' : ''}</div>` : ''}
     ${theirs.length ? `<h2 class="shr-o">Roles you help on</h2>${theirs.map(card).join('')}` : ''}${mine.length ? `<h2 class="shr-o">Your roles colleagues help on</h2>${mine.map(card).join('')}` : ''}${cards.length ? '' : `<div class="glass empty">${none}</div>`}`; }
 const TOGETHER_OPEN = new Set(), TOGETHER_INFO = new Set();
+let XDRAG = null;
+document.addEventListener('dragstart', e => { const el = e.target.closest && e.target.closest('[data-xdrag]'); if (!el) return; XDRAG = { a: el.dataset.xdrag, k: el.dataset.xk }; e.dataTransfer.setData('application/x-pt-x', XDRAG.a); e.stopImmediatePropagation(); }, true);
+const xDropOk = (col, g) => { const c = xCard(g.k); if (!c) return false; const me = myUid(), mgr = c.mgrId === me || c.salesId === me; return mgr || PRE.has(col.dataset.xkind); };
+document.addEventListener('dragover', e => { if (!XDRAG) return; const col = e.target.closest && e.target.closest('[data-xdrop]'); document.querySelectorAll('.xboard .col.drop').forEach(x => x !== col && x.classList.remove('drop')); if (!col || !xDropOk(col, XDRAG)) return; e.preventDefault(); e.stopImmediatePropagation(); col.classList.add('drop'); }, true);
+document.addEventListener('drop', e => { if (!XDRAG) return; const g = XDRAG; XDRAG = null; document.querySelectorAll('.xboard .col.drop').forEach(x => x.classList.remove('drop')); const col = e.target.closest && e.target.closest('[data-xdrop]'); if (!col || !xDropOk(col, g)) return; e.preventDefault(); e.stopImmediatePropagation();
+  const c = xCard(g.k), a = c && c.apps.find(x => x.id === g.a); if (!a) return; const last = (xPending(c).filter(it => it.appId === a.id && it.op === 'stage').pop() || {}).stage || a.stId; if (last === col.dataset.xdrop) return;
+  S.shareOut = S.shareOut || []; S.shareOut.push({ id: uid('sh'), type: 'op', op: 'stage', stage: col.dataset.xdrop, owner: c.owner, roleId: c.roleId, appId: a.id, by: S.settings.userName || '', byId: myUid(), at: new Date().toISOString(), title: c.title, client: c.client, name: a.n });
+  commit(); toast(`${a.n} moved to ${(c.stages.find(x => x.id === col.dataset.xdrop) || {}).label}. ${firstName(c.ownerName)} sees it with the next team sync`, true); if (TEAM.state === 'on') syncTeam(false); }, true);
+document.addEventListener('dragend', () => { if (XDRAG) { XDRAG = null; document.querySelectorAll('.xboard .col.drop').forEach(x => x.classList.remove('drop')); } }, true);
 let WTDRAG = null;
 document.addEventListener('dragstart', e => { const c = e.target.closest && e.target.closest('[data-wtdrag]'); if (!c) return; WTDRAG = { k: c.dataset.wtdrag, sec: c.dataset.wtsec }; e.dataTransfer.setData('application/x-pt-wt', WTDRAG.k); c.classList.add('dragging'); e.stopImmediatePropagation(); }, true);
 document.addEventListener('dragover', e => { if (!WTDRAG) return; const t = e.target.closest && e.target.closest('[data-wtdrag]'); document.querySelectorAll('.wt-card.dropb,.wt-card.dropa').forEach(x => x.classList.remove('dropb', 'dropa')); if (!t || t.dataset.wtsec !== WTDRAG.sec || t.dataset.wtdrag === WTDRAG.k) return; e.preventDefault(); e.stopImmediatePropagation(); const b = t.getBoundingClientRect(); t.classList.add(e.clientY < b.top + b.height / 2 ? 'dropb' : 'dropa'); }, true);
@@ -5107,14 +5138,16 @@ function sharedHTMLOld() {
 const teamShared = () => (VIEWAS ? SHARE_OUT[VIEWAS.userId] : TEAM.shared) || {};
 const xCard = k => { const [o, r] = String(k).split('|'); return (teamShared().roles || []).find(c => c.owner === o && c.roleId === r); };
 const xPending = c => (S.shareOut || []).filter(it => it.owner === c.owner && it.roleId === c.roleId && !it.arrived);
-function xBoardHTML(c) { const me = myUid(), mgr = c.mgrId === me || c.salesId === me, cols = c.stages, live = c.apps.filter(a => a.o === 'active'), pend = xPending(c);
+function xBoardHTML(c) { const me = myUid(), mgr = c.mgrId === me || c.salesId === me, cols = c.stages, pend = xPending(c);
+  const eff = a => { const mv = pend.filter(it => it.appId === a.id && it.op === 'stage').pop(); return mv ? { ...a, stId: mv.stage, moving: true } : a; }, live = c.apps.filter(a => a.o === 'active').map(eff);
+  const kindOf = id => (cols.find(x => x.id === id) || {}).kind, canMove = a => mgr || (a.ownerId === me && PRE.has(kindOf(a.stId)));
   const card = a => { const mine = a.ownerId === me, pe = pend.filter(it => it.appId === a.id);
-    return `<div class="card x ${mine ? 'mine' : ''}" data-act="xopen" data-k="${esc(c.owner + '|' + c.roleId)}" data-a="${esc(a.id)}"><div class="nm">${esc(a.n)}</div><div class="r2 small">${esc([a.t, a.e].filter(Boolean).join(' · '))}</div>
-      <div class="small muted">${mine ? '<b>Your candidate</b>' : esc(firstName(a.ownerName)) + "'s candidate"}${a.ni ? ` · ${esc(fmtDate(a.ni))}${a.nt ? ' ' + esc(a.nt) : ''}` : ''}</div>${a.tasks.length ? `<div class="small">☐ ${esc(a.tasks[0].text)}</div>` : ''}${pe.length ? '<div class="small shr-pend">change on the way</div>' : ''}</div>`; };
+    return `<div class="card x ${mine ? 'mine' : ''}" ${canMove(a) ? `draggable="true" data-xdrag="${esc(a.id)}" data-xk="${esc(c.owner + '|' + c.roleId)}"` : ''} data-act="xopen" data-k="${esc(c.owner + '|' + c.roleId)}" data-a="${esc(a.id)}"><div class="nm">${esc(a.n)}</div><div class="r2 small">${esc([a.t, a.e].filter(Boolean).join(' · '))}</div>
+      <div class="small muted">${mine ? '<b>Your candidate</b>' : esc(firstName(a.ownerName)) + "'s candidate"}${a.ni ? ` · ${esc(fmtDate(a.ni))}${a.nt ? ' ' + esc(a.nt) : ''}` : ''}</div>${a.tasks.length ? `<div class="small">☐ ${esc(a.tasks[0].text)}</div>` : ''}${pe.length ? `<div class="small shr-pend">${a.moving ? 'moved, on the way to ' + esc(firstName(c.ownerName)) : 'change on the way'}</div>` : ''}</div>`; };
   const newOnes = pend.filter(it => !it.type).map(it => `<div class="card x pend"><div class="nm">${esc(it.name)}</div><div class="small muted">on the way to ${esc(firstName(c.ownerName))}</div></div>`).join('');
-  return `<div class="head"><div><h1>${esc(c.client)} · ${esc(c.title)}</h1><div class="sub">${mgr ? `<b>You manage this role</b> for ${esc(c.salesName)}'s client. You can move candidates all the way.` : `<b>${esc(c.mgrName)}'s role</b>${c.salesName !== c.mgrName ? ` (${esc(c.salesName)}'s client)` : ''}. You can add candidates up to CV received; ${esc(firstName(c.mgrName))} takes it from there.`} Changes reach ${esc(firstName(c.ownerName))}'s Nimble with the next team sync.</div></div>
+  return `<div class="head"><div><h1>${esc(c.client)} · ${esc(c.title)}</h1><div class="sub">${mgr ? `<b>You manage this role</b> for ${esc(c.salesName)}'s client. You can move candidates all the way.` : `<b>${esc(c.mgrName)}'s role</b>${c.salesName !== c.mgrName ? ` (${esc(c.salesName)}'s client)` : ''}. Drag your own candidates from Sourced up to CV received; from hiring manager review on, ${esc(firstName(c.mgrName))} takes it.`} Changes reach ${esc(firstName(c.ownerName))}'s Nimble with the next team sync.</div></div>
     <div class="acts"><button class="btn primary" data-act="shareadd" data-o="${esc(c.owner)}" data-r="${esc(c.roleId)}">Add candidate</button></div></div>
-    <div class="board xboard" style="grid-template-columns:repeat(${cols.length},minmax(150px,1fr))">${cols.map((st, i) => { const L = live.filter(a => a.stId === st.id); return `<div class="col"><div class="colh"><b>${esc(st.label)}</b> <span class="muted">${L.length}</span></div>${L.map(card).join('')}${i === 0 ? newOnes : ''}</div>`; }).join('')}</div>`; }
+    <div class="board xboard" style="grid-template-columns:repeat(${cols.length},minmax(150px,1fr))">${cols.map((st, i) => { const L = live.filter(a => a.stId === st.id); return `<div class="col" data-xdrop="${esc(st.id)}" data-xkind="${esc(st.kind)}"><div class="colh"><b>${esc(st.label)}</b> <span class="muted">${L.length}</span></div>${L.map(card).join('')}${i === 0 ? newOnes : ''}</div>`; }).join('')}</div>`; }
 function xDetailHTML(m) { const c = xCard(m.k); if (!c) return '<p>This role is no longer shared.</p>'; const a = c.apps.find(x => x.id === m.a); if (!a) return '<p>Not found.</p>';
   const me = myUid(), mgr = c.mgrId === me || c.salesId === me, own = a.ownerId === me, cur = c.stages.find(st => st.id === a.stId) || {}, curPre = PRE.has(cur.kind);
   const opts = c.stages.filter(st => mgr || (own && curPre && PRE.has(st.kind))), ros = rosterAll();
@@ -5285,8 +5318,15 @@ async function leadPublish(dir) {
   try { hygieneNotify(); } catch (e) { }
   const sets = teamDataSets(), pool = { kind: 'pipetree-pool', org: S.settings.orgName || 'H&Co', at: new Date().toISOString(), people: [] };
   for (const m of sets) withData(m.ds, () => { for (const p of S.people) { const st = personStatus(p); pool.people.push({ n: p.name, t: p.title || '', e: p.employer || '', l: p.location || '', tags: (p.tags || []).slice(0, 14), sec: p.sector || '', owner: m.member, ownerId: m.userId, st: st.label, live: st.k === 'cl' }); } });
+  /* members who connected the team folder itself (not a personal folder) read their files here, named for them */
+  for (const m of TEAM.members) { try { const id4 = m.userId.slice(-4), put = async (name, obj) => { if (sameAsWritten('root/' + name, obj)) return; const fh = await dir.getFileHandle(name, { create: true }), w = await fh.createWritable(); await w.write(JSON.stringify(obj)); await w.close(); };
+      if (SHARE_OUT[m.userId]) await put(`pipetree-for-${id4}-shared.json`, SHARE_OUT[m.userId]);
+      await put(`pipetree-for-${id4}-from-${slug(S.settings.userName)}.json`, { kind: 'pipetree-mgr', from: S.settings.userName, fromId: S.settings.userId, at: new Date().toISOString(), items: (S.mgrOut || []).filter(x => x.memberId === m.userId || (m.folder && x.folder === m.folder)), edits: (S.mgrEdits || []).filter(e => (e.memberId === m.userId || (m.folder && e.folder === m.folder)) && !e.acked).map(e => { e.sent = true; return e; }) });
+    } catch (e) { console.error('root publish', e); } }
+  try { const put = async (name, obj) => { if (sameAsWritten('root/' + name, obj)) return; const fh = await dir.getFileHandle(name, { create: true }), w = await fh.createWritable(); await w.write(JSON.stringify(obj)); await w.close(); };
+    await put('pipetree-pool.json', pool); await put('pipetree-shared-settings.json', { kind: 'pipetree-teamsettings', at: S.settings.teamSetAt || S.settings.savedAt || '', from: S.settings.userName, settings: Object.fromEntries(TEAM_KEYS.filter(k => S.settings[k] !== undefined).map(k => [k, S.settings[k]])) }); } catch (e) { }
   const folders = new Set([...TEAM.members.map(m => m.folder).filter(Boolean), ...(S.settings.invites || []).map(i => i.folder)]);
-  for (const fo of folders) { try { const sub = await teamSub(dir, fo).catch(() => null); if (!sub) continue; const wr = async (name, obj) => { const fh = await sub.getFileHandle(name, { create: true }), w = await fh.createWritable(); await w.write(typeof obj === 'string' ? obj : JSON.stringify(obj)); await w.close(); };
+  for (const fo of folders) { try { const sub = await teamSub(dir, fo).catch(() => null); if (!sub) continue; const wr = async (name, obj) => { if (typeof obj !== 'string' && sameAsWritten(fo + '/' + name, obj)) return; const fh = await sub.getFileHandle(name, { create: true }), w = await fh.createWritable(); await w.write(typeof obj === 'string' ? obj : JSON.stringify(obj)); await w.close(); };
     await wr(`pipetree-from-${slug(S.settings.userName)}.json`, { kind: 'pipetree-mgr', from: S.settings.userName, fromId: S.settings.userId, at: new Date().toISOString(), items: (S.mgrOut || []).filter(x => x.folder === fo), edits: (S.mgrEdits || []).filter(e => e.folder === fo && !e.acked).map(e => { e.sent = true; return e; }) });
     await wr('pipetree-pool.json', pool);
     { const mid = (TEAM.members.find(m => m.folder === fo) || {}).userId; if (mid && SHARE_OUT[mid]) { await wr('pipetree-shared.json', SHARE_OUT[mid]); TEAM.sharedOut = TEAM.sharedOut || {}; TEAM.sharedOut[mid] = SHARE_OUT[mid].at; } }
@@ -5995,7 +6035,7 @@ function drawerHTML() {
       <section class="dpart2"><div class="dbh">Stage${live ? ' and planned' : ''}</div>${track}
       ${ev}</section>
       <details class="dpart2 dmore" data-k="dm_${a.id}" ${EXPANDED.has('dm_' + a.id) ? 'open' : ''}><summary><span class="dbh">Process details</span><span class="small muted">Fee, notice, salary, park, reject or close</span><span class="du-go">Open ▾</span></summary>
-        <div class="fgrid" style="margin-top:8px">${a.outcome !== 'closed' ? `<label class="field">Stage<select data-bind="app|${a.id}|stage|text">${list.map(s => `<option value="${s.id}" ${a.stage === s.id ? 'selected' : ''}>${esc(s.label)}</option>`).join('')}</select></label>
+        <div class="fgrid" style="margin-top:8px">${rosterAll().length > 1 ? (roleMgrId(roleOf(a) || {}) === myUid() || clientOwnerId(clientOf(a)) === myUid() ? `<label class="field">Candidate owner <span class="muted">(moves them up to CV received)</span>${ownerSelect('cow_' + a.id, candOwnerId(a), `data-act-change="setcowner" data-a="${a.id}"`)}</label>` : `<div class="field small">Candidate owner<div><b>${esc(candOwnerName(a))}</b></div></div>`) : ''}${a.outcome !== 'closed' ? `<label class="field">Stage<select data-bind="app|${a.id}|stage|text">${list.map(s => `<option value="${s.id}" ${a.stage === s.id ? 'selected' : ''}>${esc(s.label)}</option>`).join('')}</select></label>
           <label class="field">Fee<input type="number" min="0" step="500" value="${a.fee ?? ''}" placeholder="${roleOf(a) && roleOf(a).fee ? 'role: ' + roleOf(a).fee : '0'}" data-bind="app|${a.id}|fee|num"></label>
           <label class="field">Park until<input type="date" value="${a.snoozeUntil || ''}" data-bind="app|${a.id}|snoozeUntil|date"></label>
           <label class="field">Notice period<input value="${esc(a.notice)}" placeholder="e.g. 1 month" data-bind="app|${a.id}|notice|text"></label>
@@ -7366,6 +7406,10 @@ const ACT = {
   viewasfollow: () => { if (!VIEWAS) return; VIEWAS.follow = !VIEWAS.follow; if (VIEWAS.follow) viewasPlace(); render(); },
   teamtab: el => { TEAMSEL.tab = el.dataset.v; render(); },
   pipenav: () => { const on = ['pipeline', 'shared', 'teamroles'].includes(VIEW), open = S.settings.pipeNavOpen !== false; if (!open) { S.settings.pipeNavOpen = true; if (!on) VIEW = 'pipeline'; } else if (on && VIEW === 'pipeline') S.settings.pipeNavOpen = false; else VIEW = 'pipeline'; save(); render(); },
+  setcowner: el => { const a = appById(el.dataset.a); if (!a) return; const to = el.value, was = candOwnerName(a); snapshot();
+    if (to === myUid()) { delete a.cOwnerId; delete a.cOwnerName; } else { a.cOwnerId = to; a.cOwnerName = nameOf(to); }
+    addLog(a, 'system', `Candidate owner: ${was} → ${candOwnerName(a)}`); if (to !== myUid()) pushNotice(to, a, `${S.settings.userName || 'Your role manager'} made you the owner of ${personOf(a).name} (${(roleOf(a) || {}).title || ''}). You move them up to CV received`, null, 'update');
+    commit(); scheduleTeam(); toast(`${personOf(a).name} is now ${candOwnerName(a)}'s candidate`, true); },
   wttoggle: (el, e) => { const k = el.dataset.k; if (TOGETHER_OPEN.has(k)) TOGETHER_OPEN.delete(k); else TOGETHER_OPEN.add(k); render(); },
   wtall: el => { const ks = [...document.querySelectorAll('[data-wtdrag]')].map(x => x.dataset.wtdrag); if (el.dataset.v === 'open') ks.forEach(k => TOGETHER_OPEN.add(k)); else TOGETHER_OPEN.clear(); render(); },
   wtreset: () => { delete S.settings.wtOrder; save(); render(); toast('Automatic order again: urgent first, then client and role grade', true); },
@@ -8946,7 +8990,7 @@ document.addEventListener('change', e => {
   if (el.dataset && /^(bdwiz|bdca)/.test(el.dataset.actChange || '') && ACT[el.dataset.actChange]) { ACT[el.dataset.actChange](el); return; }
   if (el.dataset && el.dataset.actChange === 'cudate') { ACT.cudate(el); return; }
   if (el.dataset && el.dataset.actChange === 'aisel' && AIX) { const id = el.dataset.a; AIX.sel = el.checked ? [...new Set([...AIX.sel, id])] : AIX.sel.filter(x => x !== id); render(); return; }
-  if (el.dataset && ['rpdate', 'settarget', 'settgtstart', 'revadj', 'quietdays', 'splitset', 'pcset', 'coacc', 'bulkset', 'bulkfile', 'bgf', 'rpsel', 'msgset', 'rfpudate', 'rsset', 'rtadate', 'rfptpset', 'rfpdate', 'carset', 'lockidle', 'rfpset', 'rftset', 'obedit', 'rvlog', 'rvtask', 'bulkmove', 'rnfrom', 'rcdate', 'pldate', 'setsector', 'introsel', 'introto', 'crmset', 'edittaskdate'].includes(el.dataset.actChange)) { ACT[el.dataset.actChange](el); return; }
+  if (el.dataset && ['setcowner', 'rpdate', 'settarget', 'settgtstart', 'revadj', 'quietdays', 'splitset', 'pcset', 'coacc', 'bulkset', 'bulkfile', 'bgf', 'rpsel', 'msgset', 'rfpudate', 'rsset', 'rtadate', 'rfptpset', 'rfpdate', 'carset', 'lockidle', 'rfpset', 'rftset', 'obedit', 'rvlog', 'rvtask', 'bulkmove', 'rnfrom', 'rcdate', 'pldate', 'setsector', 'introsel', 'introto', 'crmset', 'edittaskdate'].includes(el.dataset.actChange)) { ACT[el.dataset.actChange](el); return; }
   if (el.id && el.id.startsWith('cp_dt_') && isISO(el.value)) { el.parentNode.querySelectorAll('.qchip').forEach(b => b.classList.remove('on')); return; }
   if (el.dataset && el.dataset.actChange === 'cosel') { const d = dealById(el.dataset.d); if (!d) return; const keep = ['u', 'n'].map(k => (document.getElementById(`cu_${k}_${d.id}`) || {}).value || ''); const cur = coSel(d); COSEL[d.id] = el.checked ? [...new Set([...cur, el.dataset.c])] : cur.filter(x => x !== el.dataset.c); render(); ['u', 'n'].forEach((k, n) => { const i = document.getElementById(`cu_${k}_${d.id}`); if (i) i.value = keep[n]; }); return; }
   if (el.dataset && el.dataset.actChange === 'dealcopick' && el.value) { const d = dealById(el.dataset.d), c = d && (accById(d.accountId).contacts || []).find(x => x.id === el.value); if (d && c) { snapshot(); dealCoAdd(d, c.id); bdLog(d, 'system', `Contact added: ${c.name}`); commit(); toast(`${c.name} added to this opportunity`, true); } return; }
