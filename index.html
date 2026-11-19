@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-GdeiAKiW+O6D6USFCJdQKK8XzI08ligb1eHzDXeVl4E=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-q6CNSvbJWLlJXv9clcp8VUgfD+g5M02ODQ1bZa+lDTE=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#086570">
 <link rel="manifest" href="manifest.webmanifest">
@@ -4667,6 +4667,7 @@ async function initTeam() {
   try {
     TEAM.manual = (await kvGet('teamManual')) || [];
     const h = await kvGet('teamDir');
+    const hb = await kvGet('teamHub').catch(() => null); if (hb) { TEAM.hub = hb; const hp = hb.queryPermission ? await hb.queryPermission({ mode: 'readwrite' }).catch(() => 'prompt') : 'granted'; TEAM.hubState = hp === 'granted' ? 'on' : 'needs-permission'; }
     if (h) { TEAM.handle = h; const perm = h.queryPermission ? await h.queryPermission({ mode: 'readwrite' }) : 'granted'; TEAM.state = perm === 'granted' ? 'on' : 'needs-permission'; if (TEAM.state === 'on') await syncTeam(); }
     rebuildMembers();
   } catch (e) { }
@@ -4675,7 +4676,8 @@ function rebuildMembers() {
   const me = S ? S.settings.userId : '';
   const map = new Map();
   for (const m of [...TEAM.manual, ...(TEAM.folder || [])]) { if (!m || !m.data || m.userId === me) continue; const prev = map.get(m.userId); if (!prev || (m.publishedAt || '') > (prev.publishedAt || '')) map.set(m.userId, m); }
-  TEAM.members = [...map.values()].map(m => ({ ...m, ds: prepForeign(m.data) })).sort((a, b) => a.member.localeCompare(b.member));
+  const fo = new Map(); for (const m of [...TEAM.manual, ...(TEAM.folder || [])]) if (m && m.folder && !fo.has(m.userId)) fo.set(m.userId, m.folder);
+  TEAM.members = [...map.values()].map(m => ({ ...m, folder: m.folder || fo.get(m.userId), ds: prepForeign(m.data) })).sort((a, b) => a.member.localeCompare(b.member));
 }
 /* where this file was opened from: a downloaded copy can't share anything */
 function fileWhere() { let p = ''; try { p = decodeURIComponent(location.pathname || ''); } catch (e) { p = location.pathname || ''; }
@@ -4705,8 +4707,37 @@ async function connectTeamDir() {
   } catch (e) { if (e.name !== 'AbortError') toast('That folder could not be used'); }
 }
 let RESUME_TRIED = false;
-document.addEventListener('pointerdown', () => { if (RESUME_TRIED || TEAM.state !== 'needs-permission' || !TEAM.handle) return; RESUME_TRIED = true; resumeTeam(); }, true);
-async function resumeTeam() { try { const p = await TEAM.handle.requestPermission({ mode: 'readwrite' }); TEAM.state = p === 'granted' ? 'on' : 'needs-permission'; if (TEAM.state === 'on') { await syncTeam(true); toast(p === 'granted' ? 'Back in sync with your team' : 'Back in sync with your team', true); } render(); } catch (e) { } }
+document.addEventListener('pointerdown', () => { if (RESUME_TRIED) return; if (TEAM.state === 'needs-permission' && TEAM.handle) { RESUME_TRIED = true; resumeTeam(); } else if (TEAM.hubState === 'needs-permission' && TEAM.hub) { RESUME_TRIED = true; resumeHub(); } }, true);
+async function resumeTeam() { try { if (TEAM.hub && TEAM.hubState === 'needs-permission') { const q = await TEAM.hub.requestPermission({ mode: 'readwrite' }).catch(() => 'denied'); TEAM.hubState = q === 'granted' ? 'on' : 'needs-permission'; } const p = await TEAM.handle.requestPermission({ mode: 'readwrite' }); TEAM.state = p === 'granted' ? 'on' : 'needs-permission'; if (TEAM.state === 'on') { await syncTeam(true); toast(p === 'granted' ? 'Back in sync with your team' : 'Back in sync with your team', true); } render(); } catch (e) { } }
+/* ===== team hub: one folder everyone in the team can open. Each Nimble drops its own copy there and reads the others',
+   so people see each other's work on shared roles without the team lead's Nimble being open. ===== */
+async function resumeHub() { try { const q = await TEAM.hub.requestPermission({ mode: 'readwrite' }); TEAM.hubState = q === 'granted' ? 'on' : 'needs-permission'; if (TEAM.hubState === 'on') { await syncTeam(true); toast('Back in sync with the team hub', true); } render(); } catch (e) { } }
+async function connectHub() {
+  try { const h = await window.showDirectoryPicker({ id: 'nimble-hub', mode: 'readwrite', startIn: 'documents' });
+    if (TEAM.handle && h.isSameEntry && await h.isSameEntry(TEAM.handle)) { toast("That's your own Nimble folder. Pick the team folder " + firstName(rosterName((teamRoster().find(x => x.lead) || {}).id) || 'your lead') + ' shared with you'); return; }
+    let others = 0; for await (const [n, x] of h.entries()) if (x.kind === 'file' && /^pipetree-team-.+\.json$/.test(n) && !n.endsWith(`-${myUid().slice(-4)}.json`)) others++;
+    await kvSet('teamHub', h); TEAM.hub = h; TEAM.hubState = 'on'; await syncTeam(true); render();
+    toast(others ? `Connected to the team hub "${h.name}". You now see your team's work straight away` : `Connected to "${h.name}". Nobody else is in it yet; they show up once they connect it too`, true);
+  } catch (e) { if (e.name !== 'AbortError') toast('That folder could not be used'); } }
+async function leaveHub() { await kvSet('teamHub', null); TEAM.hub = null; TEAM.hubState = 'off'; TEAM.hubPeers = []; render(); }
+async function hubRead() { const out = [], me = myUid();
+  for await (const [n, h] of TEAM.hub.entries()) { if (h.kind !== 'file' || !/^pipetree-team-.+\.json$/.test(n)) continue; try { const j = JSON.parse(await (await h.getFile()).text()); if (j.kind === 'pipetree-team' && j.userId && j.userId !== me && j.data) out.push(j); } catch (e) { } }
+  const by = new Map(); for (const j of out) { const p = by.get(j.userId); if (!p || (j.publishedAt || '') > (p.publishedAt || '')) by.set(j.userId, j); }
+  return [...by.values()].map(j => ({ member: j.member, userId: j.userId, publishedAt: j.publishedAt, ds: prepForeign(j.data) })); }
+/* the same work the lead's Nimble does for everyone, done here for me alone from the copies in the hub */
+function peerShare(base) { const me = myUid(), peers = TEAM.hubPeers || []; base = base || {}; if (!peers.length) return base;
+  const sets = [{ userId: me, member: S.settings.userName || 'Me', ds: S }, ...peers], seen = new Set(sets.map(m => m.userId));
+  const cards = [], items = [], done = new Set(), notes = [];
+  for (const m of sets) { const run = () => { for (const r of S.roles.filter(rOn)) cards.push(shareRoleCard(r, m.userId)); for (const it of (S.shareOut || [])) items.push({ ...it, from: m.userId }); (S.inboxDone || []).forEach(x => done.add(x)); (S.notices || []).forEach(x => notes.push(x)); };
+    if (m.ds === S) run(); else withData(m.ds, run); }
+  const byId = l => { const u = new Map(); for (const x of l) if (x && x.id && !u.has(x.id)) u.set(x.id, x); return [...u.values()]; };
+  const roster = [...(base.roster || [])]; for (const m of sets) if (!roster.some(x => x.id === m.userId)) roster.push({ id: m.userId, name: m.member });
+  return { kind: 'pipetree-shared', ...base, roster,
+    roles: [...cards.filter(c => c.owner !== me && (c.openTo.includes(me) || c.mgrId === me)), ...(base.roles || []).filter(c => !seen.has(c.owner))],
+    hot: [...cards.filter(c => c.hot), ...(base.hot || []).filter(c => !seen.has(c.owner))],
+    inbox: byId([...items.filter(it => it.owner === me && !done.has(it.id)), ...(base.inbox || []).filter(it => !done.has(it.id))]),
+    acks: [...new Set([...items.filter(it => it.from === me && done.has(it.id)).map(it => it.id), ...(base.acks || [])])],
+    notices: byId([...notes.filter(x => x.to === me), ...(base.notices || [])]), hubAt: new Date().toISOString(), hubPeers: peers.map(p => p.member) }; }
 async function leaveTeamDir() { await kvSet('teamDir', null); TEAM.handle = null; TEAM.state = 'off'; TEAM.folder = []; rebuildMembers(); render(); }
 function mySnapshot() { const d = JSON.parse(JSON.stringify(S)); d.settings.wallImage = null; const w = fileWhere(); return { kind: 'pipetree-team', member: S.settings.userName || 'Me', userId: S.settings.userId, publishedAt: new Date().toISOString(), v: APP_V, sharedSeen: (TEAM.shared && TEAM.shared.at) || '', sharedRoles: ((TEAM.shared && TEAM.shared.roles) || []).length, openedFrom: w.nice + (w.path ? ' › ' + w.path.split('/').pop() : ''), openedCopy: !!w.copy || !w.inOneDrive, data: d }; }
 let teamTimer = null, teamBusy = false;
@@ -4728,11 +4759,13 @@ async function syncTeam(readAll) {
     }
     TEAM.folder = folder;
     if (remoteProjects) mergeProjects(remoteProjects);
-    if (role !== 'lead') { if (invite && invite.kind === 'pipetree-invite') applyInvite(invite); for (const f of mgrIn) if (f && f.kind === 'pipetree-mgr') mergeMgr(f); if (pool && pool.kind === 'pipetree-pool') TEAM.pool = pool; if (shared) applyShared(shared); }
+    if (role !== 'lead') { if (invite && invite.kind === 'pipetree-invite') applyInvite(invite); for (const f of mgrIn) if (f && f.kind === 'pipetree-mgr') mergeMgr(f); if (pool && pool.kind === 'pipetree-pool') TEAM.pool = pool; if (shared) { TEAM.leadShared = shared; applyShared(shared); }
+      if (TEAM.hub && TEAM.hubState === 'on') { try { TEAM.hubPeers = await hubRead(); applyShared(peerShare(TEAM.leadShared || TEAM.shared)); TEAM.hubErr = ''; } catch (e) { TEAM.hubErr = e.message || 'failed'; if (e.name === 'NotAllowedError') TEAM.hubState = 'needs-permission'; } } }
     const w = async (name, obj) => { const fh = await dir.getFileHandle(name, { create: true }); const wr = await fh.createWritable(); await wr.write(JSON.stringify(obj)); await wr.close(); };
     if (role !== 'lead') { const mine = folder.find(f => f.userId === S.settings.userId) || (folder.length === 1 ? folder[0] : null);
       if (mine && shrinks(mine.data, S) && S.settings.shrinkOk !== TODAY) { await putJSON(await bkDir(dir, 'safety'), `nimble-kept-${TODAY}-${String(Date.now()).slice(-6)}.json`, mine.data); S.settings.shrinkOk = TODAY; teamBusy = false; if (!MODAL) openRestore(`This Nimble has ${recCount(S)} records, but your folder has ${recCount(mine.data)} from ${esc(fmtDate((mine.publishedAt || '').slice(0, 10)) || 'earlier')}. Nimble did <b>not</b> overwrite it. Restore it below.`); return; }
-      await w(`pipetree-team-${slug(S.settings.userName)}-${S.settings.userId.slice(-4)}.json`, mySnapshot()); TEAM.sharedAt = new Date(); await dailyCopy(dir, '', S.settings.userName || 'me', mySnapshot().data); }
+      await w(`pipetree-team-${slug(S.settings.userName)}-${S.settings.userId.slice(-4)}.json`, mySnapshot()); TEAM.sharedAt = new Date();
+      if (TEAM.hub && TEAM.hubState === 'on') { try { const fh = await TEAM.hub.getFileHandle(`pipetree-team-${slug(S.settings.userName)}-${S.settings.userId.slice(-4)}.json`, { create: true }), wr = await fh.createWritable(); await wr.write(JSON.stringify({ ...mySnapshot(), via: 'hub' })); await wr.close(); TEAM.hubAt = new Date(); } catch (e) { TEAM.hubErr = e.message || 'failed'; if (e.name === 'NotAllowedError') TEAM.hubState = 'needs-permission'; } } await dailyCopy(dir, '', S.settings.userName || 'me', mySnapshot().data); }
     else { if (recCount(S) > 0) await w(`pipetree-team-${slug(S.settings.userName || 'lead')}-${S.settings.userId.slice(-4)}.json`, mySnapshot()); await dailyCopy(dir, slug(S.settings.userName || 'lead'), S.settings.userName || 'lead', JSON.parse(JSON.stringify(S))); for (const f of folder) if (f.data) await dailyCopy(dir, slug(f.member || f.folder || 'member'), f.member || 'member', f.data); }
     await w('pipetree-projects.json', { kind: 'pipetree-projects', updatedAt: new Date().toISOString(), projects: S.projects });
     if (role === 'lead') { rebuildMembers(); try { mgrAck(); } catch (e) { } await leadPublish(dir); }
@@ -5335,8 +5368,16 @@ function teamSettingsHTML() {
   const terms = role === 'lead' ? `<section class="glass tm-tcard"><div><b>Beta terms for team members</b><div class="small muted">Everyone who joins your team agrees to a short confidentiality agreement about Nimble itself before they start (version ${TERMS_V}). Their work data stays the company's. You see who accepted on Team members.</div></div><div class="acts"><button class="btn sm" data-act="termsview">Read the terms</button><button class="btn sm quiet" data-act="termsdl">Download</button>${TEAM.members.filter(m => (((m.data || {}).settings || {}).termsOk || {}).v === TERMS_V).map(m => `<button class="btn sm quiet" data-act="termsdl" data-u="${esc(m.userId)}" title="Download ${esc(m.member)}'s accepted copy">${esc(firstName(m.member))} ✓</button>`).join('')}</div></section>` : role === 'member' && S.settings.termsOk ? `<section class="glass tm-tcard"><div><b>Nimble beta terms</b><div class="small muted">You accepted these on ${fmtDate(S.settings.termsOk.at)}.</div></div><div class="acts"><button class="btn sm" data-act="termsdl">Download a copy</button></div></section>` : '';
   const sp = splitPct(), split = role === 'lead' ? `<section class="glass tm-tcard"><div><b>How revenue is split per placement</b><div class="small muted">Used for everyone's revenue and targets. Client owner gets the sales part, the role manager the account management part, the candidate owner the candidate part. One person can earn several parts.</div></div><div class="acts">${[['sales', 'Sales (client owner)'], ['am', 'Account management (role manager)'], ['cand', 'Candidate owner']].map(([k, l]) => `<label class="small" style="display:flex;gap:6px;align-items:center">${l} <input class="inp sm num" type="number" min="0" max="100" style="width:64px" value="${sp[k]}" data-act-change="splitset" data-k="${k}">%</label>`).join('')}${sp.sales + sp.am + sp.cand !== 100 ? `<span class="small" style="color:var(--hot)">Adds up to ${sp.sales + sp.am + sp.cand}%</span>` : ''}</div></section>` : '';
   return `<div class="head"><div><h1>Team settings</h1><div class="sub">${TEAM.state === 'on' ? `Connected to the folder <b>${esc(TEAM.handle.name)}</b>${TEAM.loadedAt ? `, refreshed ${pad(TEAM.loadedAt.getHours())}:${pad(TEAM.loadedAt.getMinutes())}` : ''}.` : 'Not connected to a team folder yet.'}</div></div>
-    <div class="acts">${TEAM.state === 'on' ? '<button class="btn" data-act="teamsync">' + (role === 'member' ? 'Share now' : 'Refresh') + '</button>' : ''}${role === 'lead' && ((S.settings.invites || []).length || TEAM.members.length) && TEAM.state === 'on' ? `<button class="btn" data-act="tifile" title="Writes your current Nimble version into every team member's folder. Their data stays.">Update everyone's Nimble file</button>` : ''}${role === 'lead' ? '<button class="btn primary" data-act="teaminvite">Add team member</button>' : ''}</div></div>` + (WEB && FS_OK && TEAM.state !== 'on' ? `<section class="glass hyg-a" style="border-left-color:#0E8E99;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div style="flex:1;min-width:260px"><b>Moving over from the old Nimble?</b><div class="small">Bring your latest data in from your Nimble folder. Nimble shows every copy it finds with its time; you pick yours, and it connects to the team in the same go. What's here now is kept as a safety copy.</div></div><button class="btn primary" data-act="moveinpick">Bring my data from my Nimble folder</button></section>` : '') + split + terms + teamSetupHTML();
+    <div class="acts">${TEAM.state === 'on' ? '<button class="btn" data-act="teamsync">' + (role === 'member' ? 'Share now' : 'Refresh') + '</button>' : ''}${role === 'lead' && ((S.settings.invites || []).length || TEAM.members.length) && TEAM.state === 'on' ? `<button class="btn" data-act="tifile" title="Writes your current Nimble version into every team member's folder. Their data stays.">Update everyone's Nimble file</button>` : ''}${role === 'lead' ? '<button class="btn primary" data-act="teaminvite">Add team member</button>' : ''}</div></div>` + (WEB && FS_OK && TEAM.state !== 'on' ? `<section class="glass hyg-a" style="border-left-color:#0E8E99;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div style="flex:1;min-width:260px"><b>Moving over from the old Nimble?</b><div class="small">Bring your latest data in from your Nimble folder. Nimble shows every copy it finds with its time; you pick yours, and it connects to the team in the same go. What's here now is kept as a safety copy.</div></div><button class="btn primary" data-act="moveinpick">Bring my data from my Nimble folder</button></section>` : '') + hubHTML(role) + split + terms + teamSetupHTML();
 }
+function hubHTML(role) { if (!FS_OK || !role) return '';
+  if (role === 'lead') { if (TEAM.state !== 'on') return ''; const on = new Set((TEAM.folder || []).filter(f => f.via === 'hub').map(f => f.userId)), ppl = TEAM.members;
+    return `<section class="glass tm-tcard"><div><b>Team hub: work together without you online</b><div class="small muted">Share your folder <b>${esc(TEAM.handle.name)}</b> in OneDrive with everyone in the team (Can edit). Each person then connects it once under Team settings → Team hub. From then on their Nimbles swap updates on shared roles directly, also when your Nimble is closed. Everyone in the team can open the files in that folder.</div>${ppl.length ? `<div class="small" style="margin-top:6px">${ppl.map(m => `${esc(firstName(m.member))} ${on.has(m.userId) ? '<span class="tag ok" style="margin:0">✓ on the hub</span>' : '<span class="muted">not yet</span>'}`).join(' · ')}</div>` : ''}</div></section>`; }
+  const st = TEAM.hubState || 'off', peers = TEAM.hubPeers || [];
+  return `<section class="glass tm-tcard"><div><b>Team hub</b><div class="small muted">${st === 'on' ? `Connected to <b>${esc(TEAM.hub.name)}</b>${TEAM.hubAt ? `, last swap ${pad(TEAM.hubAt.getHours())}:${pad(TEAM.hubAt.getMinutes())}` : ''}. ${peers.length ? `You see work from ${esc(peers.map(p => firstName(p.member)).join(', '))} straight away, also when your team lead is offline.` : 'Nobody else is in it yet. They show up once they connect it too.'}`
+    : st === 'needs-permission' ? 'Nimble needs your OK to open the team hub again.'
+    : `Your team lead shares one team folder with everyone. Connect it once and you see each other's work on shared roles straight away, also when your team lead is offline. In OneDrive, open <b>Shared</b>, right-click the team folder and choose <b>Add shortcut to My files</b>. Then click Connect and pick it.`}</div></div>
+    <div class="acts">${st === 'on' ? '<button class="btn sm quiet" data-act="hubleave">Disconnect</button>' : st === 'needs-permission' ? '<button class="btn sm primary" data-act="hubresume">Reconnect</button>' : `<button class="btn sm primary" data-act="hubconnect" ${TEAM.state === 'on' ? '' : 'disabled title="Connect your own folder first"'}>Connect the team hub</button>`}</div></section>`; }
 function teamHTMLOld() {
   if ((S.settings.teamRole || '') === 'member' && TEAM.state === 'on') return `<div class="head"><div><h1>Team</h1><div class="sub">${TEAM.state === 'on' ? `You share your Nimble with your team lead through <b>${esc(TEAM.handle.name)}</b>${TEAM.sharedAt ? `, last shared ${pad(TEAM.sharedAt.getHours())}:${pad(TEAM.sharedAt.getMinutes())}` : ''}.` : 'Not connected yet.'}</div></div>${TEAM.state === 'on' ? '<div class="acts"><button class="btn" data-act="teamsync">Share now</button></div>' : ''}</div>` + teamSetupHTML();
   const sets = teamDataSets();
@@ -7051,6 +7092,7 @@ const ACT = {
   bknow: async () => { await runBackup(); render(); toast(BK.err ? 'Backup failed: ' + BK.err : 'Backed up'); },
   teamconnect: () => connectTeamDir(),
   teamresume: () => resumeTeam(),
+  hubconnect: () => connectHub(), hubresume: () => resumeHub(), hubleave: () => leaveHub(),
   teamsync: async () => { await syncTeam(true); render(); toast('Team refreshed'); },
   teamfile: () => document.getElementById('teamfilepick').click(),
   mgradd: () => { if (!VIEWAS) return; const ref = DRAWER && DRAWER.a && appById(DRAWER.a) ? { t: 'app', id: DRAWER.a, label: `${personOf(appById(DRAWER.a)).name} (${roleName(appById(DRAWER.a))})` } : BDD && BDD.deal && dealById(BDD.deal) ? { t: 'deal', id: BDD.deal, label: `${(accById(dealById(BDD.deal).accountId) || {}).name || ''} · ${dealById(BDD.deal).title || 'opportunity'}` } : null;
@@ -8978,7 +9020,8 @@ document.addEventListener('visibilitychange', () => { if (document.hidden && sav
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { }
   if (STARTCLASH) setTimeout(() => toast(`This is ${STARTCLASH.name}'s Nimble file, but this browser already holds someone else's Nimble. ${firstName(STARTCLASH.name)} should open it on their own computer (or in a separate browser profile).`), 800);
 })();
-setInterval(() => { if (TEAM.state === 'on') syncTeam(true); }, 5 * 60 * 1000);
+setInterval(() => { if (TEAM.state === 'on') syncTeam(true); }, 2 * 60 * 1000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && TEAM.state === 'on' && (!TEAM.loadedAt || Date.now() - TEAM.loadedAt > 30000)) syncTeam(true); });
 let WEBNEW = false;
 if (WEB) { try { if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js'); } catch (e) { }
   const chk = async () => { try { const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); if (j && j.v && j.v !== APP_V && !WEBNEW) { WEBNEW = true; render(); } } catch (e) { } };
