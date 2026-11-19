@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-mLVvY+ZSKmv86ncEjpVw4nyz1un8n4mwF6JgOJvCNb8=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-xxr+i+ksrOTjkTzdYpt8ktEVgNWUDuzg3J2MKraBE6o=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -43,7 +43,8 @@ body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--body),system-ui,
 .wcobar{display:none}
 @media (display-mode: window-controls-overlay){
   .wcobar{display:block;position:fixed;z-index:60;top:env(titlebar-area-y,0);left:env(titlebar-area-x,0);width:env(titlebar-area-width,100%);height:env(titlebar-area-height,32px);-webkit-app-region:drag;app-region:drag;pointer-events:none;background:transparent;padding-left:14px;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--muted)}
-  html body .shell{padding-top:env(titlebar-area-height,32px)}
+  :root{--tb:env(titlebar-area-height,32px)}
+  html body .shell{padding-top:env(titlebar-area-height,32px);box-sizing:border-box}
   html body .shell .rail{top:0;margin-top:calc(-1 * env(titlebar-area-height,32px));padding-top:calc(20px + env(titlebar-area-height,32px));height:calc(100vh / var(--z,1))}
   html body .shell.rc .rail{padding-top:calc(18px + env(titlebar-area-height,32px))}
   html body .drawer,html body .aipanel{top:env(titlebar-area-height,32px)!important;max-height:calc(100vh - env(titlebar-area-height,32px))}
@@ -163,7 +164,7 @@ h2 .count{font-size:14px;color:var(--muted);font-weight:600;font-family:var(--bo
 /* pipeline */
 .pipe{display:grid;grid-template-columns:208px minmax(0,1fr);gap:14px;align-items:start}
 .pipe.notree{grid-template-columns:minmax(0,1fr)}
-.tree{position:sticky;top:14px;max-height:calc(100vh - 28px);overflow-y:auto;overflow-x:hidden;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-content:start;padding:0 4px 4px 0;min-width:0}
+.tree{position:sticky;top:calc(14px + var(--tb,0px));max-height:calc(100vh - 28px - var(--tb,0px));overflow-y:auto;overflow-x:hidden;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-content:start;padding:0 4px 4px 0;min-width:0}
 .tbox{min-width:0}
 .tbox{padding:6px;border-radius:13px}
 .tbox.country.here{border-color:color-mix(in srgb,var(--cl) 55%,var(--line))}
@@ -256,7 +257,8 @@ h2 .count{font-size:14px;color:var(--muted);font-weight:600;font-family:var(--bo
 .morebtn:hover{background:color-mix(in srgb,var(--ink) 5%,transparent)}
 .emptyrole{padding:48px 24px;text-align:center;display:grid;gap:8px;justify-items:center}
 .emptyrole h2{font-size:22px}
-.crole{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.crole{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.crole .t{grid-column:1/-1}
 .crole:last-child{border-bottom:0}
 .crole .t{min-width:0}
 .crole .t button{border:0;background:none;padding:0;font-weight:650;cursor:pointer;color:var(--ink);text-align:left;font-size:14px;display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1305,7 +1307,7 @@ button.tcl-name:hover{text-decoration:underline;text-underline-offset:3px}
 .vboard{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
 .vrow{display:grid;grid-template-columns:200px minmax(0,1fr);gap:12px;align-items:start;padding:8px 10px;border-radius:14px;background:color-mix(in srgb,var(--panel,#fff) 55%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:inset 3px 0 0 var(--sc,var(--line));transition:box-shadow .15s,background .15s}
 .vrow.s-source{--sc:var(--muted)}.vrow.s-screen,.vrow.s-cv{--sc:#C9971C}.vrow.s-review{--sc:#7C6BD6}.vrow.s-interview{--sc:#3B82C4}.vrow.s-offer,.vrow.s-win{--sc:var(--win)}
-.vrow .vh{position:sticky;top:8px;display:flex;align-items:center;gap:8px;padding:6px 4px;font-weight:700;font-size:13.5px;min-width:0}
+.vrow .vh{position:sticky;top:calc(8px + var(--tb,0px));display:flex;align-items:center;gap:8px;padding:6px 4px;font-weight:700;font-size:13.5px;min-width:0}
 .vrow .vh .t{flex:1;min-width:0;overflow-wrap:break-word}
 .vrow .vh .num{font-size:12px;font-weight:700;padding:1px 8px;border-radius:999px;background:color-mix(in srgb,var(--ink) 9%,transparent)}
 .vrow .vh .dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--sc,var(--muted))}
@@ -1464,7 +1466,7 @@ button.tcl-name:hover{text-decoration:underline;text-underline-offset:3px}
 .rfi .rfp-st{margin-top:0}.rfi-m{display:grid;min-width:0}.rfi-m .inp{width:100%}.rfi-from{padding-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rfi-f{display:flex;gap:2px}.rfi-ok{color:var(--win);font-weight:800}
 .rfp-filter{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
-.rfp-side{padding:14px 16px;display:grid;gap:8px;position:sticky;top:14px}.rfp-side h2{margin:0 0 2px}.rfp-side .inp{width:100%}
+.rfp-side{padding:14px 16px;display:grid;gap:8px;position:sticky;top:calc(14px + var(--tb,0px))}.rfp-side h2{margin:0 0 2px}.rfp-side .inp{width:100%}
 .rfp-next{display:grid;gap:2px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--ink) 4%,transparent)}.rfp-next.set{background:color-mix(in srgb,var(--cl) 12%,transparent)}.rfp-next.late{background:color-mix(in srgb,var(--hot) 14%,transparent)}.rfp-next .btn{justify-self:start;margin-top:4px}
 .rfp-log{display:grid;gap:6px;margin-top:6px;max-height:420px;overflow:auto}.rfp-l{display:grid;grid-template-columns:52px 1fr auto;gap:6px;align-items:baseline;font-size:13px}
 .rfp-deptcfg{padding:4px 2px}
@@ -1755,7 +1757,8 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 .card.x{display:block;text-align:left;width:100%;padding:9px 10px;border-radius:10px;margin-bottom:8px;cursor:pointer;background:var(--card,rgba(255,255,255,.08));border:1px solid var(--line)}.card.x.mine{box-shadow:inset 3px 0 0 #E8A33D}.card.x.pend{opacity:.6;border-style:dashed}.card.x .nm{font-weight:700}
 .pf .pf-row{display:flex;gap:26px;flex-wrap:wrap;margin-top:10px}.pf .pf-row>div{display:grid}.pf .pf-row b{font-size:20px}.pf-neg{color:var(--hot,#E5484D)}.pf-pos{color:var(--win,#2FB37A)}
 .pf-bar{position:relative;height:8px;border-radius:99px;background:color-mix(in srgb,var(--ink) 10%,transparent);margin-top:8px}.pf-bar span{position:absolute;inset:0 auto 0 0;border-radius:99px;background:linear-gradient(90deg,#14ADB8,#2FD8C8)}.pf-bar i{position:absolute;top:-4px;width:2px;height:16px;background:var(--ink);opacity:.55}
-.pf-d{margin-top:10px}.pf-m th.cur,.pf-m td.cur{font-weight:800;background:color-mix(in srgb,#14ADB8 14%,transparent)}
+.pf-d{margin-top:10px}.pf-m{width:100%;table-layout:fixed}.pf-m th,.pf-m td{padding:3px 1px!important;font-size:10.5px;text-align:center!important;overflow:hidden;white-space:nowrap}
+.pf-m th.cur,.pf-m td.cur{font-weight:800;background:color-mix(in srgb,#14ADB8 14%,transparent)}
 .tmc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-top:14px}.tmc{display:grid;gap:8px;text-align:left;padding:16px;border:0;cursor:pointer;color:inherit;font:inherit}.tmc:hover{transform:translateY(-1px)}.tmc.dim{opacity:.7}
 .tmc-h{display:flex;gap:10px;align-items:center}.tmc-k{display:flex;gap:12px;flex-wrap:wrap;font-size:13px}.tmc-k .hot{color:var(--hot,#E5484D)}.tm-top{padding:14px 16px;margin-top:12px}
 .hot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;margin-top:14px}.hot-card{padding:16px;display:grid;gap:8px}.hot-h{display:flex;gap:10px;align-items:flex-start}.hot-f{font-size:22px;line-height:1}
@@ -1798,7 +1801,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:6129f47434*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -1951,6 +1954,10 @@ function save() {
 }
 function upgrade(s) {
   const b = blank();
+  /* repair: a role whose client is gone, or a process whose role or person is gone, would break the pipeline and the tree */
+  try { s.clients = s.clients || []; s.roles = s.roles || []; s.apps = s.apps || []; s.people = s.people || []; const cids = new Set(s.clients.map(c => c.id));
+    for (const r of s.roles) if (!r.clientId || !cids.has(r.clientId)) { let c = s.clients.find(c => c.id === '_lost'); if (!c) { c = { id: '_lost', name: 'Client missing', contact: '', notes: 'Roles whose client was deleted. Move them to the right client (Edit role).', created: (s.settings && s.settings.created) || '' }; s.clients.push(c); cids.add(c.id); } r.clientId = c.id; }
+    const pids = new Set(s.people.map(p => p.id)), gone = s.apps.filter(a => !pids.has(a.personId)); if (gone.length) { s.repaired = [...(s.repaired || []), ...gone]; s.apps = s.apps.filter(a => pids.has(a.personId)); } } catch (e) { }
   try { const fix = l => { if (l && typeof l.text === 'string' && /spoke with (them|him\/her)/i.test(l.text)) l.text = l.text.replace(/spoke with (them|him\/her)/gi, 'Spoke'); };
     for (const a of s.apps || []) (a.log || []).forEach(fix); for (const d of s.deals || []) (d.log || []).forEach(fix); for (const ac of s.accounts || []) { (ac.log || []).forEach(fix); for (const c of ac.contacts || []) (c.log || []).forEach(fix); }
     for (const t of [...(s.tasks || []), ...(s.bdTasks || [])]) fix(t); } catch (e) {}
@@ -2971,7 +2978,7 @@ function renderCore() {
       <div class="rail-foot nl">${HOSTED && document.fullscreenEnabled ? `<button class="btn quiet" style="justify-content:flex-start;padding-left:0" data-act="fullscreen" title="Hide the claude.ai bar and the browser bars. Press Esc to leave.">${document.fullscreenElement ? 'Leave full screen' : 'Full screen'}</button>` : ''}${S.settings.theme === 'living' && S.settings.wallKind === 'photos' ? '<button class="btn quiet" style="justify-content:flex-start;padding-left:0" data-act="nextwall">Another wallpaper</button>' : ''}<span id="bkstatus" style="display:grid;gap:6px">${backupBadgeHTML()}</span><button class="btn" data-act="export">Download backup</button>${lockOn() ? '<button class="btn quiet" data-act="locknow" style="justify-content:flex-start;padding-left:0">Lock now</button>' : ''}</div>
     </aside>
     <main class="main">${WEBNEW ? `<div class="glass hyg-a" style="margin-bottom:12px;display:flex;gap:12px;align-items:center;border-left-color:#0E8E99"><div style="flex:1"><b>A new version of Nimble is ready</b><div class="small">One click and you're on it. Your data stays as it is.</div></div><button class="btn primary" data-act="webreload">Reload</button></div>` : ''}${TEAM.state === 'needs-permission' && TEAM.handle && !VIEWAS ? `<div class="glass hyg-a" style="margin-bottom:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div style="flex:1;min-width:240px"><b>⚠ Nimble isn't syncing with your team</b><div class="small">Click Reconnect and choose <b>“Allow on every visit”</b> in Chrome's question. Then Nimble reconnects to “${esc(TEAM.handle.name)}” by itself from now on, and you won't see this again.</div></div><button class="btn primary" data-act="teamresume">Reconnect</button></div>` : ''}${TEAM.newVer && TEAM.newVer.stuck && !VIEWAS ? `<div class="glass hyg-a" style="margin-bottom:12px"><b>⚠ You're using an old copy of Nimble</b><div class="small">${esc(firstName(TEAM.newVer.from || 'Your team lead'))} put the current version in your OneDrive folder${TEAM.newVer.folder ? ` “${esc(TEAM.newVer.folder)}”` : ''}: <b>${esc(TEAM.newVer.file || 'your Nimble file')}</b>. Close this tab, open that file from the folder, and bookmark it. This copy is probably in Downloads or an email.</div></div>` : ''}${NAVH.length ? `<button class="backbtn" data-act="back" title="Back to ${esc(navLabel(NAVH[NAVH.length - 1]))} (Alt + ←)"><span>←</span> ${esc(navLabel(NAVH[NAVH.length - 1]))}</button>` : ''}${!VIEWAS && ['today', 'tasks', 'bdtoday', 'bdtasks'].includes(VIEW) ? mgrBoxHTML(S.settings.space === 'bd' ? 'bd' : 'rec') : ''}${(views[VIEW] || views.today)()}</main></div><div id="coachlayer">${coachHTML()}</div>`;
-  $layer.innerHTML = bulkBarHTML() + rfpPanelHTML() + (DRAWER ? drawerHTML() : '') + (BDD ? bdPanelHTML() : '') + (AIX ? aiHTML() : '') + (MODAL ? modalHTML() : '') + (JUMP ? jumpHTML() : '') + (CTX ? ctxHTML() : '');
+  $layer.innerHTML = bulkBarHTML() + rfpPanelHTML() + (DRAWER ? drawerHTML() : '') + (BDD ? bdPanelHTML() : '') + (AIX ? aiHTML() : '') + (MODAL ? modalHTML() : '') + (JUMP ? jumpHTML() : '') + (CTX ? ctxHTML() : ''); fitCtx();
   const cm = document.querySelector('.ctxmenu');
   if (cm) { const z = window.UIZ || 1, b = cm.getBoundingClientRect(); if (b.bottom > innerHeight - 8) cm.style.top = Math.max(8, innerHeight - b.height - 8) / z + 'px'; if (b.right > innerWidth - 8) cm.style.left = Math.max(8, innerWidth - b.width - 8) / z + 'px'; }
   if (JUMP) { const i = document.getElementById('jq'); if (i && document.activeElement !== i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
@@ -5326,7 +5333,7 @@ function personHTML(x) { const sets = teamDataSets(), pf = perfFor(x.m.userId, s
   return `<div class="head"><div><h1>${esc(x.name)}</h1><div class="sub">${esc(x.me ? 'You' : x.role || 'Recruiter')} · ${st.roles} live roles · ${st.live} candidates in process${(st.helping || []).length ? ` · ${st.helping.length} on colleagues' roles` : ''}</div>${(st.helping || []).length ? `<details class="small" style="margin-top:4px"><summary>Their candidates on colleagues' roles</summary>${st.helping.map(h => `<div>${esc(h.n)} <span class="muted">${esc(h.st)} · ${esc(h.c)} ${esc(h.r)} · lead ${esc(firstName(h.lead))}</span></div>`).join('')}</details>` : ''}</div>
     <div class="acts">${x.me ? '' : `<button class="btn" data-act="teamview" data-u="${esc(x.m.userId)}">See ${esc(fn)}'s screen</button>`}${isLead() ? `<label class="small" style="display:flex;gap:6px;align-items:center">Annual target <input class="inp sm num" type="number" min="0" step="1000" style="width:110px" value="${pf.annual || ''}" data-act-change="settarget" data-u="${esc(x.m.userId)}" placeholder="e.g. 50000"></label><label class="small" style="display:flex;gap:6px;align-items:center" title="The target counts from this date. The annual figure is prorated to the rest of the year.">from <input class="inp sm" type="date" style="width:140px" value="${(S.settings.targetStart || {})[x.m.userId] || ''}" data-act-change="settgtstart" data-u="${esc(x.m.userId)}"></label>` : ''}</div></div>
     <div class="pg"><div class="pg-main"><div class="tdgrid pg-2">
-      <section class="glass tdcard"><h3>Target and revenue</h3>${pf.start && pf.annual ? `<div class="small muted" style="margin-bottom:4px">Target runs from ${esc(fmtDate(pf.start))}: ${money(pf.annual)} a year, so ${money(pf.target)} for ${TODAY.slice(0, 4)}</div>` : ''}${pf.target ? `<div class="small">${money(pf.ytd)} of ${money(pf.target)} · <b class="${pm.gap > 0 ? 'pf-neg' : 'pf-pos'}">${pm.gap > 0 ? money(pm.gap) + ' behind' : money(-pm.gap) + ' ahead'}</b> for the end of ${MONTHS_L[pm.m - 1]}</div>${perfBar(pf)}` : '<div class="small muted">Set an annual target above to track it.</div>'}
+      <section class="glass tdcard"><h3>Target and revenue</h3>${pf.start && pf.annual ? `<div class="small muted" style="margin-bottom:4px">Target runs from ${esc(fmtDate(pf.start))}: ${money(pf.annual)} a year, so ${money(pf.target)} for ${TODAY.slice(0, 4)}</div>` : ''}${pf.target ? `<div class="small">${money(pf.ytd)} of ${money(pf.target)} · <b class="${pm.gap > 0 ? 'pf-neg' : 'pf-pos'}">${pm.gap > 0 ? money(pm.gap) + ' behind' : money(-pm.gap) + ' ahead'}</b> for the end of ${MONTHS_L[pm.m - 1]}</div>${perfBar(pf)}` : (isLead() ? '<div class="small muted">Set an annual target above to track it.</div>' : '<div class="small muted">No target set yet. Your team lead sets it.</div>')}
         <table class="rp-t pf-m"><tr>${MONTHS_L.map((m, i) => `<th class="num ${i + 1 === pm.m ? 'cur' : ''}">${m.slice(0, 3)}</th>`).join('')}</tr><tr>${pf.byMonth.map((v, i) => `<td class="num ${i + 1 === pm.m ? 'cur' : ''}">${v ? money(v).replace(/(\d)\d{3}$/, '$1k').replace(/,\d{3}$/, 'k') : '·'}</td>`).join('')}</tr>
 </table>
         ${REVADJ === x.m.userId ? `<div class="pf-adjg">${MONTHS_L.slice(0, pm.m).map((m, i) => `<label class="small">${m.slice(0, 3)}<input class="inp sm num" type="number" min="0" step="500" value="${(pf.adj || {})[i + 1] || ''}" data-act-change="revadj" data-u="${esc(x.m.userId)}" data-m="${i + 1}" placeholder="0"></label>`).join('')}</div>` : ''}
@@ -6264,6 +6271,9 @@ function ctxItems(type, id) {
   if (type === 'region') return `<div class="ph">${esc(id)}</div>` + B('Rename', 'renameregion', `data-rg="${esc(id)}"`) + B('Add client and role here', 'addclient', `data-rg="${esc(id)}"`) + B('Collapse all other regions', 'collapseothers', `data-rg="${esc(id)}"`);
   return '';
 }
+/* keep the right-click menu fully on screen: move it up when it would run off the bottom */
+function fitCtx() { const m = document.querySelector('.ctxmenu'); if (!m) return; const z = window.UIZ || 1, r = m.getBoundingClientRect(), H = innerHeight;
+  if (r.bottom > H - 8) { const top = Math.max(8, H - 8 - r.height); m.style.top = top / z + 'px'; } if (r.right > innerWidth - 8) m.style.left = Math.max(8, innerWidth - 8 - r.width) / z + 'px'; }
 function ctxHTML() {
   const html = ctxItems(CTX.type, CTX.id); if (!html) return '';
   const z = window.UIZ || 1, x = Math.min(CTX.x, window.innerWidth - 240) / z, y = Math.min(CTX.y, window.innerHeight - 40) / z;
