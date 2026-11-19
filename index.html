@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-doudg8rLaPXVoqDdQpEzNBR2rqvvCQByvJd2SNPPvec=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-HO4WXTWAxmkOVeCnU3h7d03fZ40TQznwzKjmGkd3rGc=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -4821,6 +4821,7 @@ async function syncTeam(readAll) {
     if (remoteProjects) mergeProjects(remoteProjects);
     if (role !== 'lead' && !TEAM.hub && folder.some(f => f.userId && f.userId !== myUid())) { TEAM.hub = dir; TEAM.hubState = 'on'; TEAM.hubAuto = true; }
     if (role !== 'lead') { if (invite && invite.kind === 'pipetree-invite') applyInvite(invite); for (const f of mgrIn) if (f && f.kind === 'pipetree-mgr') mergeMgr(f); if (pool && pool.kind === 'pipetree-pool') TEAM.pool = pool; if (shared) { TEAM.leadShared = shared; applyShared(shared); }
+      if (TEAM.hub && TEAM.hubState === 'on' && TEAM.hub !== dir) { try { const id4 = myUid().slice(-4); for await (const [n, h] of TEAM.hub.entries()) { if (h.kind !== 'file' || !n.startsWith(`pipetree-for-${id4}-`)) continue; try { const j = JSON.parse(await (await h.getFile()).text()); if (n.endsWith('-shared.json')) { if (j.kind === 'pipetree-shared' && (j.at || '') > ((TEAM.leadShared || {}).at || '')) { TEAM.leadShared = j; applyShared(j); } } else if (j.kind === 'pipetree-mgr') mergeMgr(j); } catch (e) { } } } catch (e) { } }
       if (TEAM.hub && TEAM.hubState === 'on') { try { TEAM.hubPeers = await hubRead(); applyShared(peerShare(TEAM.leadShared || TEAM.shared)); TEAM.hubErr = ''; } catch (e) { TEAM.hubErr = e.message || 'failed'; if (e.name === 'NotAllowedError') TEAM.hubState = 'needs-permission'; } } }
     const w = async (name, obj) => { if (sameAsWritten('own/' + name, obj)) return; const fh = await dir.getFileHandle(name, { create: true }); const wr = await fh.createWritable(); await wr.write(JSON.stringify(obj)); await wr.close(); };
     if (role !== 'lead') { const mine = folder.find(f => f.userId === S.settings.userId) || (folder.length === 1 ? folder[0] : null);
@@ -4853,7 +4854,7 @@ async function watchTeam(baseline) { if (WATCH.busy || TEAM.state !== 'on' || !T
       for await (const [n, h] of TEAM.handle.entries()) { if (h.kind !== 'directory' || /^(backups|safety)$/i.test(n)) continue; await scan(h, n + '/', x => /^pipetree-team-.+\.json$/.test(x));
         try { for await (const [n2, h2] of h.entries()) if (h2.kind === 'directory' && /nimble|pipetree/i.test(n2)) await scan(h2, n + '/' + n2 + '/', x => /^pipetree-team-.+\.json$/.test(x)); } catch (e) { } } }
     else await scan(TEAM.handle, '/', n => /^pipetree-(shared|from-.+|pool|version|shared-settings)\.json$/.test(n) || n.startsWith('pipetree-for-' + me + '-'));
-    if (TEAM.hub && TEAM.hubState === 'on') await scan(TEAM.hub, 'hub/', n => /^pipetree-team-.+\.json$/.test(n) && !mine(n));
+    if (TEAM.hub && TEAM.hubState === 'on') await scan(TEAM.hub, 'hub/', n => (/^pipetree-team-.+\.json$/.test(n) && !mine(n)) || n.startsWith('pipetree-for-' + me + '-'));
     const sig = parts.sort().join('|'); if (baseline || !WATCH.sig) WATCH.sig = sig; else if (sig !== WATCH.sig) { WATCH.sig = sig; WATCH.busy = false; await syncTeam(true); return; } } catch (e) { }
   WATCH.busy = false; }
 setInterval(() => watchTeam(false), 4000);
@@ -5341,7 +5342,7 @@ async function leadPublish(dir) {
 const TEAM_KEYS = ['tpl', 'taskPresets', 'bdTaskPresets', 'autoTasks', 'autoRepeat', 'defaultStages', 'bdStages', 'services', 'orgName'];
 function applyTeamSettings(f) { if (!f || !f.settings || (S.settings.teamSetFrom || '') >= (f.at || '') && S.settings.teamSetFrom) return; for (const k of TEAM_KEYS) if (f.settings[k] !== undefined) S.settings[k] = f.settings[k]; S.settings.teamSetFrom = f.at || new Date().toISOString(); }
 /* a team member's Nimble reloads itself when the team lead has a newer version */
-function checkVersion(f) { if (!f || !f.v || !APP_V || f.v === APP_V) { TEAM.newVer = null; return; } TEAM.newVer = f; safetyCopy('before-update');
+function checkVersion(f) { if (WEB) { TEAM.newVer = null; return; } if (!f || !f.v || !APP_V || f.v === APP_V) { TEAM.newVer = null; return; } TEAM.newVer = f; safetyCopy('before-update');
   let tried = ''; try { tried = sessionStorage.getItem('ptReloadFor') || ''; } catch (e) { }
   if (tried === f.v) { TEAM.newVer.stuck = true; return; } const go = () => { if (MODAL || /INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '')) { setTimeout(go, 5000); return; } try { sessionStorage.setItem('ptReloadFor', f.v); } catch (e) { } persistNow(); toast(`Nimble was updated by ${firstName(f.from || 'your team lead')}. Loading the new version…`); setTimeout(() => location.reload(), 1500); };
   setTimeout(go, 1000); }
@@ -5890,7 +5891,7 @@ const THEMES = [
 function settingsHTML() {
   const st = S.settings;
   const scenes = [['auto', 'Follow the time of day'], ['dawn', 'Dawn'], ['day', 'Day'], ['golden', 'Golden hour'], ['dusk', 'Dusk'], ['night', 'Night']];
-  return `<div class="head"><div><h1>Settings</h1><div class="sub">Everything is stored in this browser. Download a backup now and then.</div><div class="small muted" style="margin-top:4px">Nimble © 2026 Marnix Jilderda. All rights reserved.</div></div></div>
+  return `<div class="head"><div><h1>Settings</h1><div class="sub">Everything is stored in this browser. Download a backup now and then.</div><div class="small muted" style="margin-top:4px">Nimble © 2026 Marnix Jilderda. All rights reserved. · Version ${esc(String(APP_V).slice(0, 6))}</div></div></div>
   <div class="grid2">${securityHTML()}
     <div class="glass" style="padding:18px 20px"><h2 style="margin-bottom:12px">Look</h2>
       <div class="themes">${THEMES.map(([k, l, d, bg]) => `<button class="${st.theme === k ? 'on' : ''}" data-act="theme" data-k="${k}" title="${esc(d)}"><div class="sw" style="background:${bg}"></div><div class="tl">${l}</div></button>`).join('')}</div>
@@ -7219,7 +7220,7 @@ const ACT = {
     S.settings.movedIn = TODAY; persistNow(); if ((S.settings.teamRole || '')) { await kvSet('teamDir', h); TEAM.handle = h; TEAM.state = 'on'; await syncTeam(true); }
     MODAL = null; render(); toast(`Welcome back, ${firstName(S.settings.userName || '')}. ${recCount(S)} records moved in${S.settings.teamRole ? ` and connected to “${h.name}”` : ''}.`, true); },
   moveinstart: () => { S = upgrade(blank()); persistNow(); render(); },
-  webreload: () => { persistNow(); try { if (!LOCKED) sessionStorage.setItem('ptUpd', String(Date.now() + 60000)); } catch (e) { } setTimeout(() => location.reload(), 300); },
+  webreload: () => { persistNow(); try { if (!LOCKED) sessionStorage.setItem('ptUpd', String(Date.now() + 60000)); } catch (e) { } setTimeout(freshReload, 300); },
   moveinskip: () => { S.settings.movedIn = TODAY; save(); MODAL = null; render(); },
   oddsp: el => { MODAL.why = (document.getElementById('odds_why') || {}).value; MODAL.p = +el.dataset.v; render(); },
   oddsst: el => { MODAL.why = (document.getElementById('odds_why') || {}).value; MODAL.st = el.dataset.v; render(); },
@@ -9361,10 +9362,12 @@ document.addEventListener('visibilitychange', () => { if (document.hidden && sav
 setInterval(() => { if (TEAM.state === 'on') syncTeam(true); }, 2 * 60 * 1000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden && TEAM.state === 'on' && (!TEAM.loadedAt || Date.now() - TEAM.loadedAt > 30000)) syncTeam(true); });
 let WEBNEW = false;
+/* load the newest copy from the server, not a cached one (the address differs each time; the hash with an invite stays) */
+function freshReload() { try { const u = new URL(location.href); u.searchParams.set('r', Date.now().toString(36)); location.replace(u.toString()); } catch (e) { location.reload(); } }
 if (WEB) { try { if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js'); } catch (e) { }
   /* a new version updates itself while Nimble is open, at a quiet moment: nothing open, nothing being typed, no click for a while */
   const quiet = () => !MODAL && !DRAWER && !VIEWAS && !JUMP && !teamBusy && !(document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) || document.activeElement && document.activeElement.isContentEditable) && (document.hidden || Date.now() - LAST_ACT > 45000);
-  const upd = () => { if (!WEBNEW) return; try { if (Date.now() - (+sessionStorage.getItem('ptUpdAt') || 0) < 10 * 60000) return; } catch (e) { } if (!S || LOCKED || quiet()) { try { if (S) persistNow(); } catch (e) { } try { if (S && !LOCKED) sessionStorage.setItem('ptUpd', String(Date.now() + 60000)); sessionStorage.setItem('ptUpdDone', '1'); sessionStorage.setItem('ptUpdAt', String(Date.now())); } catch (e) { } WEBNEW = false; setTimeout(() => location.reload(), 300); } };
+  const upd = () => { if (!WEBNEW) return; try { if (Date.now() - (+sessionStorage.getItem('ptUpdAt') || 0) < 10 * 60000) return; } catch (e) { } if (!S || LOCKED || quiet()) { try { if (S) persistNow(); } catch (e) { } try { if (S && !LOCKED) sessionStorage.setItem('ptUpd', String(Date.now() + 60000)); sessionStorage.setItem('ptUpdDone', '1'); sessionStorage.setItem('ptUpdAt', String(Date.now())); } catch (e) { } WEBNEW = false; setTimeout(freshReload, 300); } };
   const chk = async () => { try { const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); if (j && j.v && j.v !== APP_V && !WEBNEW) { WEBNEW = true; render(); upd(); } } catch (e) { } };
   setInterval(upd, 15000);
   try { if (sessionStorage.getItem('ptUpdDone')) { sessionStorage.removeItem('ptUpdDone'); setTimeout(() => toast('Nimble updated itself to the newest version', true), 1500); } } catch (e) { }
