@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-30c8iqrXRqskgEft3QC/3FRJPR33nkGI2yxCW+Ht7Lg=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-25bt0LUvRDSVCzavEly8l9A865cWnfFXhXwOaTquMEY=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -259,6 +259,16 @@ h2 .count{font-size:14px;color:var(--muted);font-weight:600;font-family:var(--bo
 .emptyrole h2{font-size:22px}
 .crole{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
 .crole .t{grid-column:1/-1}
+/* text straight on a photo wallpaper: a soft halo in the wallpaper's own tone, and muted text a bit stronger, so it reads on any photo */
+[data-theme=glass-dark]{--halo:0 0 2px rgba(6,10,24,.9),0 0 3px rgba(6,10,24,.8),0 0 8px rgba(6,10,24,.75),0 0 16px rgba(6,10,24,.6),0 0 30px rgba(6,10,24,.45);--mutedwall:color-mix(in srgb,var(--ink) 80%,transparent)}
+[data-theme=glass-light]{--halo:0 0 2px rgba(255,255,255,.95),0 0 3px rgba(255,255,255,.9),0 0 8px rgba(255,255,255,.85),0 0 16px rgba(255,255,255,.75),0 0 30px rgba(255,255,255,.6);--mutedwall:color-mix(in srgb,var(--ink) 78%,transparent)}
+[data-theme^=glass] :is(.main > .head,.main .thead,.main .phead,.main .ptop,.main .stats,.main .section-head,.main h2.shr-o,.main h2.bt-acc-h,.main .mk-priv > summary,.main .oppbar .fltr,.main .rp-acts,.main > p.small,.main > .small,.main .backbtn){text-shadow:var(--halo);--muted:var(--mutedwall)}
+/* on a photo, short lines get a light frosted backing, like a mini version of the panels */
+[data-theme^=glass] :is(.main > .head .sub,.main .thead .sub){display:inline;padding:2px 10px;margin-left:-10px;line-height:1.95;border-radius:10px;-webkit-box-decoration-break:clone;box-decoration-break:clone;background:color-mix(in srgb,var(--panel) 46%,transparent);-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%)}
+[data-theme^=glass] :is(.main h2.shr-o,.main .section-head > h2,.main h2.bt-acc-h,.main .ph-meta,.main .section-head > .note,.main .section-head > .small,.main .mk-priv > summary,.main > p.small){display:inline-block;width:auto;max-width:100%;padding:2px 10px;margin-left:-10px;border-radius:10px;background:color-mix(in srgb,var(--panel) 46%,transparent);-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%)}
+[data-theme^=glass] .main .stats,[data-theme^=glass] .main .ptop{display:inline-flex;padding:3px 8px;border-radius:12px;background:color-mix(in srgb,var(--panel) 46%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+[data-theme^=glass] :is(.main .ph-meta,.main .section-head .note,.main .section-head .small,.main > .head .sub,.main .thead .sub,.main .mk-priv > summary .small){font-weight:550}
+[data-theme^=glass] :is(.main > .head,.main .thead,.main .phead,.main .ptop,.main .stats,.main .section-head,.main .oppbar,.main .rp-acts) :is(.btn:not(.quiet),.pill,.tag,input,select,textarea,.glass,.segc,.tabs,.badge,kbd){text-shadow:none}
 .tr-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 14px}.tr-bar .inp{max-width:320px;flex:1 1 220px}
 .tr-wrap{padding:4px 14px 6px;margin-bottom:16px;overflow-x:auto}.tr-t{width:100%}.tr-t td{vertical-align:middle}.tr-t td:first-child{min-width:260px}.tr-hot td:first-child{box-shadow:inset 3px 0 0 var(--hot,#E5484D)}
 .tag.open{background:color-mix(in srgb,#14ADB8 16%,transparent);color:#0E7C86}.tag.priv{background:color-mix(in srgb,var(--muted) 14%,transparent);color:var(--muted)}
@@ -1820,7 +1830,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:ce6969ec9c*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:b980e1095f*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
