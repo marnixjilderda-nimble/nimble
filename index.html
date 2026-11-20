@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-7cTp1/8YbU7uG+FpST4+wHwI7/Gz475/3CCLm3Jkt4c=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-oxi9iTxG6dfcnFKJF0vB1nMWkinmOfjzyiKsESFneh0=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -259,6 +259,7 @@ h2 .count{font-size:14px;color:var(--muted);font-weight:600;font-family:var(--bo
 .emptyrole h2{font-size:22px}
 .crole{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
 .crole .t{grid-column:1/-1}
+.acsugg{display:grid;gap:4px;margin:-4px 0 4px}.acsugg:empty{display:none}.acs-i{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left;padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:color-mix(in srgb,var(--card) 80%,transparent);cursor:pointer;color:inherit;font:inherit}.acs-i:hover,.acs-i:focus{border-color:var(--cl,#14ADB8);outline:none}.acs-t{display:grid;min-width:0}.acs-t .small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* text straight on a photo wallpaper: a soft halo in the wallpaper's own tone, and muted text a bit stronger, so it reads on any photo */
 [data-theme=glass-dark]{--halo:0 0 2px rgba(6,10,24,.9),0 0 3px rgba(6,10,24,.8),0 0 8px rgba(6,10,24,.75),0 0 16px rgba(6,10,24,.6),0 0 30px rgba(6,10,24,.45);--mutedwall:color-mix(in srgb,var(--ink) 80%,transparent)}
 [data-theme=glass-light]{--halo:0 0 2px rgba(255,255,255,.95),0 0 3px rgba(255,255,255,.9),0 0 8px rgba(255,255,255,.85),0 0 16px rgba(255,255,255,.75),0 0 30px rgba(255,255,255,.6);--mutedwall:color-mix(in srgb,var(--ink) 78%,transparent)}
@@ -1844,7 +1845,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:3038011192*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:acc817b849*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -6245,7 +6246,8 @@ function modalHTML() {
       <div class="fgrid">
       <label class="field wide">LinkedIn link<span style="display:flex;gap:6px"><input data-mbind="linkedin" value="${esc(d.linkedin)}" placeholder="Paste a linkedin.com/in/... link and click Read"><button class="btn sm" data-act="acliread">Read</button></span></label>
       ${rosterAll().length > 1 ? `<label class="field">Candidate owner <span class="muted">(whose candidate is this)</span>${ownerSelect('ac_owner', d.cOwnerId)}</label>` : `<label class="field">Owner <span class="muted">(if a colleague gave you this profile)</span><input data-mbind="owner" list="ownlist2" value="${esc(d.owner || '')}" placeholder="${esc(firstName(S.settings.userName || '') || 'Me')} (me)"><datalist id="ownlist2">${ownerNames().map(n => `<option value="${esc(n)}">`).join('')}</datalist></label>`}${MODAL.cvFile ? `<div class="field wide small muted">CV attached when you add: <b>${esc(MODAL.cvFile.name)}</b></div>` : ''}
-      <label class="field wide">Name<input data-mbind="name" value="${esc(d.name)}" placeholder="Full name"></label>
+      <label class="field wide">Name${d.personId && MP.get(d.personId) ? ` <span class="tag ok" style="margin:0">Existing candidate</span> <button class="btn sm quiet" data-act="acunpick">Not this person</button>` : ''}<input data-mbind="name" value="${esc(d.name)}" placeholder="Full name: start typing to find someone already in Nimble" autocomplete="off"></label>
+      <div class="wide acsugg" id="acsugg"></div>
       <div class="wide small" id="existnote" style="color:var(--cl);min-height:1.45em">${existing ? `${esc(existing.name)} already exists. This adds a new process to the same person.` : (ph => ph ? `Heads-up: ${esc(ph.n)} is already known to ${esc(ph.owner)} (${esc(ph.st)}). Check with ${esc(firstName(ph.owner))} first.` : '')(d.name && poolHit(d.name))}</div>
       <label class="field">Current title<input data-mbind="title" value="${esc(d.title)}"></label><label class="field">Employer<input data-mbind="employer" value="${esc(d.employer)}"></label>
       <label class="field">Location<input data-mbind="location" value="${esc(d.location)}"></label><label class="field">Email<input data-mbind="email" value="${esc(d.email)}"></label>
@@ -6872,8 +6874,21 @@ function goClient(cid) { SEL = { client: cid }; VIEW = 'pipeline'; DRAWER = null
 function linkTrail(a, cls = '') { const r = roleOf(a), c = clientOf(a); if (!r) return `<div class="ctx">${esc(roleName(a))}</div>`;
   return `<div class="trail ${cls}"><button data-act="goclient" data-c="${r.clientId}" title="Open ${esc(c ? c.name : '')} in the pipeline">${esc(c ? c.name : '?')}</button><i>›</i><button data-act="gocand" data-a="${a.id}" title="Open this role in the pipeline, with ${esc(personOf(a).name)} highlighted">${esc(r.title)}</button></div>`; }
 function goRole(rid) { const r = MR.get(rid); SEL = { region: r.region, sub: null, client: r.clientId, role: r.id }; VIEW = 'pipeline'; DRAWER = null; JUMP = null; CRUMB = null; save(); render(); }
+/* while typing a name: people already in Nimble that match, to pick instead of making a duplicate */
+const normName = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
+function candMatches(q, max) { const t = normName(q); if (t.length < 2) return []; const parts = t.split(' ');
+  const out = []; for (const p of S.people) { const n = normName(p.name), extra = normName([p.email, p.linkedin, p.phone].join(' ')); if (!parts.every(w => n.includes(w)) && !(t.length >= 4 && extra.includes(t))) continue;
+    out.push({ p, rank: n === t ? 0 : n.startsWith(t) ? 1 : n.split(' ').some(w => w.startsWith(parts[0])) ? 2 : 3 }); }
+  return out.sort((a, b) => a.rank - b.rank || a.p.name.localeCompare(b.p.name)).slice(0, max || 6).map(x => x.p); }
+function candSuggHTML(q) { const d = MODAL && MODAL.d; if (!d || (d.personId && MP.get(d.personId) && normName(MP.get(d.personId).name) === normName(q))) return ''; const L = candMatches(q); if (!L.length) return '';
+  return `<div class="small muted" style="margin-bottom:4px">Already in Nimble: click to use that person</div>${L.map(p => { const ps = S.apps.filter(a => a.personId === p.id), live = ps.filter(isLive), r0 = ps[0] && roleOf(ps[0]);
+    const proc = live.length ? live.slice(0, 2).map(a => `${(roleOf(a) || {}).title || ''} · ${stageOf(a).label}`).join(', ') + (live.length > 2 ? ` +${live.length - 2}` : '') : ps.length ? `earlier: ${(r0 || {}).title || 'a role'}` : 'no process yet';
+    return `<button class="acs-i" data-act="acpick" data-p="${esc(p.id)}"><span class="av sm">${esc(initials(p.name))}</span><span class="acs-t"><b>${esc(p.name)}</b><span class="small muted">${esc([p.title, p.employer].filter(Boolean).join(' at ') || '')}${p.location ? ' · ' + esc(p.location) : ''}</span></span><span class="small ${live.length ? '' : 'muted'}">${esc(proc)}</span></button>`; }).join('')}`; }
+document.addEventListener('keydown', e => { if (e.key !== 'Enter' && e.key !== 'ArrowDown') return; const t = e.target; if (!t || t.dataset.mbind !== 'name' || !MODAL || MODAL.kind !== 'addcand') return; const first = document.querySelector('#acsugg .acs-i'); if (!first) return; e.preventDefault(); e.stopImmediatePropagation(); if (e.key === 'Enter') first.click(); else first.focus(); }, true);
 function updateExisting() {
   const el = document.getElementById('existnote'), n = document.querySelector('[data-mbind="name"]'); if (!el || !n) return;
+  const dd = MODAL && MODAL.d; if (dd && dd.personId && MP.get(dd.personId) && normName(MP.get(dd.personId).name) !== normName(n.value)) delete dd.personId;
+  const sg = document.getElementById('acsugg'); if (sg) sg.innerHTML = candSuggHTML(n.value);
   const ex = n.value.trim() && S.people.find(p => p.name.toLowerCase() === n.value.trim().toLowerCase());
   const ph = !ex && poolHit(n.value); el.textContent = ex ? `${ex.name} already exists. This adds a new process to the same person.` : ph ? `Heads-up: ${ph.n} is already known to ${ph.owner} (${ph.st}). Check with ${firstName(ph.owner)} first.` : '';
 }
@@ -7554,11 +7569,14 @@ const ACT = {
   addcand: el => { CTX = null; openAddCandidate({ r: el.dataset.r || undefined, s: el.dataset.s }); render(); },
   pdfnew: () => { readMbind(); PDF_TARGET = null; document.getElementById('pdfpick').click(); },
   pdfperson: el => { PDF_TARGET = { personId: el.dataset.p }; document.getElementById('pdfpick').click(); },
+  acpick: el => { try { const ae = document.activeElement; if (ae && ae.blur && ae.dataset && ae.dataset.mbind) ae.blur(); } catch (e) { } readMbind(); const p = MP.get(el.dataset.p); if (!p || !MODAL) return; const d = MODAL.d; d.personId = p.id; d.name = p.name; for (const k of ['title', 'employer', 'location', 'email', 'linkedin', 'phone']) if (p[k]) d[k] = p[k];
+    render(); if (d.roleId && hasLiveApp(p.id, d.roleId)) toast(`${p.name} is already in this role. Pick another role, or open their card`); },
+  acunpick: () => { readMbind(); if (MODAL) delete MODAL.d.personId; render(); },
   savecand: () => {
     readMbind(); const d = MODAL.d, name = (d.name || '').trim();
     if (!name || !d.roleId) { toast('Add a name and pick a role'); return; }
     snapshot();
-    let p = S.people.find(x => x.name.toLowerCase() === name.toLowerCase());
+    let p = (d.personId && MP.get(d.personId)) || S.people.find(x => x.name.toLowerCase() === name.toLowerCase());
     if (!p) { p = newPerson({ name }); S.people.push(p); }
     for (const k of ['title', 'employer', 'location', 'linkedin', 'email', 'phone']) if ((d[k] || '').trim()) p[k] = d[k].trim();
     if (d.profile) { p.profile = d.profile; p.tags = [...new Set([...(p.tags || []), ...tagsFromProfile(d.profile)])]; }
