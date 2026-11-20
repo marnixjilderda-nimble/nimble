@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-JuTNKzC2Fixk1ApVkv+fpGaFPSJti74eo9BgkX0pc0U=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-pgHXD5rLmWt8wRWNmMa2j0D3hF9+Y4PFPtDMg2fUVNk=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -4905,7 +4905,7 @@ function shareRoleCard(r, owner, ds) { const c = MC.get(r.clientId) || {}, l = s
     stages: l.filter(x => x.kind !== 'placed').map(x => ({ id: x.id, label: x.label, kind: x.kind })),
     mgrId: roleMgrId(r), mgrName: nameOf(roleMgrId(r)), salesId: clientOwnerId(c), salesName: nameOf(clientOwnerId(c)), fee: feeOfRole(r), openings: r.openings || 1, hot: r.hot || null, teamOpen: r.hot ? (r.teamOpen || { on: r.hot.on }) : (r.teamOpen || null), helpers: (r.openTo || []).map(id => ({ id, name: nameOf(id) })),
     goal: r.goal && r.goal.n ? r.goal : null, info: { location: [r.subregion, r.location].filter(Boolean).join(', '), salary: r.salary || '', jd: String(r.jdText || '').slice(0, 1800), notes: String(r.notes || '').slice(0, 800), created: r.created || '', status: r.status },
-    apps: S.apps.filter(a => a.roleId === r.id && ['active', 'toreject', 'placed'].includes(a.outcome)).map(a => ({ id: a.id, n: personOf(a).name, t: personOf(a).title || '', e: personOf(a).employer || '', li: personOf(a).linkedin || '', stId: a.stage, st: stageOf(a).label, k: stageOf(a).kind, o: a.outcome, by: a.addedBy || '', ownerId: candOwnerId(a), ownerName: candOwnerName(a), since: a.since || '', ni: a.nextInterview || '', nt: a.nextTime || '',
+    apps: S.apps.filter(a => a.roleId === r.id && ['active', 'toreject', 'placed'].includes(a.outcome)).map(a => ({ id: a.id, n: personOf(a).name, t: personOf(a).title || '', e: personOf(a).employer || '', li: personOf(a).linkedin || '', stId: a.stage, st: stageOf(a).label, k: stageOf(a).kind, o: a.outcome, by: a.addedBy || '', byId: a.addedById || '', ownerId: candOwnerId(a), ownerName: candOwnerName(a), since: a.since || '', ni: a.nextInterview || '', nt: a.nextTime || '',
       tasks: openTasks(a).map(t => ({ text: t.text, due: t.due || '' })), log: (a.log || []).slice(0, 4).map(g => ({ d: g.date, t: g.text })), c: a.created || a.since || '', la: ((a.log || [])[0] || {}).date || a.since || '', ds: Object.keys(a.dates || {}),
       dk: (() => { const o = {}; for (const st of l) { const d = (a.dates || {})[st.id]; if (d && (!o[st.kind] || d < o[st.kind])) o[st.kind] = d; } return o; })() })) }; }
 const feeOfRole = r => +(r.fee ?? (MC.get(r.clientId) || {}).fee ?? 0) || 0;
@@ -4944,7 +4944,7 @@ function hotHTML() { const L = hotList().sort((x, y) => (y.hot.on || '').localeC
   return `<div class="head"><div><h1>Marketplace</h1><div class="sub">Urgent roles from the whole team. Pick one and you become a sourcer on it: it shows up in your pipeline, and the role manager is told.</div></div></div>
     ${L.length ? `<div class="hot-grid">${L.map(card).join('')}</div>` : `<div class="glass empty">Nothing in the marketplace right now. Role managers put an urgent role here with right-click on the role → Put in the marketplace.</div>`}`; }
 function applyOp(it) { if (it.op === 'done') { S.inNotes = S.inNotes || []; S.inNotes.unshift({ id: uid('nt'), to: myUid(), at: new Date().toISOString(), by: it.by, byId: it.byId, kind: 'done', appId: it.appId, home: myUid(), cand: it.cand || '', role: it.role || '', client: it.client || '', text: `${it.by} did: ${it.text}`, got: TODAY }); return; }
-  const r = MR.get(it.roleId), a = r && S.apps.find(x => x.id === it.appId && x.roleId === r.id); if (!r) return; const by = it.byId, mgr = roleMgrId(r) === by || clientOwnerId(MC.get(r.clientId)) === by;
+  const r = MR.get(it.roleId), a = r && S.apps.find(x => x.id === it.appId && x.roleId === r.id); if (!r) return; const by = it.byId, leadId = (((TEAM.shared || {}).roster || []).find(x => x.lead) || {}).id, mgr = roleMgrId(r) === by || clientOwnerId(MC.get(r.clientId)) === by || (!!leadId && by === leadId);
   ACTOR = by; try {
     if (it.op === 'join' || it.op === 'leave') { r.openTo = r.openTo || []; const on = r.openTo.includes(by);
       if (it.op === 'join' && !on && !(r.teamOpen || r.hot) && !mgr) { pushNotice(by, { id: '', roleId: r.id, personId: '' }, `${r.title} is no longer open to the team, so you weren't added. Ask ${firstName(nameOf(roleMgrId(r)))} to add you`, null, 'denied'); }
@@ -5105,7 +5105,7 @@ function sharedHTML() { const me = myUid(), cards = togetherCards(), lead = isLe
 const TOGETHER_OPEN = new Set(), TOGETHER_INFO = new Set();
 let XDRAG = null;
 document.addEventListener('dragstart', e => { const el = e.target.closest && e.target.closest('[data-xdrag]'); if (!el) return; XDRAG = { a: el.dataset.xdrag, k: el.dataset.xk }; e.dataTransfer.setData('application/x-pt-x', XDRAG.a); e.stopImmediatePropagation(); }, true);
-const xDropOk = (col, g) => { const c = xCard(g.k); if (!c) return false; const me = myUid(), mgr = c.mgrId === me || c.salesId === me; return mgr || PRE.has(col.dataset.xkind); };
+const xDropOk = (col, g) => { const c = xCard(g.k); if (!c) return false; const me = myUid(), mgr = c.mgrId === me || c.salesId === me || isLead(); return mgr || PRE.has(col.dataset.xkind); };
 document.addEventListener('dragover', e => { if (!XDRAG) return; const col = e.target.closest && e.target.closest('[data-xdrop]'); document.querySelectorAll('.xboard .col.drop').forEach(x => x !== col && x.classList.remove('drop')); if (!col || !xDropOk(col, XDRAG)) return; e.preventDefault(); e.stopImmediatePropagation(); col.classList.add('drop'); }, true);
 document.addEventListener('drop', e => { if (!XDRAG) return; const g = XDRAG; XDRAG = null; document.querySelectorAll('.xboard .col.drop').forEach(x => x.classList.remove('drop')); const col = e.target.closest && e.target.closest('[data-xdrop]'); if (!col || !xDropOk(col, g)) return; e.preventDefault(); e.stopImmediatePropagation();
   const c = xCard(g.k), a = c && c.apps.find(x => x.id === g.a); if (!a) return; const last = (xPending(c).filter(it => it.appId === a.id && it.op === 'stage').pop() || {}).stage || a.stId; if (last === col.dataset.xdrop) return;
@@ -5157,10 +5157,10 @@ function sharedHTMLOld() {
 const teamShared = () => (VIEWAS ? SHARE_OUT[VIEWAS.userId] : TEAM.shared) || {};
 const xCard = k => { const [o, r] = String(k).split('|'); return (teamShared().roles || []).find(c => c.owner === o && c.roleId === r); };
 const xPending = c => (S.shareOut || []).filter(it => it.owner === c.owner && it.roleId === c.roleId && !it.arrived);
-function xBoardHTML(c) { const me = myUid(), mgr = c.mgrId === me || c.salesId === me, cols = c.stages, pend = xPending(c);
+function xBoardHTML(c) { const me = myUid(), mgr = c.mgrId === me || c.salesId === me || isLead(), cols = c.stages, pend = xPending(c);
   const eff = a => { const mv = pend.filter(it => it.appId === a.id && it.op === 'stage').pop(); return mv ? { ...a, stId: mv.stage, moving: true } : a; }, live = c.apps.filter(a => a.o === 'active').map(eff);
-  const kindOf = id => (cols.find(x => x.id === id) || {}).kind, canMove = a => mgr || (a.ownerId === me && PRE.has(kindOf(a.stId)));
-  const card = a => { const mine = a.ownerId === me, pe = pend.filter(it => it.appId === a.id);
+  const kindOf = id => (cols.find(x => x.id === id) || {}).kind, canMove = a => mgr || ((a.ownerId === me || a.byId === me) && PRE.has(kindOf(a.stId)));
+  const card = a => { const mine = a.ownerId === me || a.byId === me, pe = pend.filter(it => it.appId === a.id);
     return `<div class="card x ${mine ? 'mine' : ''}" ${canMove(a) ? `draggable="true" data-xdrag="${esc(a.id)}" data-xk="${esc(c.owner + '|' + c.roleId)}"` : ''} data-act="xopen" data-k="${esc(c.owner + '|' + c.roleId)}" data-a="${esc(a.id)}"><div class="nm">${esc(a.n)}</div><div class="r2 small">${esc([a.t, a.e].filter(Boolean).join(' · '))}</div>
       <div class="small muted">${mine ? '<b>Your candidate</b>' : esc(firstName(a.ownerName)) + "'s candidate"}${a.ni ? ` · ${esc(fmtDate(a.ni))}${a.nt ? ' ' + esc(a.nt) : ''}` : ''}</div>${a.tasks.length ? `<div class="small">☐ ${esc(a.tasks[0].text)}</div>` : ''}${pe.length ? `<div class="small shr-pend">${a.moving ? 'moved, on the way to ' + esc(firstName(c.ownerName)) : 'change on the way'}</div>` : ''}</div>`; };
   const newOnes = pend.filter(it => !it.type).map(it => `<div class="card x pend"><div class="nm">${esc(it.name)}</div><div class="small muted">on the way to ${esc(firstName(c.ownerName))}</div></div>`).join('');
@@ -5168,7 +5168,7 @@ function xBoardHTML(c) { const me = myUid(), mgr = c.mgrId === me || c.salesId =
     <div class="acts"><button class="btn primary" data-act="shareadd" data-o="${esc(c.owner)}" data-r="${esc(c.roleId)}">Add candidate</button></div></div>
     <div class="board xboard" style="grid-template-columns:repeat(${cols.length},minmax(150px,1fr))">${cols.map((st, i) => { const L = live.filter(a => a.stId === st.id); return `<div class="col" data-xdrop="${esc(st.id)}" data-xkind="${esc(st.kind)}"><div class="colh"><b>${esc(st.label)}</b> <span class="muted">${L.length}</span></div>${L.map(card).join('')}${i === 0 ? newOnes : ''}</div>`; }).join('')}</div>`; }
 function xDetailHTML(m) { const c = xCard(m.k); if (!c) return '<p>This role is no longer shared.</p>'; const a = c.apps.find(x => x.id === m.a); if (!a) return '<p>Not found.</p>';
-  const me = myUid(), mgr = c.mgrId === me || c.salesId === me, own = a.ownerId === me, cur = c.stages.find(st => st.id === a.stId) || {}, curPre = PRE.has(cur.kind);
+  const me = myUid(), mgr = c.mgrId === me || c.salesId === me || isLead(), own = a.ownerId === me || a.byId === me, cur = c.stages.find(st => st.id === a.stId) || {}, curPre = PRE.has(cur.kind);
   const opts = c.stages.filter(st => mgr || (own && curPre && PRE.has(st.kind))), ros = rosterAll();
   return `<h3>${esc(a.n)}</h3><p class="small muted" style="margin-top:-6px">${esc(c.client)} · ${esc(c.title)} · <b>${esc(a.st)}</b>${a.since ? ' since ' + esc(fmtDate(a.since)) : ''} · ${own ? 'your candidate' : esc(a.ownerName) + "'s candidate"}${a.li ? ` · <a href="${esc(/^https?:/.test(a.li) ? a.li : 'https://' + a.li)}" target="_blank" rel="noopener">LinkedIn</a>` : ''}</p>
     ${a.log.length ? `<div class="small" style="margin-bottom:10px">${a.log.map(g => `<div><span class="muted">${esc(fmtDate(g.d))}</span> ${esc(g.t)}</div>`).join('')}</div>` : ''}
@@ -6244,7 +6244,7 @@ function modalHTML() {
   } else if (m.kind === 'clientupd') {
     const c = MC.get(m.c);
     inner = `<h3>Update for ${esc(c.name)}</h3><textarea class="msg" id="msgtext">${esc(clientUpdateText(c))}</textarea>
-      <div class="acts" style="margin-top:12px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="copyclient" data-c="${c.id}">Copy and mark as sent</button></div>`;
+      <div class="acts" style="margin-top:12px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="copyclient" data-c="${c.id}">Copy and mark sent</button></div>`;
   } else if (m.kind === 'close') {
     const a = S.apps.find(x => x.id === m.a);
     inner = `<h3>Close ${esc(personOf(a).name)}'s process</h3><p class="small muted" style="margin-top:-6px">${esc(roleName(a))}. They move to the talent pool with this reason.</p>
@@ -6306,7 +6306,7 @@ function modalHTML() {
   } else if (m.kind === 'editrole') {
     const r = MR.get(m.r), n = S.apps.filter(a => a.roleId === r.id).length;
     wide = 'wide';
-    inner = `<h3>Edit role</h3><div class="fgrid" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+    inner = `<h3>${m.dup ? 'Copy of ' + esc(MR.get(m.r) ? MR.get(m.r).title.replace(/ \(copy\)$/, '') : 'role') + ': give it a name' : 'Edit role'}</h3><div class="fgrid" style="grid-template-columns:repeat(3,minmax(0,1fr))">
       <label class="field" style="grid-column:span 2">Role title<input id="er_title" value="${esc(r.title)}"></label>
       <label class="field">Client<select id="er_client">${sortClients(S.clients).map(c => `<option value="${c.id}" ${c.id === r.clientId ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></label>
       <label class="field">Country / region<input id="er_region" list="regionlist" value="${esc(r.region || '')}"><datalist id="regionlist">${regionsList().map(x => `<option value="${esc(x)}">`).join('')}</datalist></label>
@@ -6336,13 +6336,13 @@ function modalHTML() {
       ${m.k === 'task' ? `<div class="field" style="margin-top:10px">When<div class="chips wzchips">${CO_DUE.slice(0, 6).map(([n, l]) => `<button class="qchip ${m.due === dueIn(n) ? 'on' : ''}" data-act="mgrdue" data-v="${dueIn(n)}">${l}${chipDay(n)}</button>`).join('')}<input type="date" class="inp cu-date" style="width:auto" id="mg_due" value="${m.due || ''}"></div></div>` : ''}
       <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="mgrsave">Save for ${esc(VIEWAS ? firstName(VIEWAS.member) : '')}</button></div>`;
   } else if (m.kind === 'teaminvite') {
-    inner = `<h3>Add a team member</h3><p class="small muted" style="margin-top:-6px">Nimble makes their own Nimble file, already set up with their name, role and your team, and opens an email to them. They make their folder in their own OneDrive and share it with you. You see everything they do; they don't see yours.</p>
+    inner = `<h3>Add team member</h3><p class="small muted" style="margin-top:-6px">Nimble makes their own Nimble file, already set up with their name, role and your team, and opens an email to them. They make their folder in their own OneDrive and share it with you. You see everything they do; they don't see yours.</p>
       <label class="field">Name<input class="inp" id="ti_name" value="${esc(m.name || '')}" placeholder="e.g. Joe Smith"></label>
       <label class="field" style="margin-top:8px">Work email<input class="inp" id="ti_mail" type="email" value="${esc(m.email || '')}" placeholder="joe.smith@hco.com"></label>
       <div class="field" style="margin-top:10px">Role<div class="segc" style="margin-top:6px">${['Recruiter', 'Manager'].map(r => `<button class="${m.role === r ? 'on' : ''}" data-act="tirole" data-v="${r}">${r}</button>`).join('')}</div></div>
       <label class="field" style="margin-top:8px">Your own work email (they share their folder with this)<input class="inp" id="ti_me" type="email" value="${esc(S.settings.userEmail || '')}" placeholder="marnix@hco.com"></label>
       <div class="small muted" style="margin-top:6px">Reports to you (${esc(S.settings.userName || '')}).</div>
-      <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="tisave">Make their Nimble</button></div>`;
+      <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="tisave">${WEB ? 'Create invite link' : 'Make their Nimble'}</button></div>`;
   } else if (m.kind === 'terms') { inner = termsHTML(m);
   } else if (m.kind === 'termsread') { inner = `<h3>Nimble beta terms (version ${TERMS_V})</h3><p class="small muted" style="margin-top:-4px">What a team member sees and agrees to before their first use.</p><div class="terms-body">${termsParts(S.settings.userName, '').map(([h, t], i) => `<p><b>${i + 1}. ${esc(h)}</b><br>${esc(t)}</p>`).join('')}</div><div class="acts" style="margin-top:12px"><button class="btn" data-act="modalclose">Close</button></div>`;
   } else if (m.kind === 'start' && m.inv.v2) { const i = m.inv;
@@ -6422,11 +6422,11 @@ function modalHTML() {
       <label class="field">Area (optional, shown on the role only)<input id="nr_sub" placeholder="e.g. Midwest, East Coast, Madrid"></label>
       <label class="field">Fee per hire<input id="nr_fee" type="number" min="0" step="500"></label>
       <label class="field">Grade<select id="nr_pri"><option>A</option><option selected>B</option><option>C</option></select></label></div>
-      <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="saverole" data-c="">Add country</button></div>`;
+      <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="saverole" data-c="">${m.rg ? 'Add client and role' : 'Add country'}</button></div>`;
   } else if (m.kind === 'addrole' || m.kind === 'addclient') {
     const c = m.c && MC.get(m.c);
     const siblings = c ? S.roles.filter(r => r.clientId === c.id) : [];
-    inner = `<h3>${m.kind === 'addclient' ? 'Add client' : 'Add role at ' + esc(c.name)}</h3><div class="fgrid">
+    inner = `<h3>${m.kind === 'addclient' ? (m.region ? 'Add client in ' + esc(m.region) : 'Add client') + ' and its first role' : 'Add role at ' + esc(c.name)}</h3><div class="fgrid">
       ${m.kind === 'addclient' ? '<label class="field wide">Client name<input id="nr_client" autofocus></label>' : ''}
       <label class="field wide">Role title<input id="nr_title" ${m.kind === 'addrole' ? 'autofocus' : ''}></label>
       <label class="field">Region<input id="nr_region" list="regionlist" value="${esc(m.region || (siblings[0] || {}).region || '')}"><datalist id="regionlist">${regionsList().map(r => `<option value="${esc(r)}">`).join('')}</datalist></label>
@@ -6434,7 +6434,7 @@ function modalHTML() {
       <label class="field">Fee per hire<input id="nr_fee" type="number" min="0" step="500"></label>
       <label class="field">Priority<select id="nr_pri"><option>A</option><option selected>B</option><option>C</option></select></label>
       ${siblings.length ? `<label class="field wide">Stages<select id="nr_copy"><option value="">Default stages</option>${siblings.map(r => `<option value="${r.id}" selected>Same as ${esc(r.title)}</option>`).join('')}</select></label>` : ''}</div>
-      <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="saverole" data-c="${m.c || ''}">Save</button></div>`;
+      <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="saverole" data-c="${m.c || ''}">${m.kind === 'addclient' ? 'Add client and role' : 'Add role'}</button></div>`;
   } else if (m.kind === 'stages') {
     wide = 'wide';
     const isDef = m.r === '_default', role = !isDef && MR.get(m.r);
@@ -6512,7 +6512,7 @@ function ctxItems(type, id) {
   }
   if (type === 'bdco') { const [aid, cid] = id.split(':'), a = accById(aid), c = a && (a.contacts || []).find(x => x.id === cid); if (!c) return ''; return `<div class="ph">${esc(c.name)}</div>` + B('Open contact card', 'bdco', `data-k="${id}"`) + B('Open company', 'bdacc', `data-id="${a.id}"`) + B('New opportunity with ' + esc(firstName(c.name || '')), 'bdadddeal', `data-acc="${a.id}" data-co="${c.id}"`) + (c.email ? B('Copy email', 'copyco', `data-v="${esc(c.email)}"`) : '') + (c.phone ? B('Copy phone', 'copyco', `data-v="${esc(c.phone)}"`) : '') + B(c.profile ? 'Update from LinkedIn PDF' : 'Add LinkedIn PDF', 'bdpdf', `data-acc="${a.id}" data-c="${c.id}"`) + `<hr>` + B(c.inactive ? 'Make active again' : 'Make inactive', 'coinactive', `data-k="${id}"`) + B('Delete contact', 'codelask', `data-k="${id}"`); }
   if (type === 'bdacc' || type === 'bdopp' || type === 'bdmarket') return bdCtxItems(type, id, B);
-  if (type === 'region') return `<div class="ph">${esc(id)}</div>` + B('Rename', 'renameregion', `data-rg="${esc(id)}"`) + B('Add client and role here', 'addclient', `data-rg="${esc(id)}"`) + B('Collapse all other regions', 'collapseothers', `data-rg="${esc(id)}"`);
+  if (type === 'region') return `<div class="ph">${esc(id)}</div>` + B('Rename', 'renameregion', `data-rg="${esc(id)}"`) + B('Add client here', 'addclient', `data-rg="${esc(id)}"`) + B('Collapse all other regions', 'collapseothers', `data-rg="${esc(id)}"`);
   return '';
 }
 /* readable on photos: after every render, find text and buttons that sit straight on the wallpaper (no panel behind them)
@@ -7499,7 +7499,7 @@ const ACT = {
   bgf: el => { const a = appById(el.dataset.a); if (!a || !a.bg) return; a.bg[el.dataset.f] = el.value.trim(); commit(); },
   schedtask: el => { const t = S.tasks.find(x => x.id === el.dataset.t), a = t && appById(t.appId); if (!a) return; snapshot(); CTX = null; MODAL = { kind: 'ask', a: a.id, label: schedLabel(t, a), task: t.id }; render(); },
   askquick: el => { document.getElementById('ask_d').value = el.dataset.v; },
-  askdate: el => { const a = appById(el.dataset.a); if (!a) return; CTX = null; MODAL = { kind: 'ask', a: a.id, label: (isISO(a.nextInterview) && a.nextLabel) || stageOf(a).label, change: isISO(a.nextInterview) }; render(); },
+  askdate: el => { const a = appById(el.dataset.a); if (!a) return; CTX = null; const L = stagesFor(a.roleId), i = L.findIndex(x => x.id === a.stage), cur = L[i] || {}, nxt = ['screen', 'interview'].includes(cur.kind) ? cur : L.slice(i + 1).find(x => ['screen', 'interview'].includes(x.kind)); MODAL = { kind: 'ask', a: a.id, label: (isISO(a.nextInterview) && a.nextLabel) || (nxt || {}).label || 'call', change: isISO(a.nextInterview) }; render(); },
   asksave: el => {
     const a = appById(el.dataset.a), d = document.getElementById('ask_d').value || null, was = a.nextInterview, wasT = a.nextTime || '';
     if (stageOf(a).kind === 'placed') { a.startDate = d; const f = document.getElementById('ask_f').value; if (f !== '') a.fee = +f; }
@@ -7531,7 +7531,7 @@ const ACT = {
   duprole: el => {
     const r = MR.get(el.dataset.r); snapshot();
     const n = { ...r, id: uid('r'), title: r.title + ' (copy)', stages: cloneStages(r.stages), status: 'active', pausedSince: null, created: TODAY, order: (r.order ?? 0) + 0.5 };
-    S.roles.push(n); CTX = null; MODAL = { kind: 'editrole', r: n.id }; save(); render(); toast('Role duplicated. Rename it here.', true);
+    S.roles.push(n); CTX = null; MODAL = { kind: 'editrole', r: n.id, dup: true }; save(); render();
   },
   delrole: el => {
     const r = MR.get(el.dataset.r), n = S.apps.filter(a => a.roleId === r.id).length;
@@ -7796,7 +7796,7 @@ function bdTreeHTML() {
 }
 /* ---------- right-click menus in BD ---------- */
 function bdCtxItems(type, id, B) {
-  const moveTo = a => { const ms = bdMarkets().filter(m => m !== a.market); return `<hr><div class="ph">Move company to</div>` + ms.map(m => B(esc(m), 'accmove', `data-id="${a.id}" data-m="${esc(m)}"`)).join('') + B('New country…', 'accmovenew', `data-id="${a.id}"`); };
+  const moveTo = a => { const ms = bdMarkets().filter(m => m !== a.market); return `<hr><div class="ph">Move company to</div>` + ms.map(m => B(esc(m), 'accmove', `data-id="${a.id}" data-m="${esc(m)}"`)).join('') + B('Move to a new country…', 'accmovenew', `data-id="${a.id}"`); };
   if (type === 'bdacc') { const a = accById(id); if (!a) return '';
     return `<div class="ph">${esc(a.name)}</div>` + B('Open company', 'bdacc', `data-id="${a.id}"`) + B('Add opportunity', 'bdadddeal', `data-acc="${a.id}"`) + B('Add contact', 'bdacc', `data-id="${a.id}" data-focus="contact"`) + B('Log a note', 'bdacc', `data-id="${a.id}" data-focus="note"`)
       + `<hr><div class="ph">Grade</div>` + ['A', 'B', 'C'].map(g => B(`Grade ${g}${(a.grade || 'B') === g ? ' ✓' : ''}`, 'accgrade', `data-id="${a.id}" data-v="${g}"`)).join('')
@@ -8424,7 +8424,7 @@ function bulkHTML(m) { const what = m.w, cols = BULK_COLS[what], rows = bulkPars
     <textarea class="inp" id="bulk_txt" rows="7" style="width:100%;font-family:ui-monospace,monospace;font-size:12.5px" placeholder="${what === 'acc' ? 'Company, Country, Sector, Website&#10;Brainvest, Netherlands, Finance, brainvest.nl&#10;EDSN, Netherlands, Energy' : 'Name, Title, Company, Email, Phone, LinkedIn&#10;Lisa de Vries, HR Director, Brainvest, lisa@brainvest.nl&#10;Tom Bakker, Head of Talent, EDSN'}">${esc(m.text || '')}</textarea>
     <div class="acts" style="justify-content:flex-start;margin:6px 0 4px"><button class="btn sm" data-act="bulkcheck">Check the list</button><span class="small muted">${rows.length ? `${rows.length} row${rows.length > 1 ? 's' : ''}: <b>${nNew}</b> to add${rows.length - nNew ? `, ${rows.length - nNew} skipped` : ''}` : ''}</span></div>
     ${rows.length ? `<div style="max-height:240px;overflow:auto;border:1px solid var(--line);border-radius:10px"><table class="rp-t" style="margin:0"><thead><tr>${cols.map(c => `<th>${c[1]}</th>`).join('')}<th></th></tr></thead><tbody>${rows.map((o, i) => `<tr style="${st[i][0] !== 'new' ? 'opacity:.5' : ''}">${cols.map(([k]) => `<td>${esc(o[k] || '')}</td>`).join('')}<td class="small ${st[i][0] === 'bad' ? 'warn' : 'muted'}" style="white-space:nowrap">${st[i][1]}</td></tr>`).join('')}</tbody></table></div>` : ''}
-    <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="bulksave" ${nNew ? '' : 'disabled'}>Add ${nNew || ''} ${what === 'acc' ? (nNew === 1 ? 'company' : 'companies') : (nNew === 1 ? 'contact' : 'contacts')}</button></div>`; }
+    <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="bulksave" ${nNew ? '' : 'disabled'}>Add ${nNew ? nNew + ' ' : ''}${what === 'acc' ? (nNew === 1 ? 'company' : 'companies') : (nNew === 1 ? 'contact' : 'contacts')}</button></div>`; }
 const coOpps = (a, c) => S.deals.filter(d => d.accountId === a.id && dealCoIds(d).includes(c.id));
 function coLastTouch(a, c) { const ds = coOpps(a, c); return [...(c.log || []).map(l => l.date), ...ds.flatMap(d => (d.log || []).filter(l => l.type !== 'system').map(l => l.date))].filter(isISO).sort().pop() || ''; }
 function contactsHTML() {
@@ -8682,7 +8682,7 @@ function bdCoAddHTML(m) {
   const free = a ? (a.contacts || []).filter(c => !c.inactive && !(d && dealCoIds(d).includes(c.id))) : [], isNew = f.co === '_new' || !free.length;
   const who = isNew ? firstName(f.coName || '') : firstName((free.find(c => c.id === f.co) || {}).name || '');
   const fromC = d && m.from ? coById(d.accountId, m.from) : null;
-  return `<h3>${fromC && m.ref ? `Who did ${esc(firstName(fromC.name || ''))} refer you to?` : fromC ? `Who do you approach instead of ${esc(firstName(fromC.name || ''))}?` : d ? `Add a contact to ${esc(d.title || 'this opportunity')}` : 'Add a contact'}</h3><p class="small muted" style="margin-top:-6px">${d ? esc(a ? a.name : '') + '. ' : ''}Fill in the details or use their LinkedIn PDF, then say what you did and what is next.</p>
+  return `<h3>${fromC && m.ref ? `Who did ${esc(firstName(fromC.name || ''))} refer you to?` : fromC ? `Who do you approach instead of ${esc(firstName(fromC.name || ''))}?` : d ? `Add a contact to ${esc(d.title || 'this opportunity')}` : 'Add contact'}</h3><p class="small muted" style="margin-top:-6px">${d ? esc(a ? a.name : '') + '. ' : ''}Fill in the details or use their LinkedIn PDF, then say what you did and what is next.</p>
     <div class="cam-sec"><div class="cam-h">Who</div><div class="fgrid">
       ${d ? '' : `<label class="field wide">Company<select class="inp" data-wz="acc" data-act-change="bdcaacc"><option value="">Pick a company…</option><option value="_new" ${f.acc === '_new' ? 'selected' : ''}>+ New company…</option>${S.accounts.filter(x => isBD(x) || x.status === 'client' || x.id === f.acc).sort((x, y) => x.name.localeCompare(y.name)).map(x => `<option value="${x.id}" ${f.acc === x.id ? 'selected' : ''}>${esc(x.name)}${x.market ? ' · ' + esc(x.market) : ''}</option>`).join('')}</select></label>
         ${f.acc === '_new' ? `<label class="field">New company name<input class="inp" data-wz="newAcc" value="${esc(f.newAcc)}"></label><label class="field">Country<input class="inp" data-wz="market" list="bdmkc" value="${esc(f.market)}"><datalist id="bdmkc">${bdMarkets().map(x => `<option value="${esc(x)}">`).join('')}</datalist></label><label class="field">Sector<select class="inp" data-wz="sector"><option value="">${(g => g ? esc(g) + ' (auto)' : 'Pick a sector…')(guessSector(((f.accInfo || {}).industry) || '', ((f.accInfo || {}).about) || '', f.newAcc || ''))}</option>${sectorList().map(x => `<option ${f.sector === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></label>` : ''}`}
