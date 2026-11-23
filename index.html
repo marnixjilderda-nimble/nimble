@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-GTffQicC5iW2du46ScJ9GBJcGJMsDuwz/+cNiYlcdto=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Lod3phFHk+UC6j7RoyYGtCwLXH/sJ3y5aBg7eer/0s0=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -42,7 +42,7 @@ html,body{margin:0;min-height:100%}
 body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--body),system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
 .wcobar{display:none}
 @media (display-mode: window-controls-overlay){
-  .wcobar{display:block;position:fixed;z-index:60;top:calc(env(titlebar-area-y,0) / var(--z,1));left:calc(env(titlebar-area-x,0) / var(--z,1));width:calc(env(titlebar-area-width,100%) / var(--z,1));height:calc(env(titlebar-area-height,32px) / var(--z,1));-webkit-app-region:drag;app-region:drag;pointer-events:none;background:linear-gradient(90deg,transparent calc(100% - 220px),var(--cornr,transparent));padding-left:14px;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--muted)}
+  .wcobar{display:block;position:fixed;z-index:60;top:calc(env(titlebar-area-y,0) / var(--z,1));left:calc(env(titlebar-area-x,0) / var(--z,1));width:calc(env(titlebar-area-width,100%) / var(--z,1));height:calc(env(titlebar-area-height,32px) / var(--z,1));-webkit-app-region:drag;app-region:drag;pointer-events:none;background:var(--cornr,transparent);padding-left:14px;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--muted)}
   :root{--tb:calc(env(titlebar-area-height,32px) / var(--z,1))}
   html body .shell{padding-top:calc(env(titlebar-area-height,32px) / var(--z,1));box-sizing:border-box}
   html body .shell .rail{top:0;margin-top:calc(-1 * calc(env(titlebar-area-height,32px) / var(--z,1)));padding-top:calc(20px + calc(env(titlebar-area-height,32px) / var(--z,1)));height:calc(100vh / var(--z,1))}
@@ -1862,7 +1862,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:6a504ff94a*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:0145d5f32c*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
