@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-CFP607wM6YAe1GOwkBYL30lxCEH/595MNqkRz73EfcA=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-P1tHG/n/sQ20IKkav54paC12m9Qeon3ECfkB/4pYhZA=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -4823,9 +4823,9 @@ async function leaveTeamDir() { await kvSet('teamDir', null); TEAM.handle = null
 function teamDiag() { try { return { role: S.settings.teamRole || '', folder: TEAM.handle ? TEAM.handle.name : '', state: TEAM.state, hub: TEAM.hub ? TEAM.hub.name : '', hubState: TEAM.hubState || '', hubAuto: !!TEAM.hubAuto, sharedAt: (TEAM.shared || {}).at || '', sharedFrom: TEAM.sharedFrom || '', mgrAt: TEAM.mgrAt || '', mgrApplied: Object.keys(S.mgrApplied || {}).length, forSeen: TEAM.forSeen || [], synced: TEAM.loadedAt ? TEAM.loadedAt.toISOString() : '', err: TEAM.err || '', hubErr: TEAM.hubErr || '', web: WEB, id4: myUid().slice(-4) }; } catch (e) { return { err: String(e) }; } }
 function mySnapshot() { const d = JSON.parse(JSON.stringify(S)); d.settings.wallImage = null; const w = fileWhere(); return { kind: 'pipetree-team', member: S.settings.userName || 'Me', userId: S.settings.userId, publishedAt: new Date().toISOString(), v: APP_V, sharedSeen: (TEAM.shared && TEAM.shared.at) || '', sharedRoles: ((TEAM.shared && TEAM.shared.roles) || []).length, openedFrom: w.nice + (w.path ? ' › ' + w.path.split('/').pop() : ''), openedCopy: !!w.copy || !w.inOneDrive, diag: teamDiag(), data: d }; }
 let teamTimer = null, teamBusy = false;
-function scheduleTeam() { if (TEAM.state !== 'on') return; clearTimeout(teamTimer); teamTimer = setTimeout(() => syncTeam(false), 1000); }
+function scheduleTeam() { if (TEAM.state !== 'on') return; clearTimeout(teamTimer); teamTimer = setTimeout(() => syncTeam(false), 250); }
 async function syncTeam(readAll) {
-  if (!TEAM.handle || TEAM.state !== 'on' || !S || teamBusy || VIEWAS) return; teamBusy = true; const sig0 = teamViewSig();
+  if (!TEAM.handle || TEAM.state !== 'on' || !S || teamBusy || VIEWAS) return; teamBusy = true; const sig0 = teamViewSig(), notes0 = new Set((S.inNotes || []).map(x => x.id));
   try {
     const dir = TEAM.handle, folder = []; TEAM.dirs = [];
     let remoteProjects = null;
@@ -4860,6 +4860,9 @@ async function syncTeam(readAll) {
   } catch (e) { TEAM.err = e.message || 'failed'; if (e.name === 'NotAllowedError') TEAM.state = 'needs-permission'; }
   teamBusy = false;
   const changed = teamViewSig() !== sig0; WATCH.sig = ''; watchTeam(true);
+  /* say what just came in from colleagues, right away */
+  const fresh = (S.inNotes || []).filter(x => !notes0.has(x.id) && !x.gone && x.byId !== myUid());
+  if (fresh.length && !(typeof PDRAG !== 'undefined' && PDRAG.on)) { AUTOMSG = ''; liveToast(fresh); }
   if ((changed || ['team', 'projects'].includes(VIEW)) && !MODAL && !(typeof PDRAG !== 'undefined' && PDRAG.on) && !/INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '')) render();
 }
 /* what the screen shows from the team: when this changes after a sync, redraw at once */
@@ -4880,7 +4883,7 @@ async function watchTeam(baseline) { if (WATCH.busy || TEAM.state !== 'on' || !T
     if (TEAM.hub && TEAM.hubState === 'on') await scan(TEAM.hub, 'hub/', n => (/^pipetree-team-.+\.json$/.test(n) && !mine(n)) || n.startsWith('pipetree-for-' + me + '-'));
     const sig = parts.sort().join('|'); if (baseline || !WATCH.sig) WATCH.sig = sig; else if (sig !== WATCH.sig) { WATCH.sig = sig; WATCH.busy = false; await syncTeam(true); return; } } catch (e) { }
   WATCH.busy = false; }
-setInterval(() => watchTeam(false), 4000);
+setInterval(() => watchTeam(false), 1500);
 function mergeProjects(remote) {
   const byId = new Map(S.projects.map(p => [p.id, p]));
   for (const r of remote) { const l = byId.get(r.id); if (!l || (r.updatedAt || '') > (l.updatedAt || '')) byId.set(r.id, r); }
@@ -6845,6 +6848,9 @@ function rpCurrent() { const R = RPT.k === 'status' ? rpStatus() : RPT.k === 'cl
 
 /* ================= events ================= */
 let toastTimer;
+function liveToast(list) { const box = document.getElementById('toastbox'); if (!box) return; const f = list[0];
+  box.innerHTML = `<div class="toast live" role="status"><div><b>${esc(firstName(f.by || 'Team'))}</b> · ${esc(f.text)}${list.length > 1 ? `<div class="toast-sub">+${list.length - 1} more update${list.length > 2 ? 's' : ''}${[...new Set(list.map(x => x.role).filter(Boolean))].length ? ' on ' + esc([...new Set(list.map(x => x.role).filter(Boolean))].slice(0, 2).join(', ')) : ''}</div>` : ''}</div><button data-act="view" data-v="today">See</button></div>`;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => box.innerHTML = '', 6000); }
 function toast(text, withUndo) {
   const extra = AUTOMSG ? AUTOMSG.split(/\. (?=[A-Z])/).map(x => x.replace(/^Task( added)?: /, '')) : []; AUTOMSG = '';
   const box = document.getElementById('toastbox');
@@ -9410,9 +9416,8 @@ document.addEventListener('fullscreenchange', () => { if (S) render(); });
       const go = img => { const iw = img.naturalWidth, ih = img.naturalHeight; if (!iw) return; const sc = Math.max(W / iw, H / ih), ox = (iw * sc - W) / 2, oy = (ih * sc - H) / 2;
         const sx = (x0 + ox) / sc, sy = oy / sc, sw = Math.max(1, (W - x0) / sc), sh = Math.max(1, h0 / sc); big.width = 24; big.height = 4; bx.drawImage(img, sx, sy, sw, sh, 0, 0, 24, 4);
         const px = bx.getImageData(0, 0, 24, 4).data; let R = 0, G = 0, B = 0; for (let i = 0; i < px.length; i += 4) { R += px[i]; G += px[i + 1]; B += px[i + 2]; } const k = px.length / 4; R /= k; G /= k; B /= k;
-        const [vr, vg, vb, va] = dark ? [6, 10, 24, .42] : [246, 248, 252, .55]; let px3 = [R * (1 - va) + vr * va, G * (1 - va) + vg * va, B * (1 - va) + vb * va];
-        /* then the menu's glass on top, so the corner looks like one of Nimble's panes */
-        const c2 = getComputedStyle(probe2).backgroundColor; if (c2) { cx.clearRect(0, 0, 1, 1); cx.fillStyle = c2; cx.fillRect(0, 0, 1, 1); const q = cx.getImageData(0, 0, 1, 1).data, ra = q[3] / 255; px3 = px3.map((v, i) => v * (1 - ra) + q[i] * ra); }
+        const vs = getComputedStyle(veil || document.body).backgroundImage || '', vm = vs.match(/rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?\)/), [vr, vg, vb, va] = vm ? [+vm[1], +vm[2], +vm[3], vm[4] === undefined ? 1 : +vm[4]] : dark ? [8, 12, 26, .55] : [246, 248, 252, .55]; let px3 = [R * (1 - va) + vr * va, G * (1 - va) + vg * va, B * (1 - va) + vb * va];
+        /* no panel glass on top: the corner simply continues the photo of the bar next to it */
         const m = v => Math.round(v), hex = px3.map(v => m(v).toString(16).padStart(2, '0')).join('');
         meta.content = tintHex = '#' + hex; tintKey = key; };
       if (key === tintKey) { if (tintHex) meta.content = tintHex; return; }
