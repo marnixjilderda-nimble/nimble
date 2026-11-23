@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-zUzaJt3ZIgGzh1DikmoMYUgV5ieOJCWw3/dT+zkv4Lo=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-rv08vPQPoMY5yZyVUTKKI3s99zQEF4t6xQ+4fCMoTqM=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -42,7 +42,7 @@ html,body{margin:0;min-height:100%}
 body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--body),system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
 .wcobar{display:none}
 @media (display-mode: window-controls-overlay){
-  .wcobar{display:block;position:fixed;z-index:60;top:calc(env(titlebar-area-y,0) / var(--z,1));left:calc(env(titlebar-area-x,0) / var(--z,1));width:calc(env(titlebar-area-width,100%) / var(--z,1));height:calc(env(titlebar-area-height,32px) / var(--z,1));-webkit-app-region:drag;app-region:drag;pointer-events:none;background:var(--cornr,transparent);padding-left:14px;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--muted)}
+  .wcobar{display:block;position:fixed;z-index:60;top:calc(env(titlebar-area-y,0) / var(--z,1));left:calc(env(titlebar-area-x,0) / var(--z,1));width:calc(env(titlebar-area-width,100%) / var(--z,1));height:calc(env(titlebar-area-height,32px) / var(--z,1));-webkit-app-region:drag;app-region:drag;pointer-events:none;background:transparent;padding-left:14px;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--muted)}
   :root{--tb:calc(env(titlebar-area-height,32px) / var(--z,1))}
   html body .shell{padding-top:calc(env(titlebar-area-height,32px) / var(--z,1));box-sizing:border-box}
   html body .shell .rail{top:0;margin-top:calc(-1 * calc(env(titlebar-area-height,32px) / var(--z,1)));padding-top:calc(20px + calc(env(titlebar-area-height,32px) / var(--z,1)));height:calc(100vh / var(--z,1))}
@@ -555,8 +555,8 @@ h3 .grade{font-size:12px;line-height:20px;vertical-align:middle;padding:0 7px}
 [data-theme=glass-dark]{--panel:rgba(16,23,42,.70);--rail:rgba(12,18,34,.62);--card:rgba(30,40,66,.92);--colbg:rgba(255,255,255,.045);--line:rgba(255,255,255,.10);--muted:rgba(226,233,246,.62);--shadow:0 10px 34px rgba(0,0,0,.22);--cardshadow:none}
 [data-theme=glass-light]{--panel:rgba(255,255,255,.76);--rail:rgba(255,255,255,.62);--card:#fff;--colbg:rgba(255,255,255,.42);--line:rgba(16,24,40,.08);--shadow:0 10px 34px rgba(16,24,40,.10);--cardshadow:0 1px 2px rgba(16,24,40,.05)}
 #wall img{filter:saturate(.82)}
-#wall .veil.dark{background:linear-gradient(180deg,rgba(8,12,26,.55),rgba(8,12,26,.32) 45%,rgba(8,12,26,.6))}
-#wall .veil.light{background:linear-gradient(180deg,rgba(246,248,252,.55),rgba(246,248,252,.30) 50%,rgba(246,248,252,.5))}
+#wall .veil.dark{background:linear-gradient(180deg,rgba(8,12,26,.4),rgba(8,12,26,.4))}
+#wall .veil.light{background:linear-gradient(180deg,rgba(246,248,252,.4),rgba(246,248,252,.4))}
 body{font-size:14px}
 h1{font-size:28px;letter-spacing:-.02em;font-weight:650}
 h2{font-size:15.5px;font-weight:650}
@@ -1862,7 +1862,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:bb8a5201ff*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:f7fe1ec74c*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
