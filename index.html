@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-4jgy3DfZT4osfP5YC0kP2sa6UY+rMKTNdN3H6uxA3uQ=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-gdUDVBPdrSQG0I08WIyA9kGK9Q7SxH9IeTo4g/3ILi0=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -2139,7 +2139,7 @@ function oddsModalHTML(m) { const a = appById(m.a); if (!a) return ''; const ms 
   const prev = m.need && a.prevStage && a.prevStage !== a.stage ? stagesFor(a.roleId).find(x => x.id === a.prevStage) : null;
   return `<h3>${ms === 'offer' ? 'Offer' : 'Final interview'}: how likely is it that ${esc(firstName(p.name))} lands?</h3>
     <p class="small muted" style="margin-top:-6px">${esc(roleName(a))}${m.left > 1 ? ` · ${m.left - 1} more to go after this one` : ''}. ${ms === 'offer' ? 'Your honest read. It ranks Closest to money, feeds the weighted pipeline, and your manager sees it.' : `Starts at ${def}% (${finalDone(a) ? 'final done, waiting for feedback' : 'final still to happen'}). Change it if you know more.`}</p>
-    ${ms === 'offer' ? `<div class="field odds-f">Where is it<div class="odds-row">${[['pending', 'Pending candidate decision'], ['verbal', 'Verbally accepted']].map(([k, l]) => `<button class="btn sm ob ${m.st === k ? 'on' : ''}" data-act="oddsst" data-v="${k}">${l}</button>`).join('')}</div></div>` : ''}
+    ${ms === 'offer' ? `<div class="field odds-f">Where is it<div class="odds-row">${[['pending', 'Pending candidate decision'], ['verbal', 'Verbally accepted'], ['accepted', 'Offer accepted 🎉']].map(([k, l]) => `<button class="btn sm ob ${m.st === k ? 'on' : ''}" data-act="oddsst" data-v="${k}">${l}</button>`).join('')}</div></div>` : ''}
     <div class="field odds-f">Chance it lands<div class="odds-row">${ODDS_STEPS.map(v => `<button class="btn sm ob ${m.p === v ? 'on' : ''}" data-act="oddsp" data-v="${v}">${v}%</button>`).join('')}</div></div>
     <label class="field odds-f">Why${ms === 'final' ? ' <span class="muted small">(needed when you change the default)</span>' : ''}<textarea id="odds_why" class="inp" rows="3" placeholder="${ms === 'offer' ? 'e.g. Offer above what he asked, super excited, no other offers' : 'e.g. Hiring manager already said he is the one'}">${esc(m.why ?? o.why ?? '')}</textarea></label>
     <div class="acts" style="margin-top:14px">${prev ? `<button class="btn quiet" data-act="oddsback" style="margin-right:auto">Move back to ${esc(prev.label)}</button>` : ''}${m.need ? '' : '<button class="btn" data-act="modalclose">Cancel</button>'}<button class="btn primary" data-act="oddssave">Save</button></div>`; }
@@ -6466,7 +6466,7 @@ function modalHTML() {
     const a = S.apps.find(x => x.id === m.a), p = personOf(a), iv = m.kind2 === 'placed' || m.kind === 'ask' && stageOf(a).kind === 'placed';
     const inv = a.invoice || {}, cl0 = clientOf(a) || {}; if (iv) ensureAccounts(); const acc0 = iv ? S.accounts.find(x => x.clientId === cl0.id) : null, cos0 = ((acc0 || {}).contacts || []).filter(c => !c.inactive);
     const ppl = [[myUid(), 'Me'], ...((TEAM.members || []).map(m => [m.userId, m.name]))];
-    inner = iv ? `<h3>Congrats, ${esc(firstName(p.name))} is placed 🎉</h3><p class="small muted" style="margin-top:-6px">${esc(roleName(a))}. Fill in the basics for the invoice: Nimble puts "send the invoice" at the top of your tasks on that date, and schedules the check-ins.</p>
+    inner = iv ? `<h3>Congrats, ${esc(firstName(p.name))} ${stageOf(a).kind === 'placed' ? 'is placed' : 'accepted the offer'} 🎉</h3><p class="small muted" style="margin-top:-6px">${esc(roleName(a))}. Fill in the basics for the invoice: Nimble puts "send the invoice" at the top of your tasks on that date, and schedules the check-ins.</p>
       <div class="fgrid"><label class="field">When do you send the invoice?<input type="date" id="ask_inv" value="${inv.date || TODAY}"></label><label class="field">Start date<input type="date" id="ask_d" value="${a.startDate || ''}"></label></div>
       <div class="fgrid" style="margin-top:8px"><label class="field">Salary in the offer (yearly)<input type="number" id="ask_sal" min="0" step="1000" value="${inv.salary ?? ''}" placeholder="e.g. 85000"></label><label class="field">Fee %<input type="number" id="ask_pct" min="0" max="100" step="0.5" value="${inv.pct ?? cl0.feePct ?? ''}" placeholder="e.g. 20"></label></div>
       <div class="fgrid" style="margin-top:8px"><label class="field">Fee (€)<input type="number" id="ask_f" min="0" step="500" value="${a.fee ?? (roleOf(a) || {}).fee ?? ''}"><span class="small muted">Filled in from salary × fee % when both are set</span></label><label class="field">Invoice contact at ${esc(cl0.name || 'the client')}<input id="ask_ic" list="ask_icl" value="${esc(inv.contact || '')}" placeholder="Name or email"><datalist id="ask_icl">${cos0.map(c => `<option value="${esc(c.name)}">${esc([c.title, c.email].filter(Boolean).join(' · '))}</option>`).join('')}</datalist></label></div>
@@ -7462,9 +7462,11 @@ const ACT = {
   oddsopen: el => { const a = appById(el.dataset.a); if (!a || !moneyStage(a)) return; CTX = null; MODAL = { kind: 'odds', a: a.id }; render(); },
   oddsback: () => { const a = appById(MODAL && MODAL.a); if (!a || !a.prevStage) return; snapshot(); MODAL = null; setStage(a, a.prevStage); ASK = null; commit(); toast(`${personOf(a).name} is back at ${stageOf(a).label}`); },
   oddssave: () => { const a = appById(MODAL && MODAL.a); if (!a) return; const why = ((document.getElementById('odds_why') || {}).value || '').trim(), ms = moneyStage(a), def = oddsDefault(a);
-    if (MODAL.p == null) { toast('Pick the chance it lands'); return; } if (!why && (ms === 'offer' || MODAL.p !== def)) { MODAL.why = ''; toast('Add one line on why'); return; }
+    const acc = ms === 'offer' && MODAL.st === 'accepted'; if (acc) MODAL.p = 100;
+    if (MODAL.p == null) { toast('Pick the chance it lands'); return; } if (!acc && !why && (ms === 'offer' || MODAL.p !== def)) { MODAL.why = ''; toast('Add one line on why'); return; }
     snapshot(); a.odds = { stage: a.stage, p: ms === 'final' && MODAL.p === def && !why ? null : MODAL.p, why, status: ms === 'offer' ? MODAL.st || 'pending' : '', on: TODAY, by: S.settings.userName || '' };
-    addLog(a, 'system', `Odds ${MODAL.p}%${ms === 'offer' ? ' · ' + (a.odds.status === 'verbal' ? 'verbally accepted' : 'pending candidate decision') : ''}${why ? ': ' + why : ''}`);
+    addLog(a, 'system', acc ? 'Offer accepted' : `Odds ${MODAL.p}%${ms === 'offer' ? ' · ' + (a.odds.status === 'verbal' ? 'verbally accepted' : 'pending candidate decision') : ''}${why ? ': ' + why : ''}`);
+    if (acc) { a.offerAccepted = a.offerAccepted || TODAY; MODAL = { kind: 'ask', a: a.id, kind2: 'placed' }; commit(); return; }
     MODAL = null; commit(); toast(`${personOf(a).name}: ${oddsOf(a)}% saved`, true); },
   hotsave: () => { const r = MR.get(MODAL && MODAL.r); if (!r) return; const why = ((document.getElementById('hot_why') || {}).value || '').trim(); if (!why) { toast('Add one line: why should people work on this?'); return; }
     snapshot(); r.hot = { why, on: (r.hot && r.hot.on) || TODAY, byId: myUid(), by: S.settings.userName || '' }; MODAL = null; commit(); scheduleTeam(); toast(`${r.title} is in the marketplace. The whole team sees it under Team, Marketplace`, true); },
@@ -7721,7 +7723,7 @@ const ACT = {
   askdate: el => { const a = appById(el.dataset.a); if (!a) return; CTX = null; const L = stagesFor(a.roleId), i = L.findIndex(x => x.id === a.stage), cur = L[i] || {}, nxt = ['screen', 'interview'].includes(cur.kind) ? cur : L.slice(i + 1).find(x => ['screen', 'interview'].includes(x.kind)); MODAL = { kind: 'ask', a: a.id, label: (isISO(a.nextInterview) && a.nextLabel) || (nxt || {}).label || 'call', change: isISO(a.nextInterview) }; render(); },
   asksave: el => {
     const a = appById(el.dataset.a), d = document.getElementById('ask_d').value || null, was = a.nextInterview, wasT = a.nextTime || '';
-    if (stageOf(a).kind === 'placed') { a.startDate = d; const f = document.getElementById('ask_f').value, sal = +(document.getElementById('ask_sal') || {}).value || 0, pct = +(document.getElementById('ask_pct') || {}).value || 0;
+    if (stageOf(a).kind === 'placed' || (MODAL && MODAL.kind2 === 'placed')) { a.startDate = d; const f = document.getElementById('ask_f').value, sal = +(document.getElementById('ask_sal') || {}).value || 0, pct = +(document.getElementById('ask_pct') || {}).value || 0;
       if (sal && pct) a.fee = Math.round(sal * pct / 100); else if (f !== '') a.fee = +f;
       const idt = (document.getElementById('ask_inv') || {}).value || '', ic = ((document.getElementById('ask_ic') || {}).value || '').trim(), iw = (document.getElementById('ask_iw') || {}).value || myUid();
       if (idt) { a.invoice = { date: idt, salary: sal || null, pct: pct || null, contact: ic, by: iw, fee: a.fee ?? null };
