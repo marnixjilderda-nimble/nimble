@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-fvp5NoBseCgFBNHpHW0gZB1reux6z73G+Oligx8fjXw=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-56Oi5b3Pwxud1cL2W++53fywU+s87G4nWbb3M8pzCAI=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -2384,7 +2384,7 @@ function syncAutoTasks(a, fromDate) {
     if ((a.autoSkip || []).includes(w.auto)) continue;
     if (S.tasks.some(t => t.appId === a.id && t.auto === w.auto && (!t.done || t.created === TODAY))) continue;
     S.tasks.push({ id: uid('t'), appId: a.id, text: w.text, due: w.due, done: false, auto: w.auto, created: TODAY });
-    AUTOMSG = `Task: ${w.text}${(n => n && !/^\(/.test(n) ? ' (' + n + ')' : '')(personOf(a).name)}, ${DOW[new Date(w.due + 'T12:00:00').getDay()]} ${fmtDate(w.due)}`;
+    AUTOMSG = (AUTOMSG ? AUTOMSG + '. ' : '') + `Task: ${w.text}${(n => n && !/^\(/.test(n) ? ' (' + n + ')' : '')(personOf(a).name)}, ${DOW[new Date(w.due + 'T12:00:00').getDay()]} ${fmtDate(w.due)}`;
   }
 }
 function logContact(a, text) { a.lastContact = TODAY; addLog(a, 'contact', text || (ballOf(a) === 'client' ? 'Chased the client' : 'Contacted the candidate')); }
@@ -7731,6 +7731,11 @@ const ACT = {
         const old = S.tasks.find(t => t.appId === a.id && t.invoice && !t.done); if (old) { old.text = txt; old.due = idt; old.owner = iw; } else S.tasks.push({ id: uid('t'), appId: a.id, text: txt, due: idt, done: false, created: TODAY, invoice: true, owner: iw });
         addLog(a, 'system', `Invoice planned for ${fmtDate(idt)}${a.fee ? `, ${money(a.fee)}` : ''}${ic ? `, to ${ic}` : ''}`); AUTOMSG = (AUTOMSG ? AUTOMSG + '. ' : '') + `Task: send the invoice, ${fmtDate(idt)}`; } }
     else { if (MODAL && MODAL.task && !d) { toast('Pick the date first'); return; } const lbl = ((document.getElementById('ask_l') || {}).value || '').trim() || (MODAL && MODAL.label) || stageOf(a).label; a.nextInterview = d; a.nextLabel = lbl; a.nextTime = document.getElementById('ask_t').value || ''; if (d && isISO(was) && (was !== d || wasT !== a.nextTime)) addLog(a, 'system', `${lbl} moved from ${fmtDate(was)}${wasT ? ' ' + wasT : ''} to ${fmtDate(d)}${a.nextTime ? ' ' + a.nextTime : ''}`); else if (d && !isISO(was)) addLog(a, 'system', `${lbl} planned for ${fmtDate(d)}${a.nextTime ? ' at ' + a.nextTime : ''}`); if (d && document.getElementById('ask_ics').checked) downloadIcs([a], `${personOf(a).name} ${stageOf(a).label}.ics`); }
+    /* every interview gets prep: as soon as it has a date, a task for today to schedule the prep call */
+    if (d && stageOf(a).kind === 'interview' && !(MODAL && MODAL.kind2 === 'placed')) { const lbl2 = (a.nextLabel || stageOf(a).label), txt = `Schedule prep with ${personOf(a).name} for the ${lbl2.toLowerCase()} at ${(clientOf(a) || {}).name || 'the client'} (${DOW[new Date(d + 'T12:00:00').getDay()]} ${fmtDate(d)})`;
+      const old = S.tasks.find(t => t.appId === a.id && t.prep && t.prep.stage === a.stage);
+      if (!old) { S.tasks.push({ id: uid('t'), appId: a.id, text: txt, due: TODAY, done: false, created: TODAY, prep: { stage: a.stage, date: d } }); AUTOMSG = (AUTOMSG ? AUTOMSG + '. ' : '') + `Task: schedule prep with ${firstName(personOf(a).name)}, today`; }
+      else if (!old.done && old.prep.date !== d) { old.text = txt; old.prep.date = d; } }
     let tk = ''; if (MODAL && MODAL.task) { const t = S.tasks.find(x => x.id === MODAL.task); if (t && !t.done) { t.done = true; t.doneOn = TODAY; tk = ', task ticked off'; } }
     const chEl = document.getElementById('ask_ch'); if (chEl) a.chaseDays = +chEl.value;
     if (document.getElementById('ask_wn_0')) { askWithRead(); const ws = MODAL.with.map(w => ({ name: w.name.trim(), title: w.title.trim() })).filter(w => w.name); a.nextWith = ws;
