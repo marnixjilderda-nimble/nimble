@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-SD9lrfyfJohqyYmg0ZIu5wuTSS/0NAnicurr0LSJZOs=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-yg8UX7X7CTzEmQfsia4DvsqHnhI0AZatBGRi95HH1ms=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -4827,7 +4827,11 @@ async function connectTeamDir() {
       else if (inv && inv.v2) { if (h.name !== want) { h = await h.getDirectoryHandle(want, { create: true }); made = true; }
         const put = async (n, t) => { const fh = await h.getFileHandle(n, { create: true }), w = await fh.createWritable(); await w.write(t); await w.close(); };
         await put('pipetree-invite.json', JSON.stringify(inv)); if (!WEB) await put(inv.file || `${want}.html`, startFileHTML(inv)); }
-      else { MODAL = { kind: 'connecthelp', picked: h.name }; render(); return; } }
+      else { /* no invite on this laptop: the shared team folder itself is fine, Nimble saves this person's file straight into it */
+        let team = false; try { for await (const [n, x] of h.entries()) if (x.kind === 'file' && /^pipetree-(team|for)-.+\.json$/.test(n)) { team = true; break; } } catch (e) {}
+        if (!team && /nimble/i.test(h.name)) team = true;
+        if (!team) { MODAL = { kind: 'connecthelp', picked: h.name }; render(); return; }
+        if (!(S.settings.userName || '').trim()) { toast('Fill in your name first, then connect'); return; } S.settings.myFolder = h.name; } }
     await kvSet('teamDir', h); TEAM.handle = h; TEAM.state = 'on'; await syncTeam(true); if ((S.settings.teamRole || '') === 'member' && S.settings.myInvite && S.settings.myInvite.v2 && !S.settings.sharedBack) { MODAL = { kind: 'shareback', folder: h.name, made }; } render(); toast(`Connected to "${h.name}"`);
   } catch (e) { if (e.name !== 'AbortError') toast('That folder could not be used'); }
 }
