@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-zfqtg7nKXZSLkUYDa1RuCyBZ4R7p3YJg0K1kaQbrePs=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-4jgy3DfZT4osfP5YC0kP2sa6UY+rMKTNdN3H6uxA3uQ=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -3094,8 +3094,11 @@ function srcPicks() { /* max 2 roles: A before B before C, then longest without 
   const ask = all.filter(x => !yes.includes(x) && !x.h.healthy && !(isISO(x.r.srcPark) && x.r.srcPark > TODAY) && !(x.r.srcPlan && x.r.srcPlan.d === TODAY))
     .sort((x, y) => PR[x.g] - PR[y.g] || y.days - x.days || y.h.gap - x.h.gap);
   return { yes, ask: ask.slice(0, Math.max(0, 2 - yes.length)) }; }
+/* the highest priority there is: invoices to send (due within 2 days or overdue) */
+document.addEventListener('input', e => { const id = e.target && e.target.id; if (id !== 'ask_sal' && id !== 'ask_pct') return; const s2 = +(document.getElementById('ask_sal') || {}).value || 0, p2 = +(document.getElementById('ask_pct') || {}).value || 0, f = document.getElementById('ask_f'); if (f && s2 && p2) f.value = Math.round(s2 * p2 / 100); });
+function invoicePlan() { return (S.tasks || []).filter(t => t.invoice && !t.done && isISO(t.due) && t.due <= addDays(TODAY, 2)).map(t => { const a = appById(t.appId); return { cl: a ? (clientOf(a) || {}).name || '' : '', rank: -1, tag: 'Invoice', cls: 'of', html: esc(t.text), sub: t.due < TODAY ? `<span class="pf-neg">due ${esc(fmtDate(t.due))}</span>` : t.due === TODAY ? 'today' : `on ${esc(fmtDate(t.due))}`, acts: `<button class="btn sm primary" data-act="taskdone" data-t="${t.id}">Sent</button>` }; }); }
 function dayPlan(tm) {
-  const live = tm.live, out = [], ivs = a => { const st = stagesFor(a.roleId).filter(x => x.kind === 'interview'); return { n: st.findIndex(x => x.id === stageOf(a).id), last: st.length - 1, label: stageOf(a).label }; };
+  const live = tm.live, out = invoicePlan(), ivs = a => { const st = stagesFor(a.roleId).filter(x => x.kind === 'interview'); return { n: st.findIndex(x => x.id === stageOf(a).id), last: st.length - 1, label: stageOf(a).label }; };
   const who = a => `<button class="name" data-act="open" data-p="${a.personId}" data-a="${a.id}">${esc(personOf(a).name)}</button>`, ctx = a => `${esc(roleOf(a).title)} · ${esc((clientOf(a) || {}).name || '')}`;
   const planned = a => isISO(a.nextInterview) && a.nextInterview >= TODAY, debrief = new Set((tm.debrief || []).map(a => a.id));
   for (const a of live) { const k = stageOf(a).kind;
@@ -3940,7 +3943,7 @@ function tasksHTML() {
   const all = S.tasks.filter(t => !t.done), q = TF.q.trim().toLowerCase();
   const dueOk = t => TF.due === 'all' ? true : !isISO(t.due) ? false : TF.due === 'week' ? t.due <= addDays(TODAY, 7) : t.due <= TODAY;
   const match = t => { if (TF.grade && taskGrade(t) !== TF.grade) return false; if (!dueOk(t)) return false; if (!q) return true; const a = appOfT(t); return (t.text + ' ' + (a ? personOf(a).name + ' ' + roleName(a) : 'general')).toLowerCase().includes(q); };
-  const list = all.filter(match);
+  const list = all.filter(match).sort((x, y) => (y.invoice ? 1 : 0) - (x.invoice ? 1 : 0));
   const doneToday = S.tasks.filter(t => t.done && t.doneOn === TODAY).length, dueNow = all.filter(t => isISO(t.due) && t.due <= TODAY).length, overN = all.filter(t => isISO(t.due) && t.due < TODAY).length;
   const pct = Math.round(doneToday / Math.max(1, doneToday + dueNow) * 100);
   const seg = (k, opts) => `<div class="segc">${opts.map(([v, l]) => `<button class="${TF[k] === v ? 'on' : ''}" data-act="tfset" data-k="${k}" data-v="${v}">${l}</button>`).join('')}</div>`;
@@ -6461,8 +6464,13 @@ function modalHTML() {
     var chaseField = a => { if (!['interview', 'review'].includes(stageOf(a).kind) && !/interview|assessment/i.test(m.label || '')) return ''; const def = autoRules().interview.days, cur = a.chaseDays ?? def;
       return `<label class="field" style="margin-top:10px">When should Nimble remind you to chase the client for feedback?<select id="ask_ch">${[[1, 'The workday after'], [2, '2 workdays after'], [3, '3 workdays after'], [5, 'A week after'], [-1, "Don't remind me"]].map(([v, l]) => `<option value="${v}" ${v === cur ? 'selected' : ''}>${l}${v === def ? ' (usual)' : ''}</option>`).join('')}</select></label>`; };
     const a = S.apps.find(x => x.id === m.a), p = personOf(a), iv = m.kind2 === 'placed' || m.kind === 'ask' && stageOf(a).kind === 'placed';
-    inner = iv ? `<h3>${esc(p.name)} is placed</h3><p class="small muted" style="margin-top:-6px">${esc(roleName(a))}. Add the start date and fee, and check-ins get scheduled for you.</p>
-      <div class="fgrid"><label class="field">Start date<input type="date" id="ask_d" value="${a.startDate || ''}"></label><label class="field">Fee<input type="number" id="ask_f" min="0" step="500" value="${a.fee ?? (roleOf(a) || {}).fee ?? ''}"></label></div>
+    const inv = a.invoice || {}, cl0 = clientOf(a) || {}; if (iv) ensureAccounts(); const acc0 = iv ? S.accounts.find(x => x.clientId === cl0.id) : null, cos0 = ((acc0 || {}).contacts || []).filter(c => !c.inactive);
+    const ppl = [[myUid(), 'Me'], ...((TEAM.members || []).map(m => [m.userId, m.name]))];
+    inner = iv ? `<h3>Congrats, ${esc(firstName(p.name))} is placed 🎉</h3><p class="small muted" style="margin-top:-6px">${esc(roleName(a))}. Fill in the basics for the invoice: Nimble puts "send the invoice" at the top of your tasks on that date, and schedules the check-ins.</p>
+      <div class="fgrid"><label class="field">When do you send the invoice?<input type="date" id="ask_inv" value="${inv.date || TODAY}"></label><label class="field">Start date<input type="date" id="ask_d" value="${a.startDate || ''}"></label></div>
+      <div class="fgrid" style="margin-top:8px"><label class="field">Salary in the offer (yearly)<input type="number" id="ask_sal" min="0" step="1000" value="${inv.salary ?? ''}" placeholder="e.g. 85000"></label><label class="field">Fee %<input type="number" id="ask_pct" min="0" max="100" step="0.5" value="${inv.pct ?? cl0.feePct ?? ''}" placeholder="e.g. 20"></label></div>
+      <div class="fgrid" style="margin-top:8px"><label class="field">Fee (€)<input type="number" id="ask_f" min="0" step="500" value="${a.fee ?? (roleOf(a) || {}).fee ?? ''}"><span class="small muted">Filled in from salary × fee % when both are set</span></label><label class="field">Invoice contact at ${esc(cl0.name || 'the client')}<input id="ask_ic" list="ask_icl" value="${esc(inv.contact || '')}" placeholder="Name or email"><datalist id="ask_icl">${cos0.map(c => `<option value="${esc(c.name)}">${esc([c.title, c.email].filter(Boolean).join(' · '))}</option>`).join('')}</datalist></label></div>
+      <label class="field" style="margin-top:8px">Who sends it<select id="ask_iw">${ppl.map(([id, n]) => `<option value="${esc(id)}" ${(inv.by || myUid()) === id ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></label>
       <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Later</button><button class="btn primary" data-act="asksave" data-a="${a.id}">Save</button></div>`
     : m.task ? `<h3>When is ${esc(firstName(p.name))}'s ${esc(m.label.toLowerCase())} scheduled?</h3><p class="small muted" style="margin-top:-6px">${esc(roleName(a))}. Saving ticks off “${esc((S.tasks.find(x => x.id === m.task) || {}).text || '')}”. Today then reminds you the day before, on the day, and to debrief after.</p>
       <label class="field" style="margin-bottom:10px">What<input id="ask_l" value="${esc(m.label)}" list="ask_ll"><datalist id="ask_ll">${[...new Set(['Phone screen', 'Call', ...stagesFor(a.roleId).filter(s => s.kind === 'interview').map(s => s.label)])].map(x => `<option value="${esc(x)}">`).join('')}</datalist></label>`
@@ -7713,7 +7721,13 @@ const ACT = {
   askdate: el => { const a = appById(el.dataset.a); if (!a) return; CTX = null; const L = stagesFor(a.roleId), i = L.findIndex(x => x.id === a.stage), cur = L[i] || {}, nxt = ['screen', 'interview'].includes(cur.kind) ? cur : L.slice(i + 1).find(x => ['screen', 'interview'].includes(x.kind)); MODAL = { kind: 'ask', a: a.id, label: (isISO(a.nextInterview) && a.nextLabel) || (nxt || {}).label || 'call', change: isISO(a.nextInterview) }; render(); },
   asksave: el => {
     const a = appById(el.dataset.a), d = document.getElementById('ask_d').value || null, was = a.nextInterview, wasT = a.nextTime || '';
-    if (stageOf(a).kind === 'placed') { a.startDate = d; const f = document.getElementById('ask_f').value; if (f !== '') a.fee = +f; }
+    if (stageOf(a).kind === 'placed') { a.startDate = d; const f = document.getElementById('ask_f').value, sal = +(document.getElementById('ask_sal') || {}).value || 0, pct = +(document.getElementById('ask_pct') || {}).value || 0;
+      if (sal && pct) a.fee = Math.round(sal * pct / 100); else if (f !== '') a.fee = +f;
+      const idt = (document.getElementById('ask_inv') || {}).value || '', ic = ((document.getElementById('ask_ic') || {}).value || '').trim(), iw = (document.getElementById('ask_iw') || {}).value || myUid();
+      if (idt) { a.invoice = { date: idt, salary: sal || null, pct: pct || null, contact: ic, by: iw, fee: a.fee ?? null };
+        const cl = (clientOf(a) || {}).name || 'the client', txt = `Send the invoice to ${cl} for ${personOf(a).name}${a.fee ? ` (${money(a.fee)})` : ''}${ic ? `, to ${ic}` : ''}`;
+        const old = S.tasks.find(t => t.appId === a.id && t.invoice && !t.done); if (old) { old.text = txt; old.due = idt; old.owner = iw; } else S.tasks.push({ id: uid('t'), appId: a.id, text: txt, due: idt, done: false, created: TODAY, invoice: true, owner: iw });
+        addLog(a, 'system', `Invoice planned for ${fmtDate(idt)}${a.fee ? `, ${money(a.fee)}` : ''}${ic ? `, to ${ic}` : ''}`); AUTOMSG = (AUTOMSG ? AUTOMSG + '. ' : '') + `Task: send the invoice, ${fmtDate(idt)}`; } }
     else { if (MODAL && MODAL.task && !d) { toast('Pick the date first'); return; } const lbl = ((document.getElementById('ask_l') || {}).value || '').trim() || (MODAL && MODAL.label) || stageOf(a).label; a.nextInterview = d; a.nextLabel = lbl; a.nextTime = document.getElementById('ask_t').value || ''; if (d && isISO(was) && (was !== d || wasT !== a.nextTime)) addLog(a, 'system', `${lbl} moved from ${fmtDate(was)}${wasT ? ' ' + wasT : ''} to ${fmtDate(d)}${a.nextTime ? ' ' + a.nextTime : ''}`); else if (d && !isISO(was)) addLog(a, 'system', `${lbl} planned for ${fmtDate(d)}${a.nextTime ? ' at ' + a.nextTime : ''}`); if (d && document.getElementById('ask_ics').checked) downloadIcs([a], `${personOf(a).name} ${stageOf(a).label}.ics`); }
     let tk = ''; if (MODAL && MODAL.task) { const t = S.tasks.find(x => x.id === MODAL.task); if (t && !t.done) { t.done = true; t.doneOn = TODAY; tk = ', task ticked off'; } }
     const chEl = document.getElementById('ask_ch'); if (chEl) a.chaseDays = +chEl.value;
