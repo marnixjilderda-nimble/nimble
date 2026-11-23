@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-P1tHG/n/sQ20IKkav54paC12m9Qeon3ECfkB/4pYhZA=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-KQbIIY1ep85WqDbaLPJy3nthSNVbw+q9JHZGSIqMY3Q=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -267,15 +267,15 @@ h2 .count{font-size:14px;color:var(--muted);font-weight:600;font-family:var(--bo
 /* the left menu: the same frosted glass as the panels, a shade deeper so it frames the page */
 [data-theme=glass-dark] .rail{background:linear-gradient(to bottom,color-mix(in srgb,var(--rail) 86%,#000 14%),color-mix(in srgb,var(--rail) 92%,#000 8%));-webkit-backdrop-filter:blur(28px) saturate(150%);backdrop-filter:blur(28px) saturate(150%);border-right:1px solid color-mix(in srgb,#fff 8%,transparent)}
 [data-theme=glass-light] .rail{background:linear-gradient(to bottom,color-mix(in srgb,var(--rail) 88%,var(--ink) 8%),color-mix(in srgb,var(--rail) 93%,var(--ink) 5%));-webkit-backdrop-filter:blur(28px) saturate(150%);backdrop-filter:blur(28px) saturate(150%);border-right:1px solid color-mix(in srgb,var(--ink) 8%,transparent)}
-/* text on a photo wallpaper, done smoothly: one soft frosted veil behind the top of every page,
-   a gentle glow behind text, and headings on a band that fades out to the right. No hard boxes. */
+/* text on a photo wallpaper: the photo stays sharp and whole. A faint shade at the very top,
+   a soft glow in the photo's own tone around the letters, and clean pills for buttons. No frosted bands. */
 [data-theme^=glass] main.main{position:relative;isolation:isolate}
-[data-theme^=glass] main.main::before{content:"";position:absolute;left:0;right:0;top:0;height:300px;z-index:-1;pointer-events:none;background:linear-gradient(to bottom,color-mix(in srgb,var(--panel) 62%,transparent),color-mix(in srgb,var(--panel) 30%,transparent) 60%,transparent);-webkit-backdrop-filter:blur(16px) saturate(130%);backdrop-filter:blur(16px) saturate(130%);-webkit-mask-image:linear-gradient(to bottom,#000 55%,transparent);mask-image:linear-gradient(to bottom,#000 55%,transparent)}
-[data-theme^=glass] .main .onwall-btn{background:color-mix(in srgb,var(--panel) 70%,transparent)!important;-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);--muted:var(--mutedwall)}
+[data-theme^=glass] main.main::before{content:"";position:absolute;left:0;right:0;top:0;height:220px;z-index:-1;pointer-events:none;background:linear-gradient(to bottom,color-mix(in srgb,var(--panel) 34%,transparent),color-mix(in srgb,var(--panel) 12%,transparent) 55%,transparent)}
+[data-theme^=glass] .main .onwall-btn{background:color-mix(in srgb,var(--panel) 80%,transparent)!important;box-shadow:0 1px 2px rgba(0,0,0,.12);--muted:var(--mutedwall)}
 [data-theme^=glass] .main .onwall-b{--muted:var(--mutedwall);text-shadow:var(--halo)}
-[data-theme^=glass] .main .onwall-bl{padding:1px 22px 1px 7px;margin:-1px -22px -1px -7px;width:fit-content;max-width:calc(100% + 29px);border-radius:9px 0 0 9px;background:linear-gradient(90deg,color-mix(in srgb,var(--panel) 66%,transparent),color-mix(in srgb,var(--panel) 40%,transparent) 70%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);-webkit-mask-image:linear-gradient(90deg,#000 75%,transparent);mask-image:linear-gradient(90deg,#000 75%,transparent)}
+[data-theme^=glass] .main .onwall-bl{font-weight:600}
 [data-theme^=glass] :is(.main > .head .sub,.main .thead .sub,.main h2.shr-o,.main .section-head > h2,.main h2.bt-acc-h,.main .section-head > .note,.main .section-head > .small,.main .mk-priv > summary,.main > p.small,.main .stats){text-shadow:var(--halo);--muted:var(--mutedwall)}
-[data-theme^=glass] .main .ptop{display:inline-flex;padding:2px 7px;border-radius:10px;background:color-mix(in srgb,var(--panel) 60%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+[data-theme^=glass] .main .ptop{display:inline-flex;padding:2px 7px;border-radius:10px;background:color-mix(in srgb,var(--panel) 80%,transparent)}
 .phead.ph2{grid-template-columns:minmax(0,1fr) auto;align-items:center;padding:12px 16px;border-radius:16px;gap:6px 18px}
 .ph-line{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:13px;margin-top:4px;color:var(--muted)}.ph-line b{color:var(--ink);font-weight:600}.ph-line .ph-warn{color:var(--urgent)}.ph-dot{opacity:.45}
 .ph-line .mini{display:inline-flex;gap:4px;margin-left:6px}.ph-line .mini .inp{height:26px;padding:0 6px;font-size:12px;border-radius:8px;background:transparent}.ph2 .ph-acts .btn{white-space:nowrap}
@@ -1862,7 +1862,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:6ac72afcc5*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:d6b2d3bec5*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
