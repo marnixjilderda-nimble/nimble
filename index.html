@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-GxPTJWzP101maW0OUcTbnpUQzP45BlR64Owy9zYH/es=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Xtxe2KbUCz3Reok9nOPRR34mHR2o6HOmhcn0PimnKzc=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -3048,10 +3048,10 @@ function goBack() { const k = NAVH.pop(); if (!k) return; const [v, rg, sub, cl,
 function navLabel(k) { const [v, , , cl, ro, dr] = JSON.parse(k); if (dr) return 'candidate'; if (v === 'pipeline') return ro && MR.get(ro) ? MR.get(ro).title : cl && MC.get(cl) ? MC.get(cl).name : 'pipeline'; return { today: 'Today', tasks: 'Tasks', sourcing: 'Sourcing', clients: 'Clients', people: 'People', numbers: 'Numbers', checks: 'Checks', settings: 'Settings', inactive: 'Inactive', team: 'Cockpit', person: 'Team members', hot: 'Team roles', teamroles: 'Team roles', members: 'Members', projects: 'Projects', personal: 'Personal', bdtoday: 'BD Today', deals: 'Opportunities', accounts: 'Accounts', contacts: 'Contacts', bdtasks: 'Tasks', bdactivity: 'Activity', rfps: 'RFPs', rfptasks: 'RFP tasks', outbox: 'Outbox', reports: 'Reports', review: 'Review', careers: 'Careers page', teamsettings: 'Team setup', shared: 'Working together', teamroles: 'Marketplace', members: 'Members' }[v] || v; }
 /* keep scroll positions (tree, board, panels…) when the page redraws, e.g. on right-click menus */
 function scrollSnap(root) { const out = new Map(), seen = {}; if (!root) return out;
-  root.querySelectorAll('*').forEach(el => { if (el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1) return; const k = el.tagName + '.' + (el.className && el.className.baseVal === undefined ? String(el.className).trim().split(/\s+/).slice(0, 2).join('.') : '') + (el.id ? '#' + el.id : ''); const i = seen[k] = (seen[k] || 0) + 1; if (el.scrollTop || el.scrollLeft) out.set(k + ':' + i, [el.scrollTop, el.scrollLeft]); });
+  root.querySelectorAll('*').forEach(el => { if (el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1) return; const k = el.tagName + '.' + (el.className && el.className.baseVal === undefined ? String(el.className).trim().split(/\s+/).filter(c => !/^tr-/.test(c)).slice(0, 2).join('.') : '') + (el.id ? '#' + el.id : ''); const i = seen[k] = (seen[k] || 0) + 1; if (el.scrollTop || el.scrollLeft) out.set(k + ':' + i, [el.scrollTop, el.scrollLeft]); });
   return out; }
 function scrollRestore(root, snap) { if (!root || !snap.size) return; const seen = {};
-  root.querySelectorAll('*').forEach(el => { const k = el.tagName + '.' + (el.className && el.className.baseVal === undefined ? String(el.className).trim().split(/\s+/).slice(0, 2).join('.') : '') + (el.id ? '#' + el.id : ''); const i = seen[k] = (seen[k] || 0) + 1, v = snap.get(k + ':' + i); if (v) { el.scrollTop = v[0]; el.scrollLeft = v[1]; } }); }
+  root.querySelectorAll('*').forEach(el => { const k = el.tagName + '.' + (el.className && el.className.baseVal === undefined ? String(el.className).trim().split(/\s+/).filter(c => !/^tr-/.test(c)).slice(0, 2).join('.') : '') + (el.id ? '#' + el.id : ''); const i = seen[k] = (seen[k] || 0) + 1, v = snap.get(k + ':' + i); if (v) { el.scrollTop = v[0]; el.scrollLeft = v[1]; } }); }
 let RSCROLL = null;
 let RENDERING = false, RERENDER = false;
 function render() { if (RENDERING) { RERENDER = true; return; } RENDERING = true; try { renderImpl(); } finally { RENDERING = false; if (RERENDER) { RERENDER = false; setTimeout(render, 0); } } }
@@ -3070,6 +3070,7 @@ function renderImpl() {
     <div class="va-sw">${TEAM.members.map(m => `<button class="${m.userId === VIEWAS.userId ? 'on' : ''}" data-act="teamview" data-u="${esc(m.userId)}" title="${esc(m.member)}">${esc(initials(m.member))}</button>`).join('')}</div>
     <button class="btn sm" data-act="mgradd">+ Task or note</button><button class="btn sm" data-act="viewasoverview">Overview</button><button class="btn sm primary" data-act="viewasexit">Back to mine</button>`; }
   else if (vb) vb.remove();
+  if (keepApp && VIEW === 'pipeline') { try { treeEdges(); } catch (e) { } }
   if (keepApp) { scrollRestore($app, snapA); if (Math.abs(window.scrollY - wy) > 2) window.scrollTo(0, wy); }
   if (keepLayer) scrollRestore($layer, snapL);
   RSCROLL = { ctx };
