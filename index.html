@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-WzrAz9sVbakKKfmZtjDqC7CFoFWEFwBo4mNTz2HfuDM=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Hi+a0RsibXfUOrN2yznnJU49Ve/c5VsU9eVs21UrBw4=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1820,6 +1820,15 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 .tn .lab.xlab{display:flex;align-items:center;gap:6px;overflow:visible}
 .tn .lab.xlab .xt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tn-who.x{flex-shrink:0;background:color-mix(in srgb,#2FB7A0 30%,transparent)}
+.ux .fmore{margin-top:6px}.ux .fmore summary{cursor:pointer;color:var(--muted);list-style:none}.ux .fmore summary::-webkit-details-marker{display:none}.ux .fmore[open] summary{margin-bottom:4px}
+.ux-acts{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-start!important;margin-top:10px}
+.ux-move{margin-left:auto;display:flex;align-items:center;gap:6px}.ux-rej{color:var(--bad,#D9534F)!important}
+.ux-extra{display:flex;gap:14px;align-items:flex-start;margin-top:10px;padding-top:8px;border-top:1px dashed var(--line)}
+.ux-link{background:none;border:0;padding:2px 0;font:inherit;font-size:12.5px;font-weight:650;color:var(--cl);cursor:pointer;list-style:none}.ux-link::-webkit-details-marker{display:none}
+.ux-note[open]{flex:1}.ux-note .dnote{margin-top:6px}
+.qchip.nxnone{border-style:dashed}
+.ft-row{display:grid;gap:6px;padding:10px 0;border-top:1px solid var(--line)}.ft-row:first-of-type{border-top:0}
+.qchip.ft-skip{color:var(--muted)}
 .tn-who{display:inline-grid;place-items:center;min-width:18px;height:16px;padding:0 4px;border-radius:8px;font-size:9.5px;font-weight:800;background:color-mix(in srgb,var(--ink) 12%,transparent);vertical-align:1px}.tn-who.h{background:color-mix(in srgb,#2FB7A0 26%,transparent)}
 .xbox .tsec{margin-bottom:2px}.tn.xrole .lab{opacity:.92}
 .c-own{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;font-size:9.5px;font-weight:800;background:color-mix(in srgb,#E8A33D 30%,transparent);margin-right:4px}
@@ -1871,7 +1880,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:a9e1c44e4c*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:93c3aacc1c*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -2096,7 +2105,7 @@ function teamDiff() {
   S.notices = (S.notices || []).filter(n => n.at.slice(0, 10) >= addDays(TODAY, -45)); APPSIG = now; RSIG = rs; }
 function addNoticeTask(n, text, due) { const t = { id: uid('t'), appId: null, text: text || n.task.text, due: due || n.task.due || TODAY, done: false, created: TODAY, ext: { home: n.home, appId: n.appId, roleId: n.roleId, cand: n.cand, role: n.role, client: n.client }, fromId: n.byId, fromName: n.by };
   const local = n.home === myUid() && S.apps.find(a => a.id === n.appId); if (local) { t.appId = local.id; delete t.ext; } S.tasks.push(t); return t; }
-function commit() { if (VIEWAS) { try { mgrTrack(); } catch (e) { console.error(e); } } try { teamDiff(); } catch (e) { console.error(e); } if (S && S.apps) sweepTasks(); if (S && S.people) syncTags(); if (S && S.deals) syncDealTasks(); if (S) syncRejectTask(); if (S) noWeekendTasks(); save(); if (AUTOMSG) setTimeout(() => { if (AUTOMSG) toast(''); }, 0); if (ASK && !MODAL) { MODAL = ASK.kind2 === 'cvask' ? { kind: 'cvask', a: ASK.a } : { ...ASK, kind: 'ask' }; } ASK = null; render(); }
+function commit() { if (VIEWAS) { try { mgrTrack(); } catch (e) { console.error(e); } } try { teamDiff(); } catch (e) { console.error(e); } if (S && S.apps) sweepTasks(); if (S && S.people) syncTags(); if (S && S.deals) syncDealTasks(); if (S) syncRejectTask(); if (S) noWeekendTasks(); save(); if (AUTOMSG) setTimeout(() => { if (AUTOMSG) toast(''); }, 0); if (ASK && !MODAL) { MODAL = ASK.kind2 === 'cvask' ? { kind: 'cvask', a: ASK.a } : { ...ASK, kind: 'ask' }; } ASK = null; if (FIRSTQ.length && !MODAL) { MODAL = { kind: 'firsttask', ids: FIRSTQ.slice(0, 8) }; FIRSTQ = []; } render(); }
 
 /* lookups */
 let MP, MR, MC, SC;
@@ -2359,7 +2368,7 @@ function setStage(a, sid) {
   if (to.kind === 'placed') { a.outcome = 'placed'; const b = bgOf(a); if (b && !['cleared', 'waived'].includes(b.status)) AUTOMSG = (AUTOMSG ? AUTOMSG + '. ' : '') + `Heads-up: the background check is ${bgLbl(b.status).toLowerCase()}, not cleared yet`; } else if (a.outcome === 'placed') a.outcome = 'active';
   if (to.askDate || (forward && to.kind === 'placed')) ASK = { a: a.id, kind: to.kind, label: to.label };
   else if (forward && to.kind === 'cv' && !(personOf(a) || {}).cv) ASK = { a: a.id, kind2: 'cvask' };
-  syncAutoTasks(a);
+  PROMPT_FIRST = !NOPROMPT && !VIEWAS; syncAutoTasks(a); PROMPT_FIRST = false;
   if (forward) { const c = clearStaleTasks(a); if (c.length) AUTOMSG = (AUTOMSG ? AUTOMSG.replace(/^Task: /, 'Task added: ') + '. ' : '') + `Cleared: ${c.map(t => shortTask(t.text)).join(', ')} (no longer needed)`; }
 }
 function askKeep() { const ids = ['ask_d', 'ask_t', 'ask_l', 'ask_ch'], v = {}; for (const id of ids) { const e = document.getElementById(id); if (e) v[id] = e.value; } const ic = document.getElementById('ask_ics'), icv = ic && ic.checked; return () => { for (const [id, x] of Object.entries(v)) { const e = document.getElementById(id); if (e) e.value = x; } const c = document.getElementById('ask_ics'); if (c) c.checked = !!icv; }; }
@@ -2367,21 +2376,23 @@ function askWithRead() { if (!MODAL || !MODAL.with) return; MODAL.with = MODAL.w
 let ASK = null; const EXPANDED = new Set(); const STAGESEL = {};
 /* ---------- automatic tasks tied to stages ---------- */
 const AUTO_DEFAULT = {
-  source: { on: true, days: 1, text: 'Follow up with candidate', label: 'Sourced' },
-  planning: { on: true, days: 1, text: 'Plan the call or chase the candidate', label: 'Planning call' },
-  cvwait: { on: true, days: 2, text: 'Chase for CV', label: 'Waiting for CV' },
-  review: { on: true, days: 2, text: 'Chase client for feedback', label: 'Hiring manager review' },
+  source: { on: false, days: 1, text: 'Follow up with candidate', label: 'Sourced' },
+  planning: { on: true, days: 0, text: 'Send availability', label: 'Planning call' },
+  cvwait: { on: true, days: 2, text: 'Chase CV', label: 'Waiting for CV' },
+  cv: { on: true, days: 1, text: 'Send CV to the client', label: 'CV received' },
+  review: { on: true, days: 3, text: 'Chase client for feedback', label: 'Hiring manager review' },
+  offer: { on: true, days: 2, text: 'Follow up on the offer', label: 'Offer' },
   interview: { on: true, days: 1, text: 'Chase client for feedback', label: 'Every interview stage' }
 };
 function autoRules() { const o = S.settings.autoTasks || {}, r = {}; for (const k in AUTO_DEFAULT) r[k] = { ...AUTO_DEFAULT[k], ...(o[k] || {}) }; return r; }
 function ruleKey(st) {
   if (!st) return null;
   if (st.kind === 'source') return st.id === 'planning' || /plan|schedul|call/i.test(st.label) ? 'planning' : 'source';
-  return ['cvwait', 'review', 'interview'].includes(st.kind) ? st.kind : null;
+  return ['cvwait', 'cv', 'review', 'interview', 'offer'].includes(st.kind) ? st.kind : null;
 }
 function isWorkday(iso) { const d = new Date(iso + 'T12:00:00').getDay(); return d !== 0 && d !== 6; }
 function addWorkdays(iso, n) { let d = iso; n = Math.max(0, +n || 0); if (!n) { while (!isWorkday(d)) d = addDays(d, 1); return d; } while (n > 0) { d = addDays(d, 1); if (isWorkday(d)) n--; } return d; }
-let AUTOMSG = '';
+let AUTOMSG = '', FIRSTQ = [], PROMPT_FIRST = false, NOPROMPT = false;
 function syncAutoTasks(a, fromDate) {
   if (!a || !roleOf(a)) return;
   const st = stageOf(a), key = ruleKey(st), rules = autoRules(), want = [];
@@ -2393,7 +2404,8 @@ function syncAutoTasks(a, fromDate) {
   for (const w of want) {
     if ((a.autoSkip || []).includes(w.auto)) continue;
     if (S.tasks.some(t => t.appId === a.id && t.auto === w.auto && (!t.done || t.created === TODAY))) continue;
-    S.tasks.push({ id: uid('t'), appId: a.id, text: w.text, due: w.due, done: false, auto: w.auto, created: TODAY });
+    const nt = { id: uid('t'), appId: a.id, text: w.text, due: w.due, done: false, auto: w.auto, created: TODAY }; S.tasks.push(nt);
+    if (PROMPT_FIRST && !String(w.auto).includes('@')) { FIRSTQ.push(nt.id); continue; }
     AUTOMSG = (AUTOMSG ? AUTOMSG + '. ' : '') + `Task: ${w.text}${(n => n && !/^\(/.test(n) ? ' (' + n + ')' : '')(personOf(a).name)}, ${DOW[new Date(w.due + 'T12:00:00').getDay()]} ${fmtDate(w.due)}`;
   }
 }
@@ -5018,7 +5030,7 @@ function applyOp(it) { if (it.op === 'done') { S.inNotes = S.inNotes || []; S.in
     else if (it.op === 'hot' && mgr) { if (it.why) r.hot = { why: it.why, on: r.hot ? r.hot.on : TODAY, byId: by, by: it.by }; else delete r.hot; }
     else if (it.op === 'note' && a) { addLog(a, 'note', `${firstName(it.by)}: ${it.text}`); }
     else if (it.op === 'stage' && a) { const to = stagesFor(r.id).find(x => x.id === it.stage); if (!to) return; const own = candOwnerId(a) === by || a.addedById === by;
-      if (mgr || (own && isPre(stageOf(a)) && isPre(to))) { setStage(a, to.id); addLog(a, 'system', `Moved by ${it.by}`); ASK = null; } else pushNotice(by, a, `Your move of ${personOf(a).name} to ${to.label} wasn't applied: only the role manager moves candidates past CV received`, null, 'denied'); }
+      if (mgr || (own && isPre(stageOf(a)) && isPre(to))) { NOPROMPT = true; setStage(a, to.id); NOPROMPT = false; addLog(a, 'system', `Moved by ${it.by}`); ASK = null; } else pushNotice(by, a, `Your move of ${personOf(a).name} to ${to.label} wasn't applied: only the role manager moves candidates past CV received`, null, 'denied'); }
     else if (it.op === 'plan' && a && mgr) { a.nextInterview = it.date || null; a.nextTime = it.time || ''; addLog(a, 'system', `${stageOf(a).label} planned for ${fmtDate(it.date)}${it.time ? ' ' + it.time : ''} by ${it.by}`); }
     else if (it.op === 'task' && a) { if (it.forId === myUid()) S.tasks.push({ id: uid('t'), appId: a.id, text: it.text, due: it.due || TODAY, done: false, created: TODAY, fromId: by, fromName: it.by }); else { const keep = ACTOR; ACTOR = by; pushNotice(it.forId, a, `${it.by} gave you a task for ${personOf(a).name}`, { text: it.text, due: it.due || TODAY, auto: true }, 'task'); ACTOR = keep; } }
     else if (it.op === 'done' && it.notice) { S.inNotes = S.inNotes || []; S.inNotes.unshift({ id: uid('nt'), to: myUid(), at: new Date().toISOString(), by: it.by, byId: by, kind: 'done', appId: it.appId, home: myUid(), cand: it.cand || '', role: it.role || '', client: it.client || '', text: `${it.by} did: ${it.text}`, got: TODAY }); }
@@ -6264,15 +6276,13 @@ function drawerHTML() {
       ${pset ? `<div class="dm-when"><b>${esc(a.nextLabel || cur.label)}</b> ${esc(whenLabel(a) || fmtDate(a.nextInterview))}</div>` : ''}</div>` : '';
     return `<div class="dproc s-${ballOf(a)}">
       <div class="dp-h"><div style="min-width:0">${linkTrail(a)}<div class="dp-sub">${a.outcome === 'closed' ? '<span class="chip">Closed</span>' : a.outcome === 'toreject' ? '<span class="chip">To be rejected</span>' : a.outcome === 'placed' ? '<span class="chip s-win">Placed</span>' : stageChip(a)}${idleHTML(a)}${a.onHold ? '<span class="tag">on hold</span>' : ''}${a.competingOffer ? '<span class="tag">other offer</span>' : ''}</div></div>
-        <div class="dp-acts"><button class="btn ai-btn" data-act="aiopen" data-k="app" data-id="${a.id}" title="Draft messages with AI, using everything Nimble knows about this process">${ICO_AI}Ask AI</button><button class="btn" data-act="msg" data-a="${a.id}">Message</button><button class="btn" data-act="done" data-a="${a.id}" title="Log that you were in touch today">Log contact</button>${live && nextStageId(a) ? `<button class="btn primary" data-act="advance" data-a="${a.id}">Next stage</button>` : ''}</div></div>
+        <div class="dp-acts"><button class="btn ai-btn" data-act="aiopen" data-k="app" data-id="${a.id}" title="Draft messages with AI, using everything Nimble knows about this process">${ICO_AI}Ask AI</button><button class="btn" data-act="msg" data-a="${a.id}">Message</button></div></div>
       ${mgrForRef('app', a.id).map(x => `<div class="mgr-inline"><span class="mgr-tag">From ${esc(firstName(x.by || 'manager'))}</span>${x.kind === 'task' ? 'Task: ' : ''}${esc(x.text)}${x.due ? ' · ' + duePill(x.due) : ''}<button class="btn sm quiet" data-act="mgrdone" data-id="${x.id}">${x.kind === 'task' ? 'Done' : 'Seen'}</button></div>`).join('')}
-      <section class="dpart2 dtodo"><div class="dbh">To do <span class="tdn">${tasks.length}</span></div>
-        ${tasks.map(taskRow).join('') || `<div class="dt-empty">${live ? 'Nothing planned for this candidate. Add a task below, or log an update with a next step.' : 'Nothing open for this process.'}</div>`}
-        <div class="dt-add"><span class="plus">+</span><input class="inp" id="nt_${a.id}" placeholder="Add a task, e.g. Call about notice period" data-enter="taskaddinline" data-a="${a.id}"><input class="inp dt-date" type="date" id="nd_${a.id}" value="${dueIn(1)}" aria-label="When"><button class="btn sm" data-act="taskaddinline" data-a="${a.id}">Add</button></div>
-        <div class="dquick"><span class="small muted">Quick add</span>${[['Keep warm', 7], ['Follow up', 2], ['Call', 1], ['Chase client for feedback', 2]].map(([l, n]) => `<button class="qchip" data-act="taskquick" data-a="${a.id}" data-v="${l}" data-n="${n}" title="Adds “${l}” for ${esc(dueLabel(dueIn(n)))}">${l}${chipDay(n)}</button>`).join('')}</div></section>
-      ${a.outcome === 'active' ? `<details class="dpart2 dupd" data-k="du_${a.id}" ${EXPANDED.has('du_' + a.id) ? 'open' : ''}><summary><span class="dbh">Update</span><span class="small muted">What happened, and what's next</span><span class="du-go">Open ▾</span></summary>${recUpdHTML(a)}</details>` : ''}
-      <section class="dpart2"><div class="dbh">Notes and activity</div>
-        <div class="dnote"><input class="inp" id="ln_${a.id}" placeholder="Add a note, e.g. Wants hybrid, 80k base" data-enter="addnote" data-a="${a.id}"><button class="btn" data-act="addnote" data-a="${a.id}">Save note</button></div>
+      <section class="dpart2 dtodo"><div class="dbh">To do <span class="tdn">${tasks.length}</span>${live ? `<button class="ux-link" style="margin-left:auto" data-act="addtask" data-a="${a.id}">+ Task</button>` : ''}</div>
+        ${tasks.map(taskRow).join('') || `<div class="dt-empty">${live ? 'Nothing planned. Log what happened below and pick the next step.' : 'Nothing open for this process.'}</div>`}
+        </section>
+      ${a.outcome === 'active' ? `<section class="dpart2 dupd ux-sec"><div class="dbh">Update <span class="small muted" style="font-weight:500;text-transform:none;letter-spacing:0">What happened, and what's next</span></div>${recUpdHTML(a)}</section>` : ''}
+      <section class="dpart2"><div class="dbh">Activity</div>${a.outcome === 'active' ? '' : `<div class="dnote"><input class="inp" id="ln_${a.id}" placeholder="Add a note" data-enter="addnote" data-a="${a.id}"><button class="btn" data-act="addnote" data-a="${a.id}">Save note</button></div>`}
         <div class="dlog">${a.log.slice(0, 6).map(l => `<div class="dl ${l.type}"><span class="dl-d">${fmtDate(l.date)}</span><span class="dl-t">${esc(ltx(l))}</span></div>`).join('')}</div>
         ${a.log.length > 6 ? `<details class="dmorelog" data-k="dl_${a.id}" ${EXPANDED.has('dl_' + a.id) ? 'open' : ''}><summary class="small">Show ${a.log.length - 6} earlier</summary><div class="dlog">${a.log.slice(6, 60).map(l => `<div class="dl ${l.type}"><span class="dl-d">${fmtDate(l.date)}</span><span class="dl-t">${esc(ltx(l))}</span></div>`).join('')}</div></details>` : ''}</section>
       <section class="dpart2"><div class="dbh">Stage${live ? ' and planned' : ''}</div>${track}
@@ -6501,6 +6511,10 @@ function modalHTML() {
       ${a && rosterAll().length > 1 ? `<label class="field" style="margin-top:10px">For${ownerSelect('tk_for', myUid())}</label>` : ''}
       ${a ? '' : `<label class="field" style="margin-top:10px">Candidate (optional)<select id="tk_app"><option value="">No candidate, general task</option>${S.apps.filter(isLive).sort((x, y) => personOf(x).name.localeCompare(personOf(y).name)).map(x => `<option value="${x.id}">${esc(personOf(x).name)}, ${esc(roleName(x))}</option>`).join('')}</select></label>`}
       <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="savetask">Add task</button></div>`;
+  } else if (m.kind === 'donenext') { const a = appById(m.a); if (!a) { MODAL = null; return ''; }
+    inner = `<h3>Done: ${esc(m.t)}</h3><p class="small muted" style="margin-top:-6px">${esc(personOf(a).name)} · ${esc(roleName(a))} · ${esc(stageOf(a).label)}. Anything to add, and what's next?</p>${recUpdHTML(a, 'rm')}<div class="acts" style="margin-top:10px"><button class="btn quiet" data-act="donenone" data-a="${a.id}">Skip</button></div>`;
+  } else if (m.kind === 'firsttask') { const L = (m.ids || []).map(id => S.tasks.find(t => t.id === id && !t.done)).filter(Boolean); if (!L.length) { MODAL = null; return ''; }
+    inner = `<h3>${L.length > 1 ? 'First tasks' : 'First task'}: when?</h3><p class="small muted" style="margin-top:-6px">Moving to a stage plans the first step. Pick when, or skip it.</p>${L.map(t => { const a = appById(t.appId); return `<div class="ft-row"><div><b>${esc(t.text)}</b><div class="small muted">${esc(personOf(a).name)} · ${esc(stageOf(a).label)}</div></div><div class="chips">${[[0, 'Today'], [1, 'Tomorrow'], [2, 'In 2 days'], [3, 'In 3 days'], [7, 'Next week']].map(([n, l]) => `<button class="qchip ${t.due === dueIn(n) ? 'on' : ''}" data-act="ftdue" data-t="${t.id}" data-n="${n}">${l}${chipDay(n)}</button>`).join('')}<input type="date" class="inp cu-date" min="${TODAY}" value="${esc(t.due || '')}" data-act-change="ftdate" data-t="${t.id}"><button class="qchip ft-skip" data-act="ftskip" data-t="${t.id}">Skip</button></div></div>`; }).join('')}<div class="acts" style="margin-top:12px"><button class="btn primary" data-act="modalclose">Done</button></div>`;
   } else if (m.kind === 'cvask') { const a = appById(m.a), p = a ? personOf(a) : {};
     inner = `<h3>Add ${esc(firstName(p.name || ''))}'s CV</h3><p class="small muted" style="margin-top:-6px">${a ? esc(roleName(a)) + '. ' : ''}Nimble reads it and fills in phone, email, where they live, date of birth, current job and employer, experience and the photo, so the candidate card is complete.</p>
       <button class="cvdz" data-act="cvpick" data-p="${p.id}" data-cvdrop="${p.id}" data-cvask="1" style="width:100%"><b>Choose the CV</b> or drop it here<span>PDF or Word (.docx)</span></button>
@@ -7080,7 +7094,23 @@ const REC_GROUPS = [
   ['Candidate', [['Replied', 'Candidate replied'], ['Spoke', 'Spoke'], ['Interested', 'Interested in the role'], ['Not interested', 'Not interested'], ['No response', 'No response']]],
   ['Process', [['CV received', 'CV received'], ['CV sent to client', 'CV sent to the client'], ['Interview booked', 'Interview booked'], ['Interview done', 'Interview done']]],
   ['Client', [['Wants to meet', 'Client wants to meet'], ['Feedback chased', 'Chased the client for feedback'], ['Rejected', 'Client rejected the candidate'], ['Offer made', 'Offer made']]]];
-function recFlowNext(v, a) { const r = recFlowNext0(v, a); if (a && r && Array.isArray(r.o)) { const p = personOf(a); const k = r.x && (r.x.k === 'rej' || r.x.k === 'close'); if (!(p.cv && p.cv.text) && !k && !r.o.some(o => /chase cv/i.test(o[0]))) r.o = [...r.o, ['Chase CV', 2]]; } return r; }
+/* what can happen while a candidate sits in a stage, and the task that follows. Leaving the stage is a move, not an update. */
+const recKey = a => { const st = a && stageOf(a); if (!st) return ''; return st.kind === 'source' ? ruleKey(st) : st.kind; };
+const REC_FLOW = {
+  source: [['They replied', 'Candidate replied', fn => [['Answer ' + fn, 0]]], ['Sent a message', 'Sent a message', () => [['Follow up', 2]]]],
+  planning: [['Sent my availability', 'Sent my availability', () => [['Follow up if no reply', 2]]], ['Waiting for their availability', 'Waiting for their availability', () => [['Follow up', 2]]], ['Asked phone and email', 'Asked for their phone number and email', () => [['Follow up', 1]]]],
+  screen: [['Needs rescheduling', 'Call needs rescheduling', () => [['Send new availability', 0]]], ['No-show', 'No-show on the call', () => [['Reach out to reschedule', 0]]]],
+  cvwait: [['Chased for the CV', 'Chased for the CV', () => [['Chase CV again', 2]]], ['They have questions', 'Candidate has questions', fn => [['Answer ' + fn, 0]]]],
+  cv: [['Waiting for more CVs', 'Waiting for more CVs', () => [['Send CVs to the client', 3]], { cancel: /send (the )?cvs? to (the )?client/i, hint: 'The “Send CV to the client” task goes away. Pick when you aim to send them together.' }]],
+  review: [['Chased the client', 'Chased the client for feedback', () => [['Chase client for feedback', 2]]], ['Client has questions', 'Client has questions', () => [['Answer the client', 0]]]],
+  interview: [['Interview rescheduled', 'Interview rescheduled', () => [], { askdate: true, hint: 'Save, then set the new date.' }], ['Done, waiting for feedback', 'Interview done, waiting for feedback', fn => [['Chase client for feedback', 1], ['Debrief with ' + fn, 0]]]],
+  offer: [['Thinking it over', 'Candidate is thinking the offer over', () => [['Follow up on the offer', 2]]], ['Negotiating', 'Negotiating the offer', () => [['Go back to the client', 1]]]]
+};
+const recFlowHit = v => { for (const k in REC_FLOW) { const h = REC_FLOW[k].find(x => x[1] === v); if (h) return h; } return null; };
+function recFlowNext(v, a) { const h = a && recFlowHit(String(v || '').trim()); if (h) { const fn = firstName(personOf(a).name || ''), o = h[2](fn), x = h[3] || {}; return { o, hint: x.hint || '', cancel: x.cancel || null, askdate: !!x.askdate, nonone: true }; }
+  if (a && !String(v || '').trim()) { const fn = firstName(personOf(a).name || ''), seen = new Set(), o = []; for (const h2 of (REC_FLOW[recKey(a)] || [])) for (const n of h2[2](fn)) if (!seen.has(n[0])) { seen.add(n[0]); o.push(n); } if (!seen.has('Follow up')) o.push(['Follow up', 2]); return { o: o.slice(0, 4), hint: '', nonone: true }; }
+  return recFlowNext1(v, a); }
+function recFlowNext1(v, a) { const r = recFlowNext0(v, a); if (a && r && Array.isArray(r.o)) { const p = personOf(a); const k = r.x && (r.x.k === 'rej' || r.x.k === 'close'); if (!(p.cv && p.cv.text) && !k && !r.o.some(o => /chase cv/i.test(o[0]))) r.o = [...r.o, ['Chase CV', 2]]; } return r; }
 function recFlowNext0(v, a) { const t = String(v || '').trim(); if (!a) return { none: true, o: [['Follow up', 2]], hint: '' };
   const p = personOf(a), fn = firstName(p.name || ''), st = stageOf(a), hasCV = !!(p.cv && p.cv.text), ahead = kind => stagesFor(a.roleId).find(x => x.kind === kind && x.i > st.i) || null;
   const mv = s => s ? { k: 'stage', sid: s.id, label: `Also move ${fn} to ${s.label}`, on: true } : null;
@@ -7099,14 +7129,15 @@ function recFlowNext0(v, a) { const t = String(v || '').trim(); if (!a) return {
     if (n <= 1) return { o: [['Follow up', 2], ['Call', 2]], hint: 'No reply yet: follow up in 2 days.' };
     return { o: [['Reject if no response', 2], ['Follow up', 2]], hint: `${n === 2 ? '2nd' : n === 3 ? '3rd' : n + 'th'} contact moment without a reply: if they stay quiet, reject them on that day.` }; }
   return { o: [['Follow up', 2], ['Call', 2], ['Keep warm', 7]], hint: '' }; }
-function recUpdHTML(a) { const dn = RUDUE[a.id] ?? 2, cur = FLOWU['ru' + a.id] || '', fl = recFlowNext(cur, a);
-  return `<div class="coupd rcupd"><div class="cu-h">Update</div>
-    <div class="cu-l"><span class="cr-k">What happened</span><div class="cu-f">${flowUpdHTML('ru', a.id, cur)}<input class="inp inp-other" id="ru_u_${a.id}" placeholder="Something else? Type it here"></div></div>
-    <div class="small cu-hint" id="ru_hint_${a.id}">${esc(fl.hint || '')}</div>
-    <div class="cu-l cu-next"><span class="cr-k">Next step</span><div class="cu-f"><div class="chips nxopts" id="ru_nxo_${a.id}">${flowNxHTML('ru', a.id, fl, FLOWN['ru' + a.id] || '')}</div>${flowNdetHTML('ru', a.id, FLOWN['ru' + a.id] || '')}<input class="inp inp-other" id="ru_n_${a.id}" placeholder="Or type your own next step">
-      <div class="chips cu-due"><span class="due-k">When</span>${CO_DUE.map(([n, l]) => `<button class="qchip ${dn === n ? 'on' : ''}" data-act="rcdue" data-a="${a.id}" data-n="${n}">${l}${chipDay(n)}</button>`).join('')}<input type="date" class="inp cu-date" id="ru_dt_${a.id}" data-act-change="rcdate" data-a="${a.id}" min="${TODAY}" value="${isISO(dn) ? dn : ''}" title="Pick a date"><span class="small muted" id="ru_dl_${a.id}">${dueLabel(dueOf(dn))}</span></div></div></div>
-    <label class="cu-alt" id="ru_xw_${a.id}" ${fl.x ? '' : 'hidden'}><input type="checkbox" id="ru_x_${a.id}" ${fl.x && fl.x.on ? 'checked' : ''} data-x="${esc(JSON.stringify(fl.x || null))}"> <span>${esc((fl.x || {}).label || '')}</span></label>
-    <div class="acts" style="justify-content:flex-start;margin-top:8px"><button class="btn primary sm" data-act="recsave" data-a="${a.id}">Save</button></div></div>`; }
+function recUpdHTML(a, p) { p = p || 'ru'; const dn = RUDUE[a.id] ?? 2, cur = FLOWU[p + a.id] || '', fl = recFlowNext(cur, a), nx = nextStageId(a), nxs = nx && stagesFor(a.roleId).find(x => x.id === nx);
+  return `<div class="coupd rcupd ux">
+    <div class="cu-l"><span class="cr-k">What happened</span><div class="cu-f">${flowUpdHTML(p, a.id, cur)}<input class="inp inp-other" id="${p}_u_${a.id}" placeholder="Something else? Type it here"></div></div>
+    <div class="small cu-hint" id="${p}_hint_${a.id}">${esc(fl.hint || '')}</div>
+    <div class="cu-l cu-next"><span class="cr-k">What's next</span><div class="cu-f"><div class="chips nxopts" id="${p}_nxo_${a.id}">${flowNxHTML(p, a.id, fl, FLOWN[p + a.id] || '')}</div>${flowNdetHTML(p, a.id, FLOWN[p + a.id] || '')}<input class="inp inp-other" id="${p}_n_${a.id}" placeholder="Or type your own next step">
+      <div class="chips cu-due"><span class="due-k">When</span>${CO_DUE.slice(0, 6).map(([n, l]) => `<button class="qchip ${dn === n ? 'on' : ''}" data-act="rcdue" data-p="${p}" data-a="${a.id}" data-n="${n}">${l}${chipDay(n)}</button>`).join('')}<input type="date" class="inp cu-date" id="${p}_dt_${a.id}" data-act-change="rcdate" data-p="${p}" data-a="${a.id}" min="${TODAY}" value="${isISO(dn) ? dn : ''}" title="Pick a date"><span class="small muted" id="${p}_dl_${a.id}">${dueLabel(dueOf(dn))}</span></div></div></div>
+    <label class="cu-alt" id="${p}_xw_${a.id}" ${fl.x ? '' : 'hidden'}><input type="checkbox" id="${p}_x_${a.id}" ${fl.x && fl.x.on ? 'checked' : ''} data-x="${esc(JSON.stringify(fl.x || null))}"> <span>${esc((fl.x || {}).label || '')}</span></label>
+    <div class="acts ux-acts"><button class="btn primary sm" data-act="recsave" data-p="${p}" data-a="${a.id}">Save</button>${p === 'ru' ? `<span class="ux-move"><span class="small muted">Move on</span>${nxs ? `<button class="btn sm" data-act="advance" data-a="${a.id}">→ ${esc(nxs.label)}</button>` : ''}<button class="btn sm quiet ux-rej" data-act="close" data-a="${a.id}">Reject</button></span>` : ''}</div>
+    ${p === 'ru' ? `<div class="ux-extra"><button class="ux-link" data-act="addtask" data-a="${a.id}">+ Task</button><details class="ux-note"><summary class="ux-link">+ Note</summary><div class="dnote"><input class="inp" id="ln_${a.id}" placeholder="Add a note, e.g. Wants hybrid, 80k base" data-enter="addnote" data-a="${a.id}"><button class="btn sm" data-act="addnote" data-a="${a.id}">Save note</button></div></details></div>` : ''}</div>`; }
 function recUpdHTML_old(a) { const dn = RUDUE[a.id] ?? 2;
   return `<div class="coupd rcupd"><div class="cu-h">Update</div>
     <div class="cu-l"><span class="cr-k">Done</span><div class="cu-f"><input class="inp" id="ru_u_${a.id}" placeholder="What did you do? e.g. Followed up"><div class="chips">${REC_UPD.map(v => `<button class="qchip" data-act="rcchip" data-f="ru_u_${a.id}" data-a="${a.id}" data-v="${esc(v)}">${esc(v)}</button>`).join('')}</div></div></div>
@@ -7356,19 +7387,22 @@ const ACT = {
   },
   rcchip: el => { const i = document.getElementById(el.dataset.f); if (i) { i.value = el.dataset.v; i.focus(); } el.parentNode.querySelectorAll('.qchip').forEach(b => b.classList.toggle('on', b === el));
     if (/^ru_u_/.test(el.dataset.f)) { const id = el.dataset.a, a = appById(id), sg = a && recCadence(el.dataset.v, a); const h = document.getElementById('ru_hint_' + id); if (h) h.textContent = sg ? sg.hint || '' : ''; if (sg) { const n = document.getElementById('ru_n_' + id); if (n && (!n.value.trim() || n.dataset.sug === n.value)) { n.value = sg.nx; n.dataset.sug = sg.nx; } const b = document.querySelector(`[data-act=rcdue][data-a="${id}"][data-n="${sg.dn}"]`); if (b) ACT.rcdue(b); } } },
-  rcdue: el => { RUDUE[el.dataset.a] = +el.dataset.n; el.parentNode.querySelectorAll('.qchip').forEach(b => b.classList.toggle('on', b === el)); const dt = document.getElementById('ru_dt_' + el.dataset.a); if (dt) dt.value = ''; const l = document.getElementById('ru_dl_' + el.dataset.a); if (l) l.textContent = dueLabel(dueOf(+el.dataset.n)); },
-  rcdate: el => { if (!isISO(el.value)) return; RUDUE[el.dataset.a] = el.value; el.parentNode.querySelectorAll('.qchip').forEach(b => b.classList.remove('on')); const l = document.getElementById('ru_dl_' + el.dataset.a); if (l) l.textContent = dueLabel(el.value); },
-  recsave: el => { const a = appById(el.dataset.a); if (!a) return; const g = k => ((document.getElementById(`ru_${k}_${a.id}`) || {}).value || '').trim(), up = g('u') || FLOWU['ru' + a.id] || '', det = g('det'), nx = g('n') || FLOWN['ru' + a.id] || '';
-    const xcb = document.getElementById('ru_x_' + a.id), xw = document.getElementById('ru_xw_' + a.id), xo = xcb && xw && !xw.hidden && xcb.checked ? JSON.parse(xcb.dataset.x || 'null') : null;
-    if (!up && !nx) { toast('Fill in what you did, the next step, or both'); const i = document.getElementById('ru_u_' + a.id); i && i.focus(); return; }
+  rcdue: el => { const pf = el.dataset.p || 'ru'; RUDUE[el.dataset.a] = +el.dataset.n; el.parentNode.querySelectorAll('.qchip').forEach(b => b.classList.toggle('on', b === el)); const dt = document.getElementById(pf + '_dt_' + el.dataset.a); if (dt) dt.value = ''; const l = document.getElementById(pf + '_dl_' + el.dataset.a); if (l) l.textContent = dueLabel(dueOf(+el.dataset.n)); },
+  rcdate: el => { if (!isISO(el.value)) return; RUDUE[el.dataset.a] = el.value; el.parentNode.querySelectorAll('.qchip').forEach(b => b.classList.remove('on')); const l = document.getElementById((el.dataset.p || 'ru') + '_dl_' + el.dataset.a); if (l) l.textContent = dueLabel(el.value); },
+  recsave: el => { const a = appById(el.dataset.a); if (!a) return; const P = el.dataset.p || 'ru', g = k => ((document.getElementById(`${P}_${k}_${a.id}`) || {}).value || '').trim(), up = g('u') || FLOWU[P + a.id] || '', det = g('det'), none = FLOWN[P + a.id] === '__none' && !g('n'), nx = none ? '' : (g('n') || FLOWN[P + a.id] || '');
+    const xcb = document.getElementById(P + '_x_' + a.id), xw = document.getElementById(P + '_xw_' + a.id), xo = xcb && xw && !xw.hidden && xcb.checked ? JSON.parse(xcb.dataset.x || 'null') : null, fl = recFlowNext(FLOWU[P + a.id] || '', a);
+    if (!up && !nx && !(none && P === 'rm')) { toast(none ? 'Pick what happened, or close this' : 'Fill in what happened, the next step, or both'); const i = document.getElementById(P + '_u_' + a.id); i && i.focus(); return; }
     snapshot(); const due = dueOf(RUDUE[a.id] ?? 2), n = firstName(personOf(a).name); let xmsg = '';
     if (xo && xo.k === 'stage' && xo.sid) { setStage(a, xo.sid); syncAutoTasks(a); xmsg = `. Moved to ${stageOf(a).label}`; }
+    if (fl.cancel) { const gone = S.tasks.filter(t => t.appId === a.id && !t.done && fl.cancel.test(t.text)); if (gone.length) { S.tasks = S.tasks.filter(t => !gone.includes(t)); gone.filter(t => t.auto).forEach(t => { a.autoSkip = [...new Set([...(a.autoSkip || []), String(t.auto).split('#')[0]])]; }); } }
     if (up) { logContact(a, up); if (det && a.log[0]) a.log[0].note = det; for (const t of S.tasks.filter(t => t.appId === a.id && !t.done)) { t.done = true; t.doneOn = TODAY; if (t.auto) a.autoSkip = [...new Set([...(a.autoSkip || []), String(t.auto).split('#')[0]])]; } }
-    if (nx) { if (!up) S.tasks = S.tasks.filter(t => !(t.appId === a.id && !t.done && !t.auto)); const nn = ((document.getElementById('ru_ndet_' + a.id) || {}).value || '').trim(); S.tasks.push({ id: uid('t'), appId: a.id, text: nx, ...(nn ? { note: nn } : {}), due, done: false, created: TODAY }); addLog(a, 'system', `Next step: ${nx}${nn ? ' — ' + nn : ''}, ${fmtDate(due)}`); delete FLOWD['ru_ndet_' + a.id]; }
+    if (nx) { if (!up) S.tasks = S.tasks.filter(t => !(t.appId === a.id && !t.done && !t.auto)); const nn = ((document.getElementById(P + '_ndet_' + a.id) || {}).value || '').trim(); S.tasks.push({ id: uid('t'), appId: a.id, text: nx, ...(nn ? { note: nn } : {}), due, done: false, created: TODAY }); addLog(a, 'system', `Next step: ${nx}${nn ? ' — ' + nn : ''}, ${fmtDate(due)}`); delete FLOWD[P + '_ndet_' + a.id]; }
     if (xo && xo.k === 'rej') { markToReject(a); xmsg = '. In To be rejected'; }
-    delete RUDUE[a.id]; delete FLOWU['ru' + a.id]; delete FLOWN['ru' + a.id]; delete FLOWD['ru' + a.id];
+    delete RUDUE[a.id]; delete FLOWU[P + a.id]; delete FLOWN[P + a.id]; delete FLOWD[P + a.id];
+    if (P === 'rm') MODAL = null;
+    if (fl.askdate) { const st = stageOf(a); ASK = { a: a.id, kind: st.kind, label: st.label }; }
     if (xo && xo.k === 'close') { MODAL = { kind: 'close', a: a.id }; }
-    commit(); toast(`Saved for ${n}${nx ? `. ${nx} ${due === TODAY ? 'today' : 'on ' + dueLabel(due)}` : ''}${xmsg}`, true); },
+    commit(); toast(`Saved for ${n}${nx ? `. ${nx} ${due === TODAY ? 'today' : 'on ' + dueLabel(due)}` : none ? '. No next step' : ''}${xmsg}`, true); },
   cvpick: el => { if (MODAL && MODAL.kind === 'intro') introRead(); CV_TARGET = el.dataset.p; document.getElementById('cvpick').click(); },
   cvopen: el => cvOpen(el.dataset.p),
   cvdel: el => { const p = MP.get(el.dataset.p); if (!p) return; snapshot(); delete p.cv; p._ts = ''; kvSet('cv:' + p.id, null).catch(() => { }); commit(); toast('CV removed', true); },
@@ -7427,7 +7461,7 @@ const ACT = {
   taskdone: el => { const rt = S.tasks.find(x => x.id === el.dataset.t);
     if (rt && !rt.done && isRejNR(rt) && appById(rt.appId) && (() => { const a = appById(rt.appId); return !(isISO(a.since) && isISO(rt.created) && a.since > rt.created); })()) { const a = appById(rt.appId); snapshot(); rt.done = true; rt.doneOn = TODAY; addLog(a, 'contact', 'No response'); if (a.outcome === 'active') markToReject(a); commit(); toast(`No response from ${personOf(a).name}: added to To be rejected`, true); return; } if (rt && String(rt.auto || '').startsWith('reject@')) { const list = allToReject(); confirmBox(`Reject ${list.length} candidate${list.length > 1 ? 's' : ''}?`, `${list.map(a => personOf(a).name + ' (' + roleName(a) + ')').join(', ')}. Their processes close and they stay in the talent pool.`, 'Reject all', () => { snapshot(); list.forEach(rejectNow); rt.done = true; rt.doneOn = TODAY; commit(); toast(`${list.length} rejected. Next round comes up when someone lands in To be rejected.`, true); }, true); return; }
     snapshot(); const next = doneTask(S.tasks.find(x => x.id === el.dataset.t)), ta = rt && appById(rt.appId), left = ta && S.tasks.some(t => t.appId === ta.id && !t.done);
-    if (ta && ta.outcome === 'active' && !next && !left) { DRAWER = { p: ta.personId, a: ta.id }; commit(); toast(`Done. What is next for ${firstName(personOf(ta).name)}?`, true); setTimeout(() => { const i = document.getElementById('ru_n_' + ta.id); if (i) { i.scrollIntoView({ block: 'center' }); i.focus(); } }, 80); afterTaskDone(el.dataset.t); return; }
+    if (ta && ta.outcome === 'active' && !next) { delete FLOWU['rm' + ta.id]; delete FLOWN['rm' + ta.id]; delete RUDUE[ta.id]; MODAL = { kind: 'donenext', a: ta.id, t: rt.text }; commit(); afterTaskDone(el.dataset.t); return; }
     commit(); toast('Task done' + (next ? `. Again on ${DOW[new Date(next + 'T12:00:00').getDay()]} ${fmtDate(next)}` : ''), true); afterTaskDone(el.dataset.t); },
   taskdoneall: el => { const ids = el.dataset.ids.split(','); snapshot(); ids.forEach(id => doneTask(S.tasks.find(x => x.id === id))); commit(); toast(`${ids.length} tasks done`, true); },
   tasknote: el => { const t = S.tasks.find(x => x.id === el.dataset.t), a = t && appById(t.appId), inp = document.getElementById('tn_' + el.dataset.t), tx = inp && inp.value.trim(); if (!a || !tx) return; snapshot(); addLog(a, 'note', tx); commit(); toast(`Note saved on ${personOf(a).name}`, true); },
@@ -8619,11 +8653,13 @@ const DET_PH = v => /replied|responded/i.test(v) ? 'What did they say?' : /spoke
 let FLOWD = {};
 function flowNdetHTML(p, key, cur) { const id = `${p}_ndet_${key}`, v = p === 'ca' ? ((MODAL && MODAL.f && MODAL.f.ndet) || '') : (FLOWD[id] || ''); return `<div class="flow-det nx-det" id="${p}_ndetw_${key}" ${cur ? '' : 'hidden'}><span class="fd-k" id="${p}_ndetk_${key}">${esc(cur || '')}</span><input class="inp inp-det" id="${id}" ${p === 'ca' ? 'data-wz="ndet"' : ''} value="${esc(v)}" placeholder="Add context for this task (optional)"></div>`; }
 function flowDetHTML(p, key, cur) { const v = p === 'ca' ? ((MODAL && MODAL.f && MODAL.f.detail) || '') : (FLOWD[p + key] || ''); return `<div class="flow-det" id="${p}_detw_${key}" ${cur ? '' : 'hidden'}><span class="fd-k" id="${p}_detk_${key}">${esc(cur || '')}</span><input class="inp inp-det" id="${p}_det_${key}" ${p === 'ca' ? 'data-wz="detail"' : ''} value="${esc(v)}" placeholder="${esc(DET_PH(cur || ''))}"></div>`; }
-function flowUpdHTML(p, key, cur) { return `<div class="flow">${(p === 'ru' ? REC_GROUPS : CO_GROUPS).map(([g, xs]) => `<div class="fg"><span class="fg-h">${g}</span><div class="chips">${xs.map(([l, v]) => `<button class="qchip ${cur === v ? 'on' : ''}" data-act="flowu" data-p="${p}" data-key="${key}" data-v="${esc(v)}">${esc(l)}</button>`).join('')}</div></div>`).join('')}</div>${flowDetHTML(p, key, cur)}`; }
-function flowNxHTML(p, key, fl, cur) { return fl.o.map(([v, n]) => `<button class="qchip nxo ${cur === v ? 'on' : ''}" data-act="flown" data-p="${p}" data-key="${key}" data-v="${esc(v)}" data-n="${n}">${esc(v)}${n === 0 ? ' <small class="cd">today</small>' : chipDay(n)}</button>`).join('') + (fl.none ? '<span class="small muted nx-tip">Pick what happened above to get the matching next steps.</span>' : ''); }
+function flowUpdHTML(p, key, cur) { if (p === 'ru' || p === 'rm') return recChipsHTML(p, key, cur); return `<div class="flow">${(p === 'ru' ? REC_GROUPS : CO_GROUPS).map(([g, xs]) => `<div class="fg"><span class="fg-h">${g}</span><div class="chips">${xs.map(([l, v]) => `<button class="qchip ${cur === v ? 'on' : ''}" data-act="flowu" data-p="${p}" data-key="${key}" data-v="${esc(v)}">${esc(l)}</button>`).join('')}</div></div>`).join('')}</div>${flowDetHTML(p, key, cur)}`; }
+function recChipsHTML(p, key, cur) { const a = appById(key), L = (a && REC_FLOW[recKey(a)]) || [], ch = ([l, v]) => `<button class="qchip ${cur === v ? 'on' : ''}" data-act="flowu" data-p="${p}" data-key="${key}" data-v="${esc(v)}">${esc(l)}</button>`, more = !L.some(x => x[1] === cur) && !!cur;
+  return `<div class="flow"><div class="chips">${L.map(ch).join('')}</div><details class="fmore" ${more || !L.length ? 'open' : ''}><summary class="small">${L.length ? 'More…' : 'Pick what happened'}</summary>${REC_GROUPS.map(([g, xs]) => `<div class="fg"><span class="fg-h">${g}</span><div class="chips">${xs.map(ch).join('')}</div></div>`).join('')}</details></div>${flowDetHTML(p, key, cur)}`; }
+function flowNxHTML(p, key, fl, cur) { return fl.o.map(([v, n]) => `<button class="qchip nxo ${cur === v ? 'on' : ''}" data-act="flown" data-p="${p}" data-key="${key}" data-v="${esc(v)}" data-n="${n}">${esc(v)}${n === 0 ? ' <small class="cd">today</small>' : chipDay(n)}</button>`).join('') + (fl.none && !fl.nonone ? '<span class="small muted nx-tip">Pick what happened above to get the matching next steps.</span>' : '') + ((p === 'ru' || p === 'rm') ? `<button class="qchip nxnone ${cur === '__none' ? 'on' : ''}" data-act="flownone" data-p="${p}" data-key="${key}">No next step</button>` : ''); }
 function flowCtx(p, key) { if (p === 'cu') { const d = dealById(key); return { d, c: d && coById(d.accountId, coSel(d)[0]) }; }
   const d = dealById((document.getElementById('cp_opp_' + key) || {}).value); return { d, c: d ? coById(d.accountId, key) : null }; }
-function flowApply(p, key, v) { const { d, c } = p === 'ru' ? {} : flowCtx(p, key), fl = p === 'ru' ? recFlowNext(v, appById(key)) : flowNext(v, c, d), box = document.getElementById(`${p}_nxo_${key}`); if (box) box.innerHTML = flowNxHTML(p, key, fl, '');
+function flowApply(p, key, v) { const rc = p === 'ru' || p === 'rm', { d, c } = rc ? {} : flowCtx(p, key), fl = rc ? recFlowNext(v, appById(key)) : flowNext(v, c, d), box = document.getElementById(`${p}_nxo_${key}`); if (box) box.innerHTML = flowNxHTML(p, key, fl, '');
   const h = document.getElementById(`${p}_hint_${key}`); if (h) h.textContent = fl.hint || '';
   const xw = document.getElementById(`${p}_xw_${key}`); if (xw) { xw.hidden = !fl.x; if (fl.x) { const cb = xw.querySelector('input'), lb = xw.querySelector('span'); cb.checked = !!fl.x.on; cb.dataset.x = JSON.stringify(fl.x); lb.textContent = fl.x.label; } }
   const al = document.getElementById(`${p}_altw_${key}`); if (al) al.hidden = !fl.neg;
@@ -9270,8 +9306,13 @@ const BD_ACT = {
     if (p === 'ca') { bdWizRead(); MODAL.f.nx = v; MODAL.f.dn = dn; render(); if (!auto) setTimeout(() => { const i = document.getElementById('ca_ndet_'); i && i.focus(); }, 30); return; }
     const n = document.getElementById(`${p}_n_${key}`); if (n) { n.value = ''; n.dataset.sug = ''; } FLOWN[p + key] = v;
     el.parentNode.querySelectorAll('.qchip').forEach(b => b.classList.toggle('on', b === el));
-    const dk = { cu: 'd', cp: 'c', ru: 'a' }[p], da = { cu: 'cudue', cp: 'cpdue', ru: 'rcdue' }[p], b = document.querySelector(`[data-act=${da}][data-${dk}="${key}"][data-n="${dn}"]`);
-    if (b) ACT[da](b); else { const iso = dueIn(dn); if (p === 'ru') RUDUE[key] = iso; else CODUE[p === 'cu' ? key : 'cp_' + key] = iso; document.querySelectorAll(`[data-act=${da}][data-${dk}="${key}"]`).forEach(x => x.classList.remove('on')); const dt = document.getElementById(`${p}_dt_${key}`); if (dt) dt.value = iso; const l = document.getElementById(`${p}_dl_${key}`); if (l) l.textContent = dueLabel(iso); } },
+    const dk = { cu: 'd', cp: 'c', ru: 'a', rm: 'a' }[p], da = { cu: 'cudue', cp: 'cpdue', ru: 'rcdue', rm: 'rcdue' }[p], pq = (p === 'ru' || p === 'rm') ? `[data-p="${p}"]` : '', b = document.querySelector(`[data-act=${da}][data-${dk}="${key}"][data-n="${dn}"]${pq}`);
+    if (b) ACT[da](b); else { const iso = dueIn(dn); if (p === 'ru' || p === 'rm') RUDUE[key] = iso; else CODUE[p === 'cu' ? key : 'cp_' + key] = iso; document.querySelectorAll(`[data-act=${da}][data-${dk}="${key}"]${pq}`).forEach(x => x.classList.remove('on')); const dt = document.getElementById(`${p}_dt_${key}`); if (dt) dt.value = iso; const l = document.getElementById(`${p}_dl_${key}`); if (l) l.textContent = dueLabel(iso); } },
+  donenone: el => { const a = appById(el.dataset.a); MODAL = null; if (a) { delete FLOWU['rm' + a.id]; delete FLOWN['rm' + a.id]; } render(); toast('Done. No next step planned', true); },
+  ftdue: el => { const t = S.tasks.find(x => x.id === el.dataset.t); if (!t) return; t.due = dueIn(+el.dataset.n); commit(); },
+  ftdate: el => { const t = S.tasks.find(x => x.id === el.dataset.t); if (!t || !isISO(el.value)) return; t.due = el.value; commit(); },
+  ftskip: el => { const t = S.tasks.find(x => x.id === el.dataset.t); if (!t) return; snapshot(); const a = appById(t.appId); S.tasks = S.tasks.filter(x => x !== t); if (a && t.auto) a.autoSkip = [...new Set([...(a.autoSkip || []), String(t.auto).split('#')[0]])]; if (MODAL && MODAL.ids) MODAL.ids = MODAL.ids.filter(x => x !== t.id); commit(); toast(`Skipped: ${t.text}`, true); },
+  flownone: el => { const p = el.dataset.p, key = el.dataset.key; FLOWN[p + key] = '__none'; el.parentNode.querySelectorAll('.qchip').forEach(b => b.classList.toggle('on', b === el)); const n = document.getElementById(`${p}_n_${key}`); if (n) { n.value = ''; n.dataset.sug = ''; } const w = document.getElementById(`${p}_ndetw_${key}`); if (w) w.hidden = true; },
   cuchip: el => { const i = document.getElementById(el.dataset.f); if (i) { i.value = el.dataset.v; i.focus(); } el.parentNode.querySelectorAll('.qchip').forEach(b => b.classList.toggle('on', b === el));
     if (/^cu_u_/.test(el.dataset.f)) { const id = el.dataset.f.replace('cu_u_', ''), d = dealById(id), c = d && coById(d.accountId, coSel(d)[0]), sg = cadenceSuggest(el.dataset.v, c, d); if (sg) { const n = document.getElementById('cu_n_' + id); if (n && (!n.value.trim() || n.dataset.sug === n.value)) { n.value = sg.nx; n.dataset.sug = sg.nx; } const b = document.querySelector(`[data-act=cudue][data-d="${id}"][data-n="${sg.dn}"]`); if (b) ACT.cudue(b); else { const iso = dueIn(sg.dn); CODUE[id] = iso; document.querySelectorAll(`[data-act=cudue][data-d="${id}"]`).forEach(x => x.classList.remove('on')); const dt = document.getElementById('cu_dt_' + id); if (dt) dt.value = iso; const l = document.getElementById('cu_dl_' + id); if (l) l.textContent = dueLabel(iso); } const h = document.getElementById('cu_hint_' + id); if (h) h.textContent = sg.hint || ''; } } },
   cudue: el => { CODUE[el.dataset.d] = +el.dataset.n; el.parentNode.querySelectorAll('.qchip').forEach(b => b.classList.toggle('on', b === el)); const dt = document.getElementById('cu_dt_' + el.dataset.d); if (dt) dt.value = ''; const l = document.getElementById('cu_dl_' + el.dataset.d); if (l) l.textContent = dueLabel(dueOf(+el.dataset.n)); },
