@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-4jH2D1tsM4cyLlE4biXYZbfLW0bVjU5dB7voRvjJ63I=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VY1ZvEkns6/Eri7mFkJn8KiNnibUlUTCx5XOKLj9jp4=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -2069,6 +2069,21 @@ function viewasLeave(b) { b = b || {}; NAVH.length = 0; (b.navh || []).forEach(x
   const regs = new Set(regionsList()); if (SEL.region && !regs.has(SEL.region)) SEL.region = ''; if (SEL.role && !MR.get(SEL.role)) SEL.role = null; if (SEL.client && !MC.get(SEL.client)) SEL.client = null; }
 const idleWait = async () => { for (let i = 0; i < 40 && (teamBusy || bkBusy); i++) await new Promise(r => setTimeout(r, 100)); };
 /* show the screen the team member last had open: same workspace, page and selection */
+/* ---------- working in a colleague's role: the same pipeline and candidate card as your own roles ----------
+   You work on their copy of the role; every change travels to their Nimble as an edit they apply (and check) within a minute. */
+function roleWorkIn(o, rid) { const m = TEAM.members.find(x => x.userId === o); if (!m || !m.data || !(m.data.roles || []).some(r => r.id === rid)) return false;
+  if (VIEWAS && !VIEWAS.scope) return false; if (!VIEWAS) persistNow();
+  const keep = VIEWAS ? VIEWAS.keep : S, back = VIEWAS ? VIEWAS.back : { view: VIEW, sel: { ...SEL }, navh: NAVH.slice() }; if (VIEWAS) { S = keep; reindex(); }
+  const me = keep.settings.userId, lead = keep.settings.teamRole === 'lead';
+  VIEWAS = { keep, back, member: m.member, at: m.publishedAt, folder: m.folder, userId: m.userId, follow: false, scope: { roleId: rid, me, meName: keep.settings.userName || 'Me', k: o + '|' + rid } };
+  S = mgrOverlay(prepForeign(m.data), (m.data || {}).mgrApplied); reindex(); const r = MR.get(rid), c = MC.get(r.clientId) || {};
+  VIEWAS.scope.mgr = lead || roleMgrId(r) === me || clientOwnerId(c) === me; VIEWAS.scope.title = r.title; VIEWAS.scope.client = c.name || '';
+  VIEWAS.prev = JSON.stringify(mgrSlice(S)); UNDO = null; DRAWER = null; BDD = null; MODAL = null; CTX = null; JUMP = null; VIEW = 'pipeline'; SEL = { region: r.region, client: r.clientId, role: rid }; render(); return true; }
+function scopeExit() { if (!VIEWAS || !VIEWAS.scope) return; S = VIEWAS.keep; VIEWAS = null; UNDO = null; reindex(); DRAWER = null; BDD = null; MODAL = null; CTX = null; SEL = {}; scheduleTeam(); }
+setInterval(async () => { try { if (!VIEWAS || !VIEWAS.scope || !TEAM.handle || TEAM.state !== 'on') return; const who = VIEWAS;
+  for await (const [n, h] of TEAM.handle.entries()) { if (h.kind !== 'file' || !/^pipetree-team-.+\.json$/.test(n)) continue; const f = await h.getFile(); if (who.fileTime && f.lastModified <= who.fileTime) continue; const j = JSON.parse(await f.text()); if (j.userId !== who.userId) continue; who.fileTime = f.lastModified;
+    if (VIEWAS !== who || (j.publishedAt || '') <= (who.at || '') || MODAL || /INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '')) return;
+    const sel = { ...SEL }, dr = DRAWER; who.at = j.publishedAt; S = mgrOverlay(prepForeign(j.data), (j.data || {}).mgrApplied); reindex(); who.prev = JSON.stringify(mgrSlice(S)); SEL = sel; if (dr && !S.apps.some(a => a.id === dr.a)) DRAWER = null; render(); return; } } catch (e) { } }, 5000);
 function viewasPlace() { const ui = (S.settings && S.settings.ui) || {}; VIEW = ui.view || (S.settings.space === 'bd' ? 'bdtoday' : 'today'); if (['team', 'teamsettings', 'settings'].includes(VIEW)) VIEW = 'today'; SEL = { ...(ui.sel || {}) }; if (SEL.role && !MR.get(SEL.role)) SEL = {}; }
 async function refreshViewed() { if (!VIEWAS || !TEAM.handle || TEAM.state !== 'on' || !VIEWAS.folder) return; const who = VIEWAS;
   try { const d = await teamSub(TEAM.handle, VIEWAS.folder); for await (const [n, h] of d.entries()) { if (h.kind !== 'file' || !/^pipetree-team-.+\.json$/.test(n)) continue; const f = await h.getFile(); if (VIEWAS.fileTime && f.lastModified <= VIEWAS.fileTime) continue; const j = JSON.parse(await f.text()); if (!VIEWAS || j.userId !== VIEWAS.userId) continue; VIEWAS.fileTime = f.lastModified;
@@ -2125,7 +2140,7 @@ function undo() { AUTOMSG = ''; if (!UNDO) return; S = JSON.parse(UNDO); UNDO = 
 function noWeekendTasks() { const mv = d => { const w = new Date(d + 'T12:00:00').getDay(); return w === 6 ? addDays(d, 2) : w === 0 ? addDays(d, 1) : d; };
   for (const t of [...(S.tasks || []), ...(S.bdTasks || [])]) if (!t.done && !t.fixed && isISO(t.due)) { const n = mv(t.due); if (n !== t.due) t.due = n; } }
 /* ---------- team updates: whenever someone else's candidate moves on a role, the candidate owner hears about it ---------- */
-let APPSIG = null, RSIG = null, ACTOR = null;
+let APPSIG = null, RSIG = null, ACTOR = null, LOGSIG = null, TSIG = null;
 const appSig = a => [a.stage, a.outcome, a.nextInterview || '', a.nextTime || ''].join('|');
 function teamTouched() { return rosterAll().length > 1 || S.apps.some(a => a.cOwnerId || a.addedById) || S.roles.some(r => r.mgrId || (r.openTo || []).length); }
 function noticeRecipients(a) { const r = MR.get(a.roleId), actor = ACTOR || myUid(), out = new Set(), own = candOwnerId(a);
@@ -2136,8 +2151,12 @@ function pushNotice(to, a, text, task, kind) { S.notices = S.notices || []; cons
   if (to === myUid()) { S.inNotes = S.inNotes || []; S.inNotes.unshift({ ...n, got: TODAY }); if (task && task.auto) addNoticeTask(n); } else S.notices.push(n); }
 function teamDiff() {
   if (!S || VIEWAS) return; const now = new Map(S.apps.map(a => [a.id, appSig(a)])), rs = new Map(S.roles.map(r => [r.id, stagesFor(r.id).map(x => x.label).join('>')]));
-  if (!APPSIG || !teamTouched()) { APPSIG = now; RSIG = rs; return; }
-  for (const a of S.apps) { const was = APPSIG.get(a.id), cur = now.get(a.id); if (!was || was === cur) continue; const [ost, oout, oni] = was.split('|'), st = stageOf(a), p = personOf(a), fn = firstName(p.name), c = clientOf(a) || {}, actor = ACTOR ? nameOf(ACTOR) : firstName(S.settings.userName || 'me');
+  const lnow = new Map(S.apps.map(a => [a.id, (a.log || []).length])), tnow = new Set(S.tasks.map(t => t.id));
+  if (!APPSIG || !teamTouched()) { APPSIG = now; RSIG = rs; LOGSIG = lnow; TSIG = tnow; return; }
+  const isMgrOf = (id, r) => !!r && (roleMgrId(r) === id || clientOwnerId(MC.get(r.clientId) || {}) === id || id === (teamRoster().find(x => x.lead) || {}).id);
+  for (const a of S.apps) { const was0 = APPSIG.get(a.id), cur = now.get(a.id), was = was0 || (ACTOR && ACTOR !== myUid() ? '|active||' : ''); if (!was || was === cur) continue; if (!was0 && !(ACTOR && ACTOR !== myUid() && !isMgrOf(ACTOR, MR.get(a.roleId)))) continue; const [ost, oout, oni] = was.split('|'), st = stageOf(a), p = personOf(a), fn = firstName(p.name), c = clientOf(a) || {}, actor = ACTOR ? nameOf(ACTOR) : firstName(S.settings.userName || 'me');
+    const srcA = !!ACTOR && ACTOR !== myUid() && !isMgrOf(ACTOR, MR.get(a.roleId));
+    if (srcA) { const k = st.kind; for (const to of noticeRecipients(a)) { if (ost !== a.stage && k === 'screen') pushNotice(to, a, `${actor} planned a phone screen with ${p.name}${isISO(a.nextInterview) ? ' on ' + fmtDate(a.nextInterview) + (a.nextTime ? ' at ' + a.nextTime : '') : ''}`, null, 'stage'); else if (ost !== a.stage && k === 'cv') pushNotice(to, a, `CV received for ${p.name} (${actor})`, null, 'stage'); else if (ost === a.stage && k === 'screen' && a.nextInterview !== (oni || null) && isISO(a.nextInterview)) pushNotice(to, a, `${actor} planned a phone screen with ${p.name} on ${fmtDate(a.nextInterview)}`, null, 'planned'); } continue; }
     for (const to of noticeRecipients(a)) {
       if (a.outcome === 'closed' && oout !== 'closed') pushNotice(to, a, `${p.name} is not moving forward at ${c.name}${a.closeReason ? ': ' + a.closeReason : ''}${a.closeNote ? ' (' + a.closeNote + ')' : ''}`, { text: `Let ${fn} know: not moving forward at ${c.name}`, due: TODAY, auto: true }, 'rejected');
       else if (a.outcome === 'placed' && oout !== 'placed') pushNotice(to, a, `${p.name} is placed at ${c.name}!`, { text: `Congratulate ${fn} and check the start`, due: addWorkdays(TODAY, 1) }, 'placed');
@@ -2151,7 +2170,11 @@ function teamDiff() {
     for (const a of S.apps.filter(x => x.roleId === r.id && isLive(x))) for (const to of noticeRecipients(a)) { if (seen.has(to)) continue; seen.add(to); pushNotice(to, a, `The process for ${r.title} at ${(MC.get(r.clientId) || {}).name || ''} changed: ${rs.get(r.id).split('>').join(' → ')}`, null, 'structure'); } }
   for (const t of S.tasks) if (t.done && t.fromId && t.fromId !== myUid() && !t.toldDone) { t.toldDone = TODAY; S.shareOut = S.shareOut || []; const ex = t.ext || {}, a = t.appId && appById(t.appId);
     S.shareOut.push({ id: uid('sh'), type: 'op', op: 'done', owner: t.fromId, roleId: '', appId: ex.appId || t.appId || '', by: S.settings.userName || '', byId: myUid(), text: t.text, cand: ex.cand || (a ? personOf(a).name : ''), role: ex.role || '', client: ex.client || '', at: new Date().toISOString() }); }
-  S.notices = (S.notices || []).filter(n => n.at.slice(0, 10) >= addDays(TODAY, -45)); APPSIG = now; RSIG = rs; }
+  { const actId = ACTOR || myUid(), actName = ACTOR ? nameOf(ACTOR) : (S.settings.userName || 'Your colleague');
+    for (const a of S.apps) { const own = candOwnerId(a), was = LOGSIG ? LOGSIG.get(a.id) : null, len = (a.log || []).length; if (was == null || len <= was || !own || own === actId || own === homeId() && !ACTOR) continue;
+      for (const l of a.log.slice(0, len - was)) if (['contact', 'note'].includes(l.type)) pushNotice(own, a, `${firstName(actName)} logged on ${personOf(a).name}: ${l.text}`, null, 'update'); }
+    if (TSIG) for (const t of S.tasks) { if (TSIG.has(t.id) || !t.appId || t.auto || t.done) continue; const a = appById(t.appId), own = a && candOwnerId(a); if (a && own && own !== actId && !(own === homeId() && !ACTOR)) pushNotice(own, a, `${firstName(actName)} planned for ${personOf(a).name}: ${t.text}, ${fmtDate(t.due)}`, null, 'task'); } }
+  S.notices = (S.notices || []).filter(n => n.at.slice(0, 10) >= addDays(TODAY, -45)); APPSIG = now; RSIG = rs; LOGSIG = lnow; TSIG = tnow; }
 function addNoticeTask(n, text, due) { const t = { id: uid('t'), appId: null, text: text || n.task.text, due: due || n.task.due || TODAY, done: false, created: TODAY, ext: { home: n.home, appId: n.appId, roleId: n.roleId, cand: n.cand, role: n.role, client: n.client }, fromId: n.byId, fromName: n.by };
   const local = n.home === myUid() && S.apps.find(a => a.id === n.appId); if (local) { t.appId = local.id; delete t.ext; } S.tasks.push(t); return t; }
 function commit() { if (VIEWAS) { try { mgrTrack(); } catch (e) { console.error(e); } } try { teamDiff(); } catch (e) { console.error(e); } if (S && S.apps) sweepTasks(); if (S && S.people) syncTags(); if (S && S.deals) syncDealTasks(); if (S) syncRejectTask(); if (S) noWeekendTasks(); save(); if (AUTOMSG) setTimeout(() => { if (AUTOMSG) toast(''); }, 0); if (ASK && !MODAL) { MODAL = ASK.kind2 === 'cvask' ? { kind: 'cvask', a: ASK.a } : { ...ASK, kind: 'ask' }; } ASK = null; if (BDFIRST) { const d = dealById(BDFIRST), t = d && (S.bdTasks || []).filter(x => x.dealId === d.id && x.auto && !x.done && x.created === TODAY && String(x.auto).startsWith(d.stage)).pop(); if (t) FIRSTQ.push(t.id); BDFIRST = null; } if (FIRSTQ.length && !MODAL) { MODAL = { kind: 'firsttask', ids: FIRSTQ.slice(0, 8) }; FIRSTQ = []; } render(); }
@@ -3112,7 +3135,8 @@ function renderImpl() { if (S && S.settings && !VIEWAS) HOK = S.settings.healthO
   renderCore();
   document.body.classList.toggle('rfpp', !!(RFPP && S && S.settings.space === 'bd' && ['rfps', 'rfptasks'].includes(VIEW)));
   let vb = document.getElementById('viewas');
-  if (VIEWAS) { if (!vb) { vb = document.createElement('div'); vb.id = 'viewas'; document.body.appendChild(vb); } const h = Math.round((Date.now() - new Date(VIEWAS.at)) / 36e5); const mins = Math.round((Date.now() - new Date(VIEWAS.at)) / 6e4); vb.innerHTML = `<div class="va-l"><span class="va-who">You're seeing <b>${esc(firstName(VIEWAS.member))}</b>'s screen</span><span class="va-s">you can change anything: it goes to ${esc(firstName(VIEWAS.member))}'s Nimble with an update · updated ${mins < 1 ? 'just now' : mins < 90 ? mins + ' min ago' : h < 48 ? h + 'h ago' : Math.round(h / 24) + ' days ago'}</span></div>
+  if (VIEWAS && VIEWAS.scope) { if (!vb) { vb = document.createElement('div'); vb.id = 'viewas'; document.body.appendChild(vb); } const sc = VIEWAS.scope, fn = esc(firstName(VIEWAS.member)); vb.innerHTML = `<div class="va-l"><span class="va-who">${fn}'s role: <b>${esc(sc.client)} ${esc(sc.title)}</b></span><span class="va-s">${sc.mgr ? `You manage this role: everything you do goes to ${fn}'s Nimble.` : `You work on your own candidates up to CV received; ${fn} takes them on from there. Everything goes to ${fn}'s Nimble within a minute.`}</span></div><button class="btn sm primary" data-act="scopeback">Back to my pipeline</button>`; }
+  else if (VIEWAS) { if (!vb) { vb = document.createElement('div'); vb.id = 'viewas'; document.body.appendChild(vb); } const h = Math.round((Date.now() - new Date(VIEWAS.at)) / 36e5); const mins = Math.round((Date.now() - new Date(VIEWAS.at)) / 6e4); vb.innerHTML = `<div class="va-l"><span class="va-who">You're seeing <b>${esc(firstName(VIEWAS.member))}</b>'s screen</span><span class="va-s">you can change anything: it goes to ${esc(firstName(VIEWAS.member))}'s Nimble with an update · updated ${mins < 1 ? 'just now' : mins < 90 ? mins + ' min ago' : h < 48 ? h + 'h ago' : Math.round(h / 24) + ' days ago'}</span></div>
     <label class="va-f" title="Jump along to the page ${esc(firstName(VIEWAS.member))} has open"><input type="checkbox" data-act="viewasfollow" ${VIEWAS.follow ? 'checked' : ''}> Follow ${esc(firstName(VIEWAS.member))}</label>
     <div class="va-sw">${TEAM.members.map(m => `<button class="${m.userId === VIEWAS.userId ? 'on' : ''}" data-act="teamview" data-u="${esc(m.userId)}" title="${esc(m.member)}">${esc(initials(m.member))}</button>`).join('')}</div>
     <button class="btn sm" data-act="mgradd">+ Task or note</button><button class="btn sm" data-act="viewasoverview">Overview</button><button class="btn sm primary" data-act="viewasexit">Back to mine</button>`; }
@@ -3129,9 +3153,9 @@ function renderCore() {
   if (needsSetup()) { $app.innerHTML = setupHTML(); $layer.innerHTML = ''; setTimeout(() => { const i = document.getElementById('su_c1'); i && !document.activeElement.closest('.lockbox') && i.focus(); }, 30); return; }
   if (LOCKED) { $app.innerHTML = lockHTML(); $layer.innerHTML = ''; setTimeout(() => { const i = document.getElementById('lockpw'); i && document.activeElement !== i && i.focus(); }, 30); return; }
   reindex(); trackNav();
-  const tm = todayModel(), checks = computeChecks();
-  const unhealthy = S.roles.filter(r => rOn(r) && !roleHealth(r).healthy).length;
-  const dueTasks = S.tasks.filter(t => !t.done && isISO(t.due) && t.due <= TODAY).length;
+  const rd = VIEWAS && VIEWAS.scope ? VIEWAS.keep : S, tm = withData(rd, todayModel), checks = withData(rd, computeChecks);
+  const unhealthy = rd.roles.filter(r => withData(rd, () => rOn(r) && !roleHealth(r).healthy)).length;
+  const dueTasks = rd.tasks.filter(t => !t.done && isISO(t.due) && t.due <= TODAY).length;
   ICON.teamroles = ic('<path d="M12 4v16M8 20h8M5 7h14"/><circle cx="12" cy="4" r="1"/><path d="M5 7l-3 6.5a3 3 0 0 0 6 0L5 7zM19 7l-3 6.5a3 3 0 0 0 6 0L19 7z"/>'); ICON.members = ICON.members || ICON.team;
   const views = { today: () => todayHTML(tm), pipeline: pipelineHTML, sourcing: sourcingHTML, numbers: numbersHTML, tasks: tasksHTML, people: peopleHTML, clients: clientsHTML, inactive: inactiveHTML, team: teamHTML, person: personPageHTML, hot: () => { TRF.f = 'urgent'; VIEW = 'teamroles'; return teamrolesHTML(); }, teamroles: teamrolesHTML, members: membersHTML, teamsettings: teamSettingsHTML, shared: sharedHTML, projects: projectsHTML, checks: () => checksHTML(checks), settings: settingsHTML, personal: personalHTML, bdtoday: bdTodayHTML, deals: dealsHTML, accounts: accountsHTML, contacts: contactsHTML, bdtasks: bdTasksHTML, bdactivity: bdActivityPageHTML, review: reviewHTML, outbox: obHTML, reports: reportsHTML, rfps: rfpsHTML, rfptasks: rfpTasksHTML, careers: careersHTML };
   const nav = (id, label, badge, warn) => `<button class="nav ${VIEW === id ? 'on' : ''}" data-act="view" data-v="${id}" title="${label}">${ICON[id]}<span class="nl">${label}</span>${badge ? `<span class="badge ${warn ? 'warn' : ''}">${badge}</span>` : ''}</button>`;
@@ -3902,7 +3926,7 @@ function careersHTML() {
 function carImportText(t) { const rows = appsFromCsv(t); if (!rows.length) { toast('No applicants found in that file. Is it the CSV export?'); return; } MODAL = { kind: 'carimp', rows }; render(); }
 function pipelineHTML() {
   const navMode = S.settings.nav, showTree = navMode !== 'path' && !S.settings.treeHidden, showPath = navMode !== 'tree' || S.settings.treeHidden;
-  if (SEL.xrole) { const xc = xCard(SEL.xrole); if (xc) return `<div class="pipe ${showTree ? '' : 'notree'}" style="--treew:${Math.max(160, Math.min(560, +S.settings.treeW || 208))}px">${showTree ? treeHTML() + '<div class="tree-rs" data-treers aria-hidden="true"></div>' : ''}<div class="pmain" style="min-width:0">${xBoardHTML(xc)}</div></div>`; SEL.xrole = null; }
+  if (SEL.xrole && !(VIEWAS && VIEWAS.scope)) { const xc = xCard(SEL.xrole); if (xc) return `<div class="pipe ${showTree ? '' : 'notree'}" style="--treew:${Math.max(160, Math.min(560, +S.settings.treeW || 208))}px">${showTree ? treeHTML() + '<div class="tree-rs" data-treers aria-hidden="true"></div>' : ''}<div class="pmain" style="min-width:0">${xBoardHTML(xc)}</div></div>`; SEL.xrole = null; }
   const role = SEL.role ? MR.get(SEL.role) : null;
   if (SEL.role && !role) SEL.role = null;
   const cols = role ? stagesFor(role.id) : SC.get('_default').list;
@@ -3947,7 +3971,7 @@ function pipelineHTML() {
   }
   const rej = toRejectList(role);
   const closedN = 0;
-  return `<div class="pipe ${showTree ? '' : 'notree'}" style="--treew:${Math.max(160, Math.min(560, +S.settings.treeW || 208))}px">${showTree ? treeHTML() + '<div class="tree-rs" data-treers title="Drag to make the menu wider or narrower. Double-click to reset." aria-hidden="true"></div>' : ''}<div class="pmain" style="min-width:0">${head}${strip}${board}
+  return `<div class="pipe ${showTree ? '' : 'notree'}" style="--treew:${Math.max(160, Math.min(560, +S.settings.treeW || 208))}px">${showTree ? (VIEWAS && VIEWAS.scope ? withData(VIEWAS.keep, () => { const s0 = SEL; SEL = { xrole: VIEWAS.scope.k }; try { return treeHTML(); } finally { SEL = s0; } }) : treeHTML()) + '<div class="tree-rs" data-treers title="Drag to make the menu wider or narrower. Double-click to reset." aria-hidden="true"></div>' : ''}<div class="pmain" style="min-width:0">${head}${strip}${board}
     <div class="rejstrip glass" data-drop="__rej" title="Drop candidates here. Reject them all at once, for example every Friday."><span class="rj-h">To be rejected <b>${rej.length}</b></span><span class="rj-n">${rej.map(a => `<span class="tr"><button data-act="open" data-p="${a.personId}" data-a="${a.id}" title="${esc(role ? stageOf(a).label : roleName(a))}">${esc(personOf(a).name)}</button><button class="x" data-act="unreject" data-a="${a.id}" title="Put back in the pipeline">&times;</button></span>`).join('') || '<span class="muted">Drag a card here. Reject everyone in one go when ready.</span>'}</span>${rej.length ? `<button class="btn danger rj-all" data-act="rejectall" data-r="${role ? role.id : ''}">Reject all ${rej.length}</button>` : ''}</div></div></div></div>`;
 }
 function sourcingHTML() {
@@ -4942,7 +4966,7 @@ function scheduleTeam() { if (TEAM.state !== 'on') return; clearTimeout(teamTime
 async function syncTeam(readAll) {
   if (!TEAM.handle || TEAM.state !== 'on' || !S || teamBusy || VIEWAS) return; teamBusy = true; const sig0 = teamViewSig(), notes0 = new Set((S.inNotes || []).map(x => x.id));
   try {
-    const dir = TEAM.handle, folder = []; TEAM.dirs = [];
+    const dir = TEAM.handle, folder = [], peerIn = []; TEAM.dirs = [];
     let remoteProjects = null;
     const role = S.settings.teamRole || '';
     let invite = null; const mgrIn = []; let pool = null, shared = null;
@@ -4954,9 +4978,11 @@ async function syncTeam(readAll) {
       if (h.kind !== 'file') continue;
       if (/^pipetree-team-.+\.json$/.test(n) && (readAll || true)) { try { const j = JSON.parse(await (await h.getFile()).text()); if (j.kind === 'pipetree-team') folder.push(j); } catch (e) { } }
       if (n === 'pipetree-projects.json') { try { remoteProjects = JSON.parse(await (await h.getFile()).text()).projects || []; } catch (e) { } }
+      if (/^pipetree-edits-.+\.json$/.test(n)) { try { const j = JSON.parse(await (await h.getFile()).text()); if (j.kind === 'pipetree-peer') peerIn.push(j); } catch (e) { } }
     }
     TEAM.folder = folder;
     if (remoteProjects) mergeProjects(remoteProjects);
+    { let pn = 0; for (const f of peerIn) pn += peerApply(f); if (pn) { save(); setTimeout(() => render(), 0); } }
     if (role !== 'lead' && !TEAM.hub && folder.some(f => f.userId && f.userId !== myUid())) { TEAM.hub = dir; TEAM.hubState = 'on'; TEAM.hubAuto = true; }
     if (role !== 'lead') { if (invite && invite.kind === 'pipetree-invite') applyInvite(invite); for (const f of mgrIn) if (f && f.kind === 'pipetree-mgr') mergeMgr(f); if (pool && pool.kind === 'pipetree-pool') TEAM.pool = pool; if (shared) { TEAM.leadShared = shared; applyShared(shared); }
       if (TEAM.hub && TEAM.hubState === 'on' && TEAM.hub !== dir) { try { const id4 = myUid().slice(-4); for await (const [n, h] of TEAM.hub.entries()) { if (h.kind !== 'file' || !n.startsWith(`pipetree-for-${id4}-`)) continue; try { const j = JSON.parse(await (await h.getFile()).text()); TEAM.forSeen = [...new Set([...(TEAM.forSeen || []), 'hub:' + TEAM.hub.name + '/' + n])].slice(-6); if (n.endsWith('-shared.json')) { if (j.kind === 'pipetree-shared' && (j.at || '') > ((TEAM.leadShared || {}).at || '')) { TEAM.leadShared = j; TEAM.sharedFrom = 'hub:' + TEAM.hub.name + '/' + n; applyShared(j); } } else if (j.kind === 'pipetree-mgr') { TEAM.mgrAt = j.at || ''; mergeMgr(j); } } catch (e) { } } } catch (e) { } }
@@ -5301,7 +5327,7 @@ function sharedHTMLOld() {
     ${roles.length ? Object.entries(by).map(([n, cs]) => `<h2 class="shr-o">${esc(firstName(n))}'s roles you source for</h2><div class="shr-grid">${cs.map(card).join('')}</div>`).join('') : none}
     ${mine.length ? `<section class="section"><div class="section-head"><h2>Candidates you added</h2></div><div class="glass shr-mine">${mine.map(it => `<div><b>${esc(it.name)}</b> <span class="muted">${esc(it.client || '')} ${esc(it.title || '')} · ${esc(it.ownerName || '')}</span><span class="shr-st ${it.arrived ? 'ok' : ''}">${it.arrived ? '✓ Arrived' : 'Waiting for sync'}</span></div>`).join('')}</div></section>` : ''}`; }
 /* the roles colleagues share: while viewing a member, what that member receives */
-const teamShared = () => (VIEWAS ? SHARE_OUT[VIEWAS.userId] : TEAM.shared) || {};
+const teamShared = () => (VIEWAS && !VIEWAS.scope ? SHARE_OUT[VIEWAS.userId] : TEAM.shared) || {};
 /* a candidate you just added is on the board straight away, movable like any other; it lands in the role owner's Nimble at the stage you left it */
 const xCard = k => { const [o, r] = String(k).split('|'), c = (teamShared().roles || []).find(x => x.owner === o && x.roleId === r); if (!c) return c; const me = myUid(), have = new Set((c.apps || []).map(a => a.sid).filter(Boolean)), names = new Set((c.apps || []).map(a => String(a.n || '').trim().toLowerCase()));
   const add = (S.shareOut || []).filter(it => !it.type && it.owner === o && it.roleId === r && !have.has(it.id) && !(it.arrived && names.has(String(it.name || '').trim().toLowerCase())) && !(it.arrived && it.arrived < addDays(TODAY, -2))).map(it => { const st = (c.stages || []).find(x => x.id === it.stage) || (c.stages || [])[0] || {};
@@ -5438,21 +5464,45 @@ function mgrDesc(c, x, y, pv) { const v = y || x || {}, P = [...(S.people || [])
   if (c === 'people') return !x ? [5, `added ${v.name || 'a person'}`] : !y ? [5, `deleted ${v.name || 'a person'}`] : [9, ''];
   const lb = { accounts: 'account', deals: 'opportunity', bdTasks: 'BD task', rfps: 'RFP', projects: 'project' }[c] || 'item', t = v.name || v.title || v.text || '';
   return [5, `${!x ? 'added' : !y ? 'deleted' : 'updated'} the ${lb}${t ? ' ' + t : ''}`]; }
-function mgrTrack() { if (!VIEWAS || !VIEWAS.prev) return; const prev = JSON.parse(VIEWAS.prev), keep = VIEWAS.keep, me = keep.settings.userName || 'Your manager', grp = uid('mgg'); keep.mgrEdits = keep.mgrEdits || []; let n = 0;
+function scopeCheck(c, x, y, prev) { const sc = VIEWAS.scope, me = sc.me, rid = sc.roleId, apps = id => S.apps.find(a => a.id === id) || (prev.apps || []).find(a => a.id === id);
+  const pre = a => { const st = stagesFor(a.roleId).find(z => z.id === a.stage); return !!st && PRE.has(st.kind); }, own = a => !!a && a.roleId === rid && (sc.mgr || a.cOwnerId === me || a.addedById === me);
+  if (c === 'apps') { if (!x && y) { if (y.roleId !== rid) return 'other'; if (!sc.mgr) { y.cOwnerId = me; y.addedById = me; y.cOwnerName = sc.meName; if (!pre(y)) return 'stage'; } else if (!y.cOwnerId) { y.cOwnerId = me; y.cOwnerName = sc.meName; } return ''; }
+    if (!own(x)) return 'notyours'; if (!sc.mgr && y && (x.stage !== y.stage && !(pre(x) && pre(y)) || x.outcome !== y.outcome && !pre(x))) return 'stage'; return ''; }
+  if (c === 'people') { if (!x) return ''; const L = [...S.apps, ...(prev.apps || [])].filter(a => a.personId === x.id); return L.some(own) && (y || L.every(a => own(a))) ? '' : 'notyours'; }
+  if (c === 'tasks') { const a = apps((y || x).appId); return own(a) ? '' : 'notyours'; }
+  if (c === 'settings') return 'quiet'; return 'other'; }
+function mgrTrack() { if (!VIEWAS || !VIEWAS.prev) return; const prev = JSON.parse(VIEWAS.prev), keep = VIEWAS.keep, me = keep.settings.userName || 'Your manager', grp = uid('mgg'); keep.mgrEdits = keep.mgrEdits || []; let n = 0, blocked = '';
   const rec = (c, id, x, y) => { let e = keep.mgrEdits.find(z => z.memberId === VIEWAS.userId && z.c === c && z.rid === id && !z.acked);
-    if (!e) { e = { id: uid('me'), memberId: VIEWAS.userId, member: VIEWAS.member, folder: VIEWAS.folder, c, rid: id, before: x, v: 0, by: me, byId: keep.settings.userId }; keep.mgrEdits.push(e); }
+    if (!e) { e = { id: uid('me'), memberId: VIEWAS.userId, member: VIEWAS.member, folder: VIEWAS.folder, c, rid: id, before: x, v: 0, by: me, byId: keep.settings.userId, ...(VIEWAS.scope ? { scope: VIEWAS.scope.roleId } : {}) }; keep.mgrEdits.push(e); }
     e.after = y; e.v++; e.at = new Date().toISOString(); e.grp = grp; e.undone = jeq(e.before, y); const d = e.undone ? [9, ''] : mgrDesc(c, e.before, y, prev); e.rank = d[0]; e.desc = d[1]; n++; };
   for (const c of MGR_COLLS) { const a = new Map((prev[c] || []).map(x => [x.id, x])), b = new Map((S[c] || []).map(x => [x.id, x]));
-    for (const id of new Set([...a.keys(), ...b.keys()])) { const x = a.get(id) || null, y = b.get(id) || null; if (jeq(x, y)) continue; if (c === 'tasks' && y && !x && !y.auto && !y.byMgr) y.byMgr = me; rec(c, id, x, y && JSON.parse(JSON.stringify(y))); } }
-  for (const k of MGR_SET) { const x = prev.settings[k], y = S.settings[k]; if (!jeq(x, y)) rec('settings', k, x ?? null, y ?? null); }
+    for (const id of [...new Set([...a.keys(), ...b.keys()])]) { const x = a.get(id) || null, y = b.get(id) || null; if (jeq(x, y)) continue; if (VIEWAS.scope) { const why = scopeCheck(c, x, y, prev); if (why) { mgrPut(S, c, id, x); if (why !== 'quiet') blocked = blocked || why; continue; } } if (c === 'tasks' && y && !x && !y.auto && !y.byMgr) y.byMgr = me; rec(c, id, x, y && JSON.parse(JSON.stringify(y))); } }
+  for (const k of MGR_SET) { const x = prev.settings[k], y = S.settings[k]; if (jeq(x, y)) continue; if (VIEWAS.scope) { S.settings[k] = x; continue; } rec('settings', k, x ?? null, y ?? null); }
+  if (blocked) { reindex(); const fn = firstName(VIEWAS.member); setTimeout(() => toast(blocked === 'stage' ? `Past CV received, ${fn} moves candidates on. Your change wasn't kept` : blocked === 'notyours' ? `That candidate isn't yours: only their owner, ${fn} or the role manager can change it` : `Only candidates on this role can be changed here`), 30); }
   VIEWAS.prev = JSON.stringify(mgrSlice(S));
-  if (n) { keep.mgrEdits = keep.mgrEdits.filter(e => !(e.undone && !e.sent)); const v = VIEWAS, cur = S; VIEWAS = null; S = v.keep; try { persistNow(); } finally { S = cur; VIEWAS = v; } } }
+  if (n) { keep.mgrEdits = keep.mgrEdits.filter(e => !(e.undone && !e.sent)); const v = VIEWAS, cur = S; VIEWAS = null; S = v.keep; try { persistNow(); } finally { S = cur; VIEWAS = v; } if (v.scope) peerEditsPut(); } }
 function mgrPut(d, c, id, val) { if (c === 'settings') { d.settings[id] = val; return; } const arr = d[c] = d[c] || [], i = arr.findIndex(x => x.id === id); if (val == null) { if (i >= 0) arr.splice(i, 1); } else if (i >= 0) arr[i] = JSON.parse(JSON.stringify(val)); else arr.push(JSON.parse(JSON.stringify(val))); }
 /* what the lead sees while viewing: the member's data plus his own edits that haven't arrived yet */
 function mgrOverlay(d, applied) { const L = ((VIEWAS && VIEWAS.keep.mgrEdits) || []).filter(e => e.memberId === VIEWAS.userId && !e.acked && (applied || {})[e.id] !== e.v); for (const e of L) mgrPut(d, e.c, e.rid, e.undone ? e.before : e.after); return d; }
 function mgrAck() { const L = S.mgrEdits || []; if (!L.length) return; for (const e of L) { const m = TEAM.members.find(x => x.userId === e.memberId); if (m && m.data && (m.data.mgrApplied || {})[e.id] === e.v) e.acked = true; }
   S.mgrEdits = L.filter(e => !(e.acked && (e.at || '') < addDays(TODAY, -21))); }
 /* member side */
+async function peerEditsPut() { try { const dir = TEAM.state === 'on' && (TEAM.hubAuto || !TEAM.hub ? TEAM.handle : TEAM.hub); if (!dir) return; const mine = VIEWAS ? VIEWAS.keep : S, L = (mine.mgrEdits || []).filter(e => e.scope && !e.acked); if (!L.length && !mine.settings.peerEditsOut) return;
+  for (const e of L) { const m = TEAM.members.find(x => x.userId === e.memberId); if (m && m.data && (m.data.mgrApplied || {})[e.id] === e.v && (e.at || '') < addDays(TODAY, -3)) e.acked = true; }
+  const fh = await dir.getFileHandle(`pipetree-edits-${String(mine.settings.userId).slice(-4)}.json`, { create: true }), w = await fh.createWritable(); await w.write(JSON.stringify({ kind: 'pipetree-peer', from: mine.settings.userName || '', fromId: mine.settings.userId, at: new Date().toISOString(), edits: L })); await w.close(); mine.settings.peerEditsOut = L.length > 0; } catch (e) { } }
+/* the role owner's side: apply a colleague's edits to their own role, only what they're allowed to do */
+function peerOk(c, cur, val, from, r) { const pre = a => { const st = stagesFor(a.roleId).find(z => z.id === a.stage); return !!st && PRE.has(st.kind); }, own = a => !!a && a.roleId === r.id && (a.cOwnerId === from || a.addedById === from);
+  if (c === 'apps') { const t = cur || val; if (!t || t.roleId !== r.id) return false; if (!cur) return val.cOwnerId === from && pre(val); if (!own(cur)) return false; if (val && (cur.stage !== val.stage && !(pre(cur) && pre(val)) || cur.outcome !== val.outcome && !pre(cur))) return false; return true; }
+  if (c === 'people') { if (!cur) return true; const L = S.apps.filter(a => a.personId === cur.id); return L.some(own) && (val || L.every(own)); }
+  if (c === 'tasks') { const a = S.apps.find(z => z.id === (val || cur).appId); return own(a); } return false; }
+function peerApply(f) { if (VIEWAS || !f || f.kind !== 'pipetree-peer') return 0; const me = myUid(), from = f.fromId, L = (f.edits || []).filter(e => e.memberId === me && e.scope); if (!L.length || from === me) return 0;
+  S.mgrApplied = S.mgrApplied || {}; const lead = (teamRoster().find(x => x.lead) || {}).id, ord = { apps: 0, people: 1, tasks: 2 }; let n = 0;
+  for (const e of L.sort((a, b) => (ord[a.c] ?? 3) - (ord[b.c] ?? 3) || (a.at || '').localeCompare(b.at || ''))) { if (S.mgrApplied[e.id] === e.v) continue; S.mgrApplied[e.id] = e.v; const r = MR.get(e.scope); if (!r) continue;
+    const mgr = from === lead || roleMgrId(r) === from || clientOwnerId(MC.get(r.clientId) || {}) === from, helper = (r.openTo || []).includes(from) || r.teamOpen || r.hot;
+    const val = e.undone ? e.before : e.after, cur = e.c === 'settings' ? null : (S[e.c] || []).find(x => x.id === e.rid) || null;
+    if (!(mgr && ['apps', 'people', 'tasks'].includes(e.c)) && !(helper && peerOk(e.c, cur, val, from, r))) continue;
+    mgrPut(S, e.c, e.rid, val); n++; }
+  if (n) { reindex(); ACTOR = from; try { teamDiff(); } finally { ACTOR = null; } } return n; }
 function mgrApply(f) { const L = f.edits || []; if (!L.length) return 0; S.mgrApplied = S.mgrApplied || {}; S.mgrNotes = S.mgrNotes || {}; let n = 0;
   for (const e of L.sort((a, b) => (a.at || '').localeCompare(b.at || ''))) { const was = S.mgrApplied[e.id]; if (was === e.v) continue;
     if ((e.undone ? e.before : e.after) == null) S.settings.shrinkOk = TODAY;
@@ -5491,7 +5541,7 @@ async function leadPublish(dir) {
   /* members who connected the team folder itself (not a personal folder) read their files here, named for them */
   for (const m of TEAM.members) { try { const id4 = m.userId.slice(-4), put = async (name, obj) => { if (sameAsWritten('root/' + name, obj)) return; const fh = await dir.getFileHandle(name, { create: true }), w = await fh.createWritable(); await w.write(JSON.stringify(obj)); await w.close(); };
       if (SHARE_OUT[m.userId]) await put(`pipetree-for-${id4}-shared.json`, SHARE_OUT[m.userId]);
-      await put(`pipetree-for-${id4}-from-${slug(S.settings.userName)}.json`, { kind: 'pipetree-mgr', from: S.settings.userName, fromId: S.settings.userId, at: new Date().toISOString(), items: (S.mgrOut || []).filter(x => x.memberId === m.userId || (m.folder && x.folder === m.folder)), edits: (S.mgrEdits || []).filter(e => (e.memberId === m.userId || (m.folder && e.folder === m.folder)) && !e.acked).map(e => { e.sent = true; return e; }) });
+      await put(`pipetree-for-${id4}-from-${slug(S.settings.userName)}.json`, { kind: 'pipetree-mgr', from: S.settings.userName, fromId: S.settings.userId, at: new Date().toISOString(), items: (S.mgrOut || []).filter(x => x.memberId === m.userId || (m.folder && x.folder === m.folder)), edits: (S.mgrEdits || []).filter(e => !e.scope && (e.memberId === m.userId || (m.folder && e.folder === m.folder)) && !e.acked).map(e => { e.sent = true; return e; }) });
     } catch (e) { console.error('root publish', e); } }
   try { const put = async (name, obj) => { if (sameAsWritten('root/' + name, obj)) return; const fh = await dir.getFileHandle(name, { create: true }), w = await fh.createWritable(); await w.write(JSON.stringify(obj)); await w.close(); };
     await put('pipetree-pool.json', pool); await put('pipetree-shared-settings.json', { kind: 'pipetree-teamsettings', at: S.settings.teamSetAt || S.settings.savedAt || '', from: S.settings.userName, settings: Object.fromEntries(TEAM_KEYS.filter(k => S.settings[k] !== undefined).map(k => [k, S.settings[k]])) }); } catch (e) { }
@@ -7593,7 +7643,8 @@ const ACT = {
     MODAL = null; commit(); scheduleTeam(); toast(mode === 'urgent' ? `${r.title} is urgent: on top of the marketplace` : mode === 'open' ? `${r.title} is open to the team, in the marketplace` : `${r.title} is private${r.openTo ? ', with ' + r.openTo.map(id => firstName(nameOf(id))).join(', ') : ''}`, true); },
   otpick: el => { if (!MODAL || (MODAL.kind !== 'opento' && MODAL.kind !== 'roleshare')) return; const v = el.dataset.v; MODAL.sel = el.checked ? [...new Set([...(MODAL.sel || []), v])] : (MODAL.sel || []).filter(x => x !== v); },
   otsave: el => { const r = MR.get(el.dataset.r); if (!r || !MODAL) return; snapshot(); r.openTo = (MODAL.sel || []).slice(); r.openTo.forEach(id => { r.openSince = r.openSince || {}; if (!r.openSince[id]) r.openSince[id] = TODAY; }); if (!r.openTo.length) delete r.openTo; addLogRole(r); MODAL = null; commit(); scheduleTeam(); toast(r.openTo ? `${r.title} is open to ${r.openTo.map(rosterName).map(firstName).join(', ')}` : `${r.title} is only yours again`, true); },
-  selxrole: el => { SEL = { xrole: el.dataset.k }; VIEW = 'pipeline'; DRAWER = null; save(); render(); },
+  selxrole: el => { const [o, r] = String(el.dataset.k).split('|'); if (roleWorkIn(o, r)) return; if (VIEWAS && VIEWAS.scope) scopeExit(); SEL = { xrole: el.dataset.k }; VIEW = 'pipeline'; DRAWER = null; save(); render(); },
+  scopeback: () => { scopeExit(); VIEW = 'pipeline'; render(); },
   hotopen: el => ACT.rsopen({ dataset: { r: el.dataset.r, mode: 'urgent' } }),
   hotopen0: el => { CTX = null; const r = MR.get(el.dataset.r); if (!r) return; MODAL = { kind: 'hotrole', r: r.id }; render(); setTimeout(() => { const i = document.getElementById('hot_why'); i && i.focus(); }, 30); },
   moveinpick: async () => { let h; try { h = await window.showDirectoryPicker({ id: 'pipetree-team', mode: 'readwrite', startIn: 'documents' }); } catch (e) { return; }
@@ -9622,6 +9673,7 @@ document.addEventListener('click', e => {
   const menu = el.closest('details.menu'); if (menu) menu.open = false;
   if (el.classList.contains('card') && el.dataset.act === 'open' && VIEW === 'pipeline' && (BULK.on || e.ctrlKey || e.metaKey || e.shiftKey)) { e.preventDefault(); bulkToggle(el.dataset.a); return; }
   const fn = ACT[el.dataset.act];
+  if (fn && VIEWAS && VIEWAS.scope && el.dataset.act !== 'selxrole' && el.dataset.act !== 'scopeback' && el.closest('nav.tree, .rail, .side, aside.rail')) scopeExit();
   if (fn) { const cm = el.closest('.cmsg[data-mid]'); if (cm) { const m = coachState().msgs.find(x => x.id === cm.dataset.mid); if (m && m.kind === 'ask' && !m.answer) { m.answer = el.textContent.trim(); m.answeredAt = Date.now(); setTimeout(() => { if (COACH.open) render(); }, 1300); } }
     if (el.closest('.ctxmenu')) CTX = null; if (el.tagName !== 'INPUT') e.preventDefault(); fn(el, e); } else if (rer) render();
 });
