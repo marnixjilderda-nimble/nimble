@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-llI7vBQTKlB8r0sLe4EN7j7XfN+GdVUlAUcai6S6eTU=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-eDQz0XqCk/FRruUWwAo5/Il4oWK2SkSm6oIQBkiV+CQ=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -8678,14 +8678,14 @@ function outreachSince(c, d) { const ls = (c.log || []).filter(l => l.type === '
 /* What happened → what is next. Grouped choices; the next step follows from what happened (2-3 options, first one preselected with its date). */
 const CO_GROUPS = [
   ['LinkedIn', [['Request sent', 'Connection request sent'], ['Accepted', 'Connection request accepted'], ['Not accepted', 'Connection request not accepted']]],
-  ['Reached out', [['LinkedIn message', 'LinkedIn message sent'], ['InMail', 'BD InMail sent'], ['Email', 'Email sent'], ['Voicemail', 'Called, left a voicemail']]],
+  ['Reached out', [['Message sent', 'LinkedIn message sent'], ['Voicemail', 'Called, left a voicemail']]],
   ['Their reaction', [['Replied', 'They replied'], ['Spoke', 'Spoke'], ['Wants to meet', 'Interested, wants to meet'], ['Referred me on', 'Referred me to someone else'], ['Not interested', 'Not interested'], ['No response', 'No response']]],
   ['Meeting', [['Booked', 'Meeting booked'], ['Held', 'Meeting held']]]];
 const CO_UPD = CO_GROUPS.flatMap(g => g[1].map(x => x[1]));
-const CO_NEXT = ['Follow up', 'Call', 'Send a LinkedIn message', 'Send an email', 'Book a meeting'];
+const CO_NEXT = ['Follow up', 'Call', 'Send a message', 'Book a meeting'];
 const DEL_REQ = 'Delete connection request if not accepted';
 function flowNext(v, c, d) { const t = String(v || '').trim(), fn = c ? firstName(c.name || '') : '';
-  if (!t) { const ph = bdPhaseOf(d, c); return { none: true, nonone: true, o: ph === 'conv' ? [['Reply to them', 0], ['Follow up', 3], ['Book a meeting', 1]] : ph === 'meet' ? [['Prepare the meeting', 1], ['Send a recap', 0], ['Follow up', 3]] : ph === 'close' ? [['Chase the proposal', 3], ['Send revised terms', 1], ['Call', 2]] : [['Follow up', 3], ['Send an email', 2], ['Call', 2]], hint: '' }; }
+  if (!t) { const ph = bdPhaseOf(d, c); return { none: true, nonone: true, o: ph === 'conv' ? [['Reply to them', 0], ['Follow up', 3], ['Book a meeting', 1]] : ph === 'meet' ? [['Prepare the meeting', 1], ['Send a recap', 0], ['Follow up', 3]] : ph === 'close' ? [['Chase the proposal', 3], ['Send revised terms', 1], ['Call', 2]] : [['Follow up', 3], ['Send a message', 2], ['Call', 2]], hint: '' }; }
   if (/^they replied$/i.test(t)) return { o: [['Reply to them', 0], ['Book a meeting', 1]], hint: 'They replied: answer them today.' };
   if (/^waiting for their answer$/i.test(t)) return { o: [['Follow up', 3], ['Call', 3]], hint: '' };
   if (/^meeting rescheduled$/i.test(t)) return { o: [['Prepare the meeting', 1], ['Confirm the new date', 0]], hint: 'Set the new date on the opportunity (Stage and details).' };
@@ -8693,15 +8693,15 @@ function flowNext(v, c, d) { const t = String(v || '').trim(), fn = c ? firstNam
   if (/^proposal \/ t&cs sent$/i.test(t)) return { o: [['Chase the proposal', 3]], hint: '' };
   if (/^negotiating the terms$/i.test(t)) return { o: [['Send revised terms', 1], ['Call', 1]], hint: '' };
   if (/^waiting on their side$/i.test(t)) return { o: [['Chase', 3]], hint: '' };
-  if (/request sent/i.test(t)) return { o: [[DEL_REQ, 7], ['Send an email', 2], ['Approach a different stakeholder', 7]], hint: 'If they have not accepted within a week, this task asks you to delete the request. They then move to Not active (try again in 3 months) and you can approach someone else.' };
+  if (/request sent/i.test(t)) return { o: [[DEL_REQ, 7], ['Send a message', 2], ['Approach a different stakeholder', 7]], hint: 'If they have not accepted within a week, this task asks you to delete the request. They then move to Not active (try again in 3 months) and you can approach someone else.' };
   if (signalWeight(t) < 0) return { neg: true, o: [['Try again in 3 months', 91], ['Approach a different stakeholder', 0], ['Try again in a month', 30]], hint: `${fn || 'This contact'} moves to Not active and stays on the opportunity.` };
-  if (/accepted/i.test(t)) return { o: [['Send a LinkedIn message', 0], ['Send an email', 0], ['Call', 1]], hint: 'Accepted: send your message today.' };
+  if (/accepted/i.test(t)) return { o: [['Send a message', 0], ['Call', 1]], hint: 'Accepted: send your message today.' };
   if (/referred/i.test(t)) return { refer: true, o: [['Keep them posted', 7], ['Thank them', 0]], hint: `When you save, add the person ${fn || 'they'} referred you to. ${fn || 'This contact'} stays on the opportunity.` };
   if (/meeting held/i.test(t)) return { o: [['Send a recap', 0], ['Send a proposal', 2], ['Follow up', 7]], hint: '' };
   if (/meeting (booked|planned|scheduled)/i.test(t)) return { o: [['Prepare the meeting', 1], ['Follow up after the meeting', 7]], hint: '' };
   if (/wants? to meet/i.test(t)) return { o: [['Book a meeting', 0], ['Call', 1]], hint: 'They want to meet: lock in a date today.' };
   if (/spoke|replied|responded/i.test(t)) return { o: [['Book a meeting', 1], ['Send information', 1], ['Follow up', 2]], hint: '' };
-  if (/message|inmail|e-?mail|voicemail|follow|called/i.test(t)) { const n = (c && d ? outreachSince(c, d) : 0) + 1, alt = /e-?mail/i.test(t) ? 'Send a LinkedIn message' : 'Send an email';
+  if (/message|inmail|e-?mail|voicemail|follow|called/i.test(t)) { const n = (c && d ? outreachSince(c, d) : 0) + 1, alt = 'Send a message';
     if (n <= 1) return { o: [['Follow up', 1], ['Call', 1], [alt, 1]], hint: 'No reply yet: follow up tomorrow.' };
     if (n === 2) return { o: [['Follow up', 2], ['Not active if no response', 7], ['Approach a different stakeholder', 7]], hint: '2nd contact moment: follow up again in 2 days.' };
     return { o: [['Not active if no response', 2], ['Approach a different stakeholder', 2], ['Follow up', 2]], hint: `${n} contact moments without a reply: if they stay quiet, tick this task and they move to Not active (try again in 3 months).` }; }
@@ -9119,7 +9119,7 @@ function bdWizardHTML(m) {
 function bdCoAddInit(m) { if (m.f) return m.f; const d = m.d ? dealById(m.d) : null, a = d ? accById(d.accountId) : (m.acc ? accById(m.acc) : null);
   const free = a ? (a.contacts || []).filter(c => !c.inactive && !(d && dealCoIds(d).includes(c.id))) : [];
   m.f = { acc: a ? a.id : '', newAcc: '', market: a ? a.market || '' : BDSEL.market || '', co: free.length ? '' : '_new', coName: '', coTitle: '', coEmail: '', coPhone: '', coLinkedin: '', coProfile: null, update: '', nx: '', dn: 2 }; return m.f; }
-const ALT_FIRST = { o: [['Send a LinkedIn request', 0], ['Send an email', 0], ['Call', 0]] };
+const ALT_FIRST = { o: [['Send a LinkedIn request', 0], ['Send a message', 0], ['Call', 0]] };
 function bdCoAddHTML(m) {
   const f = bdCoAddInit(m), d = m.d ? dealById(m.d) : null, a = f.acc && f.acc !== '_new' ? accById(f.acc) : null;
   const free = a ? (a.contacts || []).filter(c => !c.inactive && !(d && dealCoIds(d).includes(c.id))) : [], isNew = f.co === '_new' || !free.length;
