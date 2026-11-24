@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-vhWK93pzHP7rhv7DZKiYJNjobzutajth9ZFIRPWTKVY=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-WzrAz9sVbakKKfmZtjDqC7CFoFWEFwBo4mNTz2HfuDM=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1811,6 +1811,15 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 .st-t td{vertical-align:top}
 .wm{display:inline-flex;align-items:center;gap:.42em}.wm-ic{width:1.45em;height:1.45em;flex:none;border-radius:.4em;box-shadow:0 2px 8px -3px rgba(0,0,0,.35)}.wm-s .wm-ic{width:1.7em;height:1.7em}
 .wm.wm-s{display:none}.shell.rc .wm.wm-s{display:inline-flex}
+.xbox{border:1px solid color-mix(in srgb,#2FB7A0 45%,var(--line))!important;background:color-mix(in srgb,#2FB7A0 9%,var(--glass,transparent))!important;margin-top:6px}
+.xbox .xhead{display:flex;align-items:center;gap:7px;padding:8px 8px 0;font-size:13px;font-weight:750;color:var(--ink)}
+.xbox .xhead svg{width:15px;height:15px;color:#2FB7A0}
+.xbox .xhead .xn{margin-left:auto;font-size:11px;font-weight:800;padding:1px 7px;border-radius:9px;background:color-mix(in srgb,#2FB7A0 24%,transparent)}
+.xbox .xsub{font-size:11px;color:var(--muted);padding:1px 8px 4px}
+.xbox .xgrp{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding:6px 8px 2px}
+.tn .lab.xlab{display:flex;align-items:center;gap:6px;overflow:visible}
+.tn .lab.xlab .xt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tn-who.x{flex-shrink:0;background:color-mix(in srgb,#2FB7A0 30%,transparent)}
 .tn-who{display:inline-grid;place-items:center;min-width:18px;height:16px;padding:0 4px;border-radius:8px;font-size:9.5px;font-weight:800;background:color-mix(in srgb,var(--ink) 12%,transparent);vertical-align:1px}.tn-who.h{background:color-mix(in srgb,#2FB7A0 26%,transparent)}
 .xbox .tsec{margin-bottom:2px}.tn.xrole .lab{opacity:.92}
 .c-own{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;font-size:9.5px;font-weight:800;background:color-mix(in srgb,#E8A33D 30%,transparent);margin-right:4px}
@@ -1862,7 +1871,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:cbd78912c7*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:a9e1c44e4c*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -3244,8 +3253,8 @@ function treeHTML() {
     h += `</div>`;
   }
   const xr = (teamShared().roles || []).filter(c => c.owner !== myUid() && (!q || (c.title + ' ' + c.client).toLowerCase().includes(q)));
-  if (xr.length) { const mgd = xr.filter(c => c.mgrId === myUid()), hlp = xr.filter(c => c.mgrId !== myUid()); const node = c => `<button class="tn role xrole ${SEL.xrole === c.owner + '|' + c.roleId ? 'on' : ''}" data-act="selxrole" data-k="${esc(c.owner + '|' + c.roleId)}"><span class="bul"></span><span class="lab">${esc(c.client)} ${esc(c.title)} <span class="tn-who">${esc(initials(c.ownerName))}</span></span><span class="cnt">${c.apps.filter(a => a.o === 'active').length}</span></button>`;
-    h += `<div class="tbox glass xbox"><div class="tsec">Colleagues' roles</div>${mgd.length ? `<div class="small muted" style="padding:2px 10px">You manage</div>${mgd.map(node).join('')}` : ''}${hlp.length ? `<div class="small muted" style="padding:2px 10px">You source for</div>${hlp.map(node).join('')}` : ''}</div>`; }
+  if (xr.length) { const mgd = xr.filter(c => c.mgrId === myUid()), hlp = xr.filter(c => c.mgrId !== myUid()); const node = c => `<button class="tn role xrole ${SEL.xrole === c.owner + '|' + c.roleId ? 'on' : ''}" data-act="selxrole" data-k="${esc(c.owner + '|' + c.roleId)}"><span class="bul"></span><span class="lab xlab"><span class="xt">${esc(c.client)} ${esc(c.title)}</span><span class="tn-who x" title="${esc(c.ownerName)}'s role">${esc(initials(c.ownerName))}</span></span><span class="cnt">${c.apps.filter(a => a.o === 'active').length}</span></button>`;
+    h += `<div class="tbox glass xbox"><div class="xhead">${ICON.team || ''}<span>Colleagues' roles</span><span class="xn">${xr.length}</span></div><div class="xsub">Roles your team shared with you</div>${mgd.length ? `<div class="xgrp">You manage</div>${mgd.map(node).join('')}` : ''}${hlp.length ? `<div class="xgrp">You source for</div>${hlp.map(node).join('')}` : ''}</div>`; }
   const pausedN = S.roles.filter(r => !rOn(r)).length;
   h += `<div class="tbox glass tfoot"><button class="btn quiet" style="justify-content:flex-start;padding-left:2px" data-act="addcountry">+ Add country</button>${pausedN ? `<button class="btn quiet" style="justify-content:flex-start;padding-left:2px" data-act="view" data-v="inactive">${pausedN} inactive role${pausedN > 1 ? 's' : ''}, see Inactive</button>` : ''}
     <div class="small muted">Drag to reorder; A grades sit on top. Paused roles and inactive clients move to Inactive.</div></div>`;
