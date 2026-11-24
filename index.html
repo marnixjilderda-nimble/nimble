@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-PPPmuHiniewdBKtviIiXJFsGOxDm7B3EfneAZ/apVVM=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-+61xjuzIJyJOtXzHv7fRZrdIviBNDpniLgwd+mhnNAI=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1870,6 +1870,8 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 .u3 .ux-extra{margin-left:38px}
 .u3 .whom summary{padding:9px 12px;font-size:13.5px}
 @media (max-width:760px){.u3 .u3-c.has-side{grid-template-columns:1fr}.u3 .u3-foot{padding-left:0}.u3 .ux-extra{margin-left:0}}
+.addc.intro-c{opacity:1!important;font-size:12.5px;padding:7px 10px;font-weight:700;color:var(--cl);border-style:solid;border-color:color-mix(in srgb,var(--cl) 45%,transparent);background:color-mix(in srgb,var(--cl) 9%,transparent)}
+.dz.dz-ok{border-color:color-mix(in srgb,var(--win,#2e9b6a) 60%,transparent)}
 .tn-who{display:inline-grid;place-items:center;min-width:18px;height:16px;padding:0 4px;border-radius:8px;font-size:9.5px;font-weight:800;background:color-mix(in srgb,var(--ink) 12%,transparent);vertical-align:1px}.tn-who.h{background:color-mix(in srgb,#2FB7A0 26%,transparent)}
 .xbox .tsec{margin-bottom:2px}.tn.xrole .lab{opacity:.92}
 .c-own{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;font-size:9.5px;font-weight:800;background:color-mix(in srgb,#E8A33D 30%,transparent);margin-right:4px}
@@ -1909,6 +1911,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <div id="tip" role="tooltip"></div>
 <input type="file" id="filepick" accept=".json,application/json" hidden>
 <input type="file" id="pdfpick" accept="application/pdf,.pdf" hidden>
+<input type="file" id="cvnewpick" accept=".pdf,.doc,.docx,application/pdf" hidden>
 <input type="file" id="rfppick" accept=".zip,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.odt,.ods" multiple hidden>
 <input type="file" id="rfppick1" hidden>
 <input type="file" id="carpick" accept=".csv,text/csv" hidden>
@@ -1921,7 +1924,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:bb8be0bd21*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:4bc458fb8d*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -2945,15 +2948,15 @@ const hasNotes = (p, a) => !!((p.transcript || '').trim() || (p.notes || '').tri
 /* client contact persons */
 function clientContacts(c) { if (!c) return []; if (!Array.isArray(c.contacts)) c.contacts = c.contact ? [{ id: uid('cc'), name: c.contact, title: '', email: '', phone: '' }] : []; return c.contacts; }
 /* introducing candidates to a client: email with key points and CVs */
-function introPool(cid) { return S.apps.filter(a => isLive(a) && roleOf(a) && roleOf(a).clientId === cid).sort((x, y) => (stageOf(x).kind === 'cv' ? 0 : 1) - (stageOf(y).kind === 'cv' ? 0 : 1) || roleOf(x).title.localeCompare(roleOf(y).title) || stageOf(y).i - stageOf(x).i || personOf(x).name.localeCompare(personOf(y).name)); }
+function introPool(cid, rid) { return S.apps.filter(a => isLive(a) && roleOf(a) && roleOf(a).clientId === cid && stageOf(a).kind === 'cv' && (!rid || a.roleId === rid)).sort((x, y) => (stageOf(x).kind === 'cv' ? 0 : 1) - (stageOf(y).kind === 'cv' ? 0 : 1) || roleOf(x).title.localeCompare(roleOf(y).title) || stageOf(y).i - stageOf(x).i || personOf(x).name.localeCompare(personOf(y).name)); }
 function introKp(m, a) { const p = personOf(a); if (m.kp[a.id] == null) m.kp[a.id] = (p.kp && p.kp.trim()) ? p.kp : kpMake(p, a).join('\n'); return m.kp[a.id]; }
 function introText(m) {
-  const c = MC.get(m.c), sel = introPool(m.c).filter(a => m.sel.includes(a.id)), to = clientContacts(c).find(x => x.id === m.to), me = firstName(S.settings.userName || '') || '';
+  const c = MC.get(m.c), sel = introPool(m.c, m.r).filter(a => m.sel.includes(a.id)), to = clientContacts(c).find(x => x.id === m.to), me = firstName(S.settings.userName || '') || '';
   const roles = [...new Set(sel.map(a => roleOf(a).title))], multi = roles.length > 1, cvN = sel.filter(a => personOf(a).cv).length, rl = roles.length > 1 ? roles.slice(0, -1).join(', ') + ' and ' + roles[roles.length - 1] : roles[0] || '';
   const att = cvN ? (cvN === sel.length ? (sel.length > 1 ? ', CVs attached' : ', CV attached') : `, ${cvN} CV${cvN > 1 ? 's' : ''} attached`) : '';
   const lead = sel.length === 1 ? `I'd like to introduce ${personOf(sel[0]).name} for the ${rl} role. A few key points below${att}.` : `As promised, here are ${sel.length} candidates for the ${rl} role${multi ? 's' : ''}. Key points per candidate below${att}.`;
   const blocks = sel.map(a => `${personOf(a).name}${multi ? ' – ' + roleOf(a).title : ''}\n` + introKp(m, a).split('\n').map(l => l.trim().replace(/^[-•*·]\s*/, '')).filter(Boolean).slice(0, 6).map(l => '• ' + l).join('\n'));
-  const subj = `${sel.length > 1 ? 'Candidates' : 'Candidate'} for ${rl}${sel.length ? ': ' + sel.map(a => personOf(a).name).join(', ') : ''}`;
+  const subj = `${sel.length > 1 ? 'Candidates' : 'Candidate'} for ${c.name} ${rl}`.trim();
   return { subj, body: `Hi ${to ? firstName(to.name) : 'there'}, hope you're doing well!\n\n${lead}\n\n${blocks.join('\n\n')}\n\nHappy to set up interviews with whoever stands out, or to give more context on a quick call.\n\nLooking forward,\n${me}` };
 }
 function textToHtml(t) { const ls = String(t).split('\n'), out = []; let ul = false;
@@ -2970,15 +2973,15 @@ function buildEml({ to, subject, text, html, files }) {
   L.push(`--${b}--`, ''); return L.join('\r\n');
 }
 function introHTML(m) {
-  const c = MC.get(m.c), pool = introPool(m.c), cts = clientContacts(c); if (m.to == null) m.to = (cts[0] || {}).id || '';
+  const c = MC.get(m.c), pool = introPool(m.c, m.r), cts = clientContacts(c); if (m.to == null) m.to = (cts[0] || {}).id || '';
   const sel = pool.filter(a => m.sel.includes(a.id)), tx = introText(m); m.gen = tx.body;
   const rows = pool.map(a => { const p = personOf(a), on = m.sel.includes(a.id), fn = esc(firstName(p.name)), kp = on ? introKp(m, a) : '';
     return `<div class="ir ${on ? 'on' : ''}"><label class="ir-h"><input type="checkbox" data-act-change="introsel" data-a="${a.id}" ${on ? 'checked' : ''}><b>${esc(p.name)}</b><span class="muted small">${esc(roleOf(a).title)} · ${esc(stageOf(a).label)}</span><span class="ir-tags">${p.cv ? '<span class="tag ok" style="margin:0">CV</span>' : '<span class="tag" style="margin:0">no CV</span>'}${hasNotes(p, a) ? '<span class="tag ok" style="margin:0">notes</span>' : ''}</span></label>
       ${on ? `<div class="ir-b">${!p.cv ? `<div class="ir-warn">No CV for ${fn} yet. <button class="btn sm" data-act="cvpick" data-p="${p.id}">Upload CV</button></div>` : ''}
         ${!hasNotes(p, a) ? `<div class="ir-warn">I see there's no transcript or notes for ${fn}. Want to add a few notes? They make the key points better.<textarea class="inp" id="in_${p.id}" rows="2" placeholder="e.g. Wants more architecture work, notice 1 month, 75k, hybrid 2 days"></textarea><div><button class="btn sm" data-act="introkp" data-a="${a.id}" data-n="1">Use these notes</button></div></div>` : ''}
         <div class="ir-kp"><span class="small muted">Key points for the client (one per line, max 6)</span><textarea class="inp" id="kp_${a.id}" rows="${Math.min(7, Math.max(3, kp.split('\n').length + 1))}">${esc(kp)}</textarea><button class="btn sm quiet" data-act="introkp" data-a="${a.id}">Make again from CV and notes</button></div></div>` : ''}</div>`; }).join('');
-  return `<h3>Introduce candidates to ${esc(c.name)}</h3><p class="small muted" style="margin-top:-6px">Tick who you send. Nimble writes the email with short key points per candidate and attaches their CVs. Check the key points, then create the email.</p>
-    <div class="irs">${rows || '<div class="small muted">No live candidates at this client.</div>'}</div>
+  return `<h3>Introduce candidates to ${esc(c.name)}${m.r && MR.get(m.r) ? ' for ' + esc(MR.get(m.r).title) : ''}</h3><p class="small muted" style="margin-top:-6px">Everyone in CV received is ticked. Untick who you don't send. Nimble writes the email with short key points per candidate and attaches their CVs. Check the key points, then create the email.</p>
+    <div class="irs">${rows || '<div class="small muted">Nobody in CV received yet.</div>'}</div>
     <div class="fgrid" style="margin-top:14px"><label class="field">To<select id="ib_to" data-act-change="introto">${cts.map(x => `<option value="${x.id}" ${m.to === x.id ? 'selected' : ''}>${esc(x.name)}${x.email ? ' · ' + esc(x.email) : ' · no email yet'}</option>`).join('')}<option value="" ${!m.to ? 'selected' : ''}>New contact person…</option></select></label>
       ${!m.to ? `<label class="field">Name<input id="ib_nn" placeholder="e.g. Sophie de Vries"></label><label class="field">Email<input id="ib_ne" type="email" placeholder="sophie@client.com"></label>` : (cts.find(x => x.id === m.to) || {}).email ? '' : `<label class="field">Email of ${esc(firstName((cts.find(x => x.id === m.to) || {}).name || ''))}<input id="ib_ne" type="email"></label>`}
       <label class="field wide">Subject<input id="ib_subj" value="${esc(m.subj ?? tx.subj)}"></label>
@@ -3915,11 +3918,11 @@ function pipelineHTML() {
   const rows = S.settings.pipeView === 'rows';
   /* Rows view: stages under each other, the candidates of each stage listed to the right of it */
   const rowsBoard = () => `<div class="vboard" id="board">${cols.map(c => { const list = byCol[c.id].sort((x, y) => idleDays(y) - idleDays(x));
-    if (!list.length) return `<div class="vrow empty s-${colorOf(c)}" data-drop="${c.id}" id="col-${c.id}"><div class="vh"><span class="dot"></span><span class="t">${esc(c.label)}</span><span class="num muted">0</span></div><div class="vlist"><span class="vdrop">Drop a card here</span><button class="addc vadd" data-act="addcand" data-r="${role ? role.id : ''}" data-s="${c.id}" title="Add a candidate to ${esc(c.label)}">+ Add</button></div></div>`;
-    return `<div class="vrow s-${colorOf(c)}" data-drop="${c.id}" id="col-${c.id}"><div class="vh"><span class="dot"></span><span class="t">${esc(c.label)}</span>${BULK.on ? `<button class="bcol" data-act="bulkcol" data-col="${c.id}" title="Select everyone in ${esc(c.label)}">All</button>` : `<span class="num">${list.length}</span>`}</div><div class="vlist">${list.map(card).join('')}<button class="addc vadd" data-act="addcand" data-r="${role ? role.id : ''}" data-s="${c.id}" title="Add a candidate to ${esc(c.label)}">+ Add candidate</button></div></div>`; }).join('')}</div>`;
+    if (!list.length) return `<div class="vrow empty s-${colorOf(c)}" data-drop="${c.id}" id="col-${c.id}"><div class="vh"><span class="dot"></span><span class="t">${esc(c.label)}</span><span class="num muted">0</span></div><div class="vlist"><span class="vdrop">Drop a card here</span>${PRE.has(c.kind) ? `<button class="addc vadd" data-act="addcand" data-r="${role ? role.id : ''}" data-s="${c.id}" title="Add a candidate to ${esc(c.label)}">+ Add</button>` : ''}</div></div>`;
+    return `<div class="vrow s-${colorOf(c)}" data-drop="${c.id}" id="col-${c.id}"><div class="vh"><span class="dot"></span><span class="t">${esc(c.label)}</span>${BULK.on ? `<button class="bcol" data-act="bulkcol" data-col="${c.id}" title="Select everyone in ${esc(c.label)}">All</button>` : `<span class="num">${list.length}</span>`}</div><div class="vlist">${list.map(card).join('')}${PRE.has(c.kind) ? `<button class="addc vadd" data-act="addcand" data-r="${role ? role.id : ''}" data-s="${c.id}" title="Add a candidate to ${esc(c.label)}">+ Add candidate</button>` : ''}${c.kind === 'cv' && role && list.length ? `<button class="addc intro-c" data-act="introopen" data-c="${role.clientId}" data-r="${role.id}">${list.length > 1 ? 'Introduce all ' + list.length : 'Introduce'}</button>` : ''}</div></div>`; }).join('')}</div>`;
   const board = rows ? rowsBoard() : emptyRole ? `<div class="glass emptyrole" data-drop="${cols[0].id}"><h2>No candidates yet</h2><p class="muted">Add the first one, or drop a LinkedIn PDF anywhere on this page.</p><button class="btn primary big" data-act="addcand" data-r="${role.id}">Add candidate</button></div>` : `<div class="board" id="board">${cols.map(c => { const list = byCol[c.id].sort((x, y) => idleDays(y) - idleDays(x));
-    if (!list.length && !(role && ['source', 'screen', 'cvwait', 'cv', 'review'].includes(c.kind))) return `<div class="col slim s-${colorOf(c)}" data-drop="${c.id}" id="col-${c.id}" title="${esc(c.label)}"><span class="vl">${esc(c.label)}</span><button class="addc slimadd" data-act="addcand" data-r="${role ? role.id : ''}" data-s="${c.id}" title="Add a candidate to ${esc(c.label)}">+</button></div>`;
-    return `<div class="col s-${colorOf(c)}" data-drop="${c.id}" id="col-${c.id}"><div class="ch"><span><span class="dot"></span><span class="t">${esc(c.label)}</span></span>${BULK.on && list.length ? `<button class="bcol" data-act="bulkcol" data-col="${c.id}" title="Select everyone in ${esc(c.label)}">All</button>` : `<span class="num muted">${list.length || ''}</span>`}</div>${list.map(card).join('')}<button class="addc" data-act="addcand" data-r="${role ? role.id : ''}" data-s="${c.id}" title="Add a candidate to ${esc(c.label)}">+ Add candidate</button></div>`; }).join('')}</div>`;
+    if (!list.length && !(role && ['source', 'screen', 'cvwait', 'cv', 'review'].includes(c.kind))) return `<div class="col slim s-${colorOf(c)}" data-drop="${c.id}" id="col-${c.id}" title="${esc(c.label)}"><span class="vl">${esc(c.label)}</span>${PRE.has(c.kind) ? `<button class="addc slimadd" data-act="addcand" data-r="${role ? role.id : ''}" data-s="${c.id}" title="Add a candidate to ${esc(c.label)}">+</button>` : ''}</div>`;
+    return `<div class="col s-${colorOf(c)}" data-drop="${c.id}" id="col-${c.id}"><div class="ch"><span><span class="dot"></span><span class="t">${esc(c.label)}</span></span>${BULK.on && list.length ? `<button class="bcol" data-act="bulkcol" data-col="${c.id}" title="Select everyone in ${esc(c.label)}">All</button>` : `<span class="num muted">${list.length || ''}</span>`}</div>${list.map(card).join('')}${PRE.has(c.kind) ? `<button class="addc" data-act="addcand" data-r="${role ? role.id : ''}" data-s="${c.id}" title="Add a candidate to ${esc(c.label)}">+ Add candidate</button>` : ''}${c.kind === 'cv' && role && list.length ? `<button class="addc intro-c" data-act="introopen" data-c="${role.clientId}" data-r="${role.id}">${list.length > 1 ? 'Introduce all ' + list.length : 'Introduce'}</button>` : ''}</div>`; }).join('')}</div>`;
   const toggle = `<button class="btn quiet treetoggle ${BULK.on ? 'on' : ''}" data-act="bulkon" title="Select several candidates and move, reject or close them in one go">${BULK.on ? '✓ Selecting' : 'Select'}</button><button class="btn quiet treetoggle viewtoggle" data-act="pipeview" title="${rows ? 'Show the stages as columns, side by side' : 'Show the stages under each other, with the candidates next to each stage'}">${rows ? '⇆ Columns view' : '⇅ Rows view'}</button><button class="btn quiet treetoggle" data-act="railtoggle" title="${S.settings.railCollapsed ? 'Show the full main menu' : 'Narrow the main menu for more room'}">${S.settings.railCollapsed ? 'Show menu' : 'Hide menu'}</button>` + (navMode !== 'path' ? `<button class="btn quiet treetoggle" data-act="treetoggle" title="${S.settings.treeHidden ? 'Show the tree' : 'Hide the tree for more room'}">${S.settings.treeHidden ? 'Show tree' : 'Hide tree'}</button>` : '');
   let head;
   if (role) {
@@ -6529,8 +6532,10 @@ function modalHTML() {
   } else if (m.kind === 'addcand') {
     const d = m.d, roles = S.roles.filter(r => rOn(r)), stl = d.roleId ? stagesFor(d.roleId) : [];
     const existing = d.name && S.people.find(p => p.name.toLowerCase() === d.name.trim().toLowerCase());
-    inner = `<h3>Add candidate</h3>
-      <div class="dz" id="dz" data-act="pdfnew"><b>Paste their LinkedIn link below and click Read</b>, or drop a LinkedIn PDF here<div class="small" style="margin-top:4px">The link fills in the basics. The PDF (on a profile: More, then Save to PDF) gives the full career history.</div></div>
+    const cvStage = d.roleId && d.stage && (stagesFor(d.roleId).find(x => x.id === d.stage) || {}).kind === 'cv';
+    inner = `<h3>Add candidate${cvStage ? ' to CV received' : ''}</h3>
+      ${cvStage ? `<div class="dz ${m.cvFile ? 'dz-ok' : ''}" id="dz" data-act="cvnewpick"><b>${m.cvFile ? 'CV: ' + esc(m.cvFile.name) : 'Add their CV (required)'}</b><div class="small" style="margin-top:4px">Click to pick it, or drop a PDF or Word file here. Nimble reads the name, email and phone from it.</div></div>` : ''}
+      <div class="dz" id="dz" data-act="pdfnew" ${cvStage ? 'hidden' : ''}><b>Paste their LinkedIn link below and click Read</b>, or drop a LinkedIn PDF here<div class="small" style="margin-top:4px">The link fills in the basics. The PDF (on a profile: More, then Save to PDF) gives the full career history.</div></div>
       ${d.profile ? `<div class="small" style="margin:-6px 0 12px"><span class="tag ok" style="margin:0">Profile read</span> ${d.profile.experience.length} roles, ${d.profile.education.length} schools. You'll see it all when you open the candidate.</div>` : ''}
       <div class="fgrid">
       <label class="field wide">LinkedIn link<span style="display:flex;gap:6px"><input data-mbind="linkedin" value="${esc(d.linkedin)}" placeholder="Paste a linkedin.com/in/... link and click Read"><button class="btn sm" data-act="acliread">Read</button></span></label>
@@ -7454,24 +7459,25 @@ const ACT = {
   setsector: el => { const p = MP.get(el.dataset.p); if (!p) return; p.sector = el.value; p.sectorSet = !!el.value; commit(); },
   kpgen: el => { const p = MP.get(el.dataset.p); if (!p) return; snapshot(); p.kp = kpMake(p, appById(el.dataset.a)).join('\n'); commit(); toast(p.kp ? 'Key points made. Edit them if needed.' : 'Not enough to go on yet. Add a CV, LinkedIn PDF or notes first.', true); },
   introopen: el => { CTX = null; const a = el.dataset.a && appById(el.dataset.a), cid = el.dataset.c || (a && roleOf(a) ? roleOf(a).clientId : SEL.client || (SEL.role && MR.get(SEL.role) ? MR.get(SEL.role).clientId : '')); if (!cid) { toast('Pick a client or role first'); return; }
-    const pool = introPool(cid); if (!pool.length) { toast('No live candidates at this client'); return; }
-    const pre = a ? [a.id, ...pool.filter(x => x.id !== a.id && x.roleId === a.roleId && x.stage === a.stage).map(x => x.id)] : pool.filter(x => stageOf(x).kind === 'cv' && (!SEL.role || x.roleId === SEL.role)).map(x => x.id);
-    MODAL = { kind: 'intro', c: cid, sel: pre, kp: {}, to: null }; render(); },
+    const rid = el.dataset.r || (a ? a.roleId : SEL.role && MR.get(SEL.role) && MR.get(SEL.role).clientId === cid ? SEL.role : ''), pool = introPool(cid, rid);
+    if (!pool.length) { toast(`Nobody in CV received${rid ? ' for ' + MR.get(rid).title : ' at ' + MC.get(cid).name} yet`); return; }
+    const cts = clientContacts(MC.get(cid));
+    MODAL = { kind: 'intro', c: cid, r: rid, sel: pool.map(x => x.id), kp: {}, to: cts[0] ? cts[0].id : null }; render(); },
   introsel: el => { introRead(); const id = el.dataset.a; MODAL.sel = el.checked ? [...new Set([...MODAL.sel, id])] : MODAL.sel.filter(x => x !== id); render(); },
   introto: el => { introRead(); MODAL.to = el.value; render(); },
   introkp: el => { introRead(); const a = appById(el.dataset.a); if (!a) return; const p = personOf(a); if (el.dataset.n) { const t = ((document.getElementById('in_' + p.id) || {}).value || '').trim(); if (!t) { toast('Type a few notes first'); return; } p.transcript = [(p.transcript || '').trim(), t].filter(Boolean).join('\n'); }
     p.kp = kpMake(p, a).join('\n'); MODAL.kp[a.id] = p.kp; save(); render(); },
   introrebuild: () => { introRead(); MODAL.body = null; MODAL.subj = null; render(); },
-  introcopy: () => { introRead(); const tx = introText(MODAL); copyText(MODAL.body ?? tx.body); toast('Message copied'); },
+  introcopy: () => { introRead(); { const m = MODAL, c = MC.get(m.c), cts = clientContacts(c), v = id => ((document.getElementById(id) || {}).value || '').trim(); let to = cts.find(x => x.id === m.to); if (!to && v('ib_nn')) { to = { id: uid('cc'), name: v('ib_nn'), title: '', email: v('ib_ne'), phone: '' }; cts.push(to); m.to = to.id; if (!c.contact) c.contact = to.name; save(); } else if (to && !to.email && v('ib_ne')) { to.email = v('ib_ne'); save(); } } const tx = introText(MODAL); copyText(MODAL.body ?? tx.body); toast('Message copied'); },
   introeml: async () => { introRead(); const m = MODAL, c = MC.get(m.c), cts = clientContacts(c), v = id => ((document.getElementById(id) || {}).value || '').trim();
     let to = cts.find(x => x.id === m.to); if (!to && v('ib_nn')) { to = { id: uid('cc'), name: v('ib_nn'), title: '', email: v('ib_ne'), phone: '' }; cts.push(to); m.to = to.id; if (!c.contact) c.contact = to.name; } if (to && !to.email && v('ib_ne')) to.email = v('ib_ne');
-    const sel = introPool(m.c).filter(a => m.sel.includes(a.id)); if (!sel.length) { toast('Tick at least one candidate'); return; }
+    const sel = introPool(m.c, m.r).filter(a => m.sel.includes(a.id)); if (!sel.length) { toast('Tick at least one candidate'); return; }
     const tx = introText(m), body = m.body ?? tx.body, subj = m.subj ?? tx.subj, files = [], missing = [];
     for (const a of sel) { const p = personOf(a); if (!p.cv) { missing.push(firstName(p.name)); continue; } const f = await kvGet('cv:' + p.id).catch(() => null); if (!f || !f.data) { missing.push(firstName(p.name)); continue; } const ext = (f.name.match(/\.\w+$/) || ['.pdf'])[0]; files.push({ name: `${p.name} - CV${ext}`, type: f.type, data: f.data }); }
     const eml = buildEml({ to: to ? (to.email ? `${mimeWord(to.name)} <${to.email}>` : mimeWord(to.name)) : '', subject: subj, text: body, html: textToHtml(body), files });
     downloadFile(`Introduction ${c.name} ${TODAY}.eml`, eml, 'message/rfc822'); m.made = true; save(); render();
     toast(`Email created${files.length ? ' with ' + files.length + ' CV' + (files.length > 1 ? 's' : '') : ''}. Open the downloaded file: it opens in Outlook as a draft.${missing.length ? ' No CV for ' + missing.join(', ') + '.' : ''}`); },
-  introsent: () => { const m = MODAL, c = MC.get(m.c), to = clientContacts(c).find(x => x.id === m.to), sel = introPool(m.c).filter(a => m.sel.includes(a.id)); snapshot(); let n = 0;
+  introsent: () => { const m = MODAL, c = MC.get(m.c), to = clientContacts(c).find(x => x.id === m.to), sel = introPool(m.c, m.r).filter(a => m.sel.includes(a.id)); snapshot(); let n = 0;
     for (const a of sel) { const nx = introNext(a); addLog(a, 'contact', `Introduced to ${to ? to.name : c.name}`); if (nx) { setStage(a, nx.id); n++; } }
     MODAL = null; ASK = null; commit(); toast(`${sel.length} introduced${n ? ', moved to ' + introNextLabel(sel) : ''}. Chase-feedback tasks are set.`, true); },
   ccopen: el => { CTX = null; MODAL = { kind: 'ccontacts', c: el.dataset.c }; render(); },
@@ -7940,6 +7946,7 @@ const ACT = {
   ptab: el => { PEOPLE_TAB = el.dataset.k; render(); },
   /* creation */
   addcand: el => { CTX = null; openAddCandidate({ r: el.dataset.r || undefined, s: el.dataset.s }); render(); },
+  cvnewpick: () => { readMbind(); document.getElementById('cvnewpick').click(); },
   pdfnew: () => { readMbind(); PDF_TARGET = null; document.getElementById('pdfpick').click(); },
   pdfperson: el => { PDF_TARGET = { personId: el.dataset.p }; document.getElementById('pdfpick').click(); },
   acpick: el => { try { const ae = document.activeElement; if (ae && ae.blur && ae.dataset && ae.dataset.mbind) ae.blur(); } catch (e) { } readMbind(); const p = MP.get(el.dataset.p); if (!p || !MODAL) return; const d = MODAL.d; d.personId = p.id; d.name = p.name; for (const k of ['title', 'employer', 'location', 'email', 'linkedin', 'phone']) if (p[k]) d[k] = p[k];
@@ -7948,6 +7955,7 @@ const ACT = {
   savecand: () => {
     readMbind(); const d = MODAL.d, name = (d.name || '').trim();
     if (!name || !d.roleId) { toast('Add a name and pick a role'); return; }
+    if (d.stage && (stagesFor(d.roleId).find(x => x.id === d.stage) || {}).kind === 'cv' && !MODAL.cvFile && !(((d.personId && MP.get(d.personId)) || {}).cv)) { toast('CV received needs the CV: add it first'); return; }
     snapshot();
     let p = (d.personId && MP.get(d.personId)) || S.people.find(x => x.name.toLowerCase() === name.toLowerCase());
     if (!p) { p = newPerson({ name }); S.people.push(p); }
@@ -9802,6 +9810,7 @@ document.getElementById('rfppick1').addEventListener('change', async e => { cons
 document.getElementById('carpick').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) f.text().then(carImportText); });
 document.getElementById('jdpick').addEventListener('change', e => { const f = e.target.files[0]; if (f && JD_TARGET) jdFile(f, JD_TARGET); JD_TARGET = null; e.target.value = ''; });
 document.getElementById('cvpick').addEventListener('change', e => { const f = e.target.files[0]; if (f && CV_TARGET) { if (MODAL && MODAL.kind === 'cvask') MODAL = null; cvFile(f, CV_TARGET); } CV_TARGET = null; e.target.value = ''; });
+document.getElementById('cvnewpick').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) cvNewCandidate(f); });
 document.getElementById('pdfpick').addEventListener('change', e => { const f = e.target.files[0]; if (f) (PDF_TARGET && PDF_TARGET.bd ? bdPdfFile(f, PDF_TARGET) : handlePdfFile(f, PDF_TARGET)); PDF_TARGET = null; e.target.value = ''; });
 document.getElementById('wallpick').addEventListener('change', e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f) return;
