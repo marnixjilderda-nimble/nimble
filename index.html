@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-NdAUoHtfF6ghtHlvHzid8TAQP44/w9Y7sj8FCiHzFis=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VwuTHZQyvzxpFuMU1Y5kw4btgAreXqZxaSNhCuE/srU=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1876,6 +1876,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 .addc.intro-c{opacity:1!important;display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:8px;padding:9px 10px;border-radius:10px;font-size:13px;font-weight:700;color:#fff!important;background:var(--cl)!important;border:0!important;box-shadow:0 2px 8px color-mix(in srgb,var(--cl) 30%,transparent);cursor:pointer}.addc.intro-c:hover{filter:brightness(1.08)}.addc.intro-c svg{width:14px;height:14px}
 .dz.dz-ok{border-color:color-mix(in srgb,var(--win,#2e9b6a) 60%,transparent)}
 .rv-w{display:grid;gap:2px}.hok-l{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:0 12px 8px 30px;color:var(--muted)}
+.bdw-name{display:grid;gap:2px}.bdw-name b{font-size:16px}
 .tn-who{display:inline-grid;place-items:center;min-width:18px;height:16px;padding:0 4px;border-radius:8px;font-size:9.5px;font-weight:800;background:color-mix(in srgb,var(--ink) 12%,transparent);vertical-align:1px}.tn-who.h{background:color-mix(in srgb,#2FB7A0 26%,transparent)}
 .xbox .tsec{margin-bottom:2px}.tn.xrole .lab{opacity:.92}
 .c-own{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;font-size:9.5px;font-weight:800;background:color-mix(in srgb,#E8A33D 30%,transparent);margin-right:4px}
@@ -1928,7 +1929,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:073888a756*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:ea8bc92b28*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -9116,6 +9117,12 @@ function bdWizInit(m) {
 }
 function bdWizRead() { bdWizRead0(); const f = MODAL && MODAL.f; if (f && f.coName && /linkedin\.com\/in\//i.test(f.coName)) { if (!f.coLinkedin) f.coLinkedin = f.coName.trim(); f.coName = liSlugName(f.coName) || ''; if (!f.coProfile) setTimeout(() => ACT.bdliread(), 0); } }
 function bdWizRead0() { const f = MODAL && MODAL.f; if (!f) return; document.querySelectorAll('[data-wz]').forEach(el => { if ((el.dataset.wz === 'update' || el.dataset.wz === 'nx') && el.classList.contains('inp-other') && !el.value.trim()) return; if (el.dataset.wz === 'detail' && !(MODAL.f.update && CO_UPD.includes(MODAL.f.update))) return; if (el.dataset.wz === 'ndet' && !MODAL.f.nx) return; f[el.dataset.wz] = el.value; }); }
+const oppAccName = f => f.acc === '_new' ? (f.newAcc || '').trim() : ((accById(f.acc) || {}).name || '');
+const oppName = f => [oppAccName(f), (f.role || '').trim()].filter(Boolean).join(' ');
+document.addEventListener('input', e => { const el = e.target; if (!el.dataset || !['role', 'newAcc'].includes(el.dataset.wz) || !MODAL || !MODAL.f) return; MODAL.f[el.dataset.wz] = el.value; const n = document.getElementById('bdw_name'); if (n) n.textContent = oppName(MODAL.f) || 'Pick a company'; });
+async function readVacancy(link) { let u = String(link || '').trim(); if (!/^https?:/i.test(u)) u = 'https://' + u.replace(/^\/+/, ''); const txt = await coFetch(u), t = ((/^Title:\s*(.+)$/m.exec(txt) || [])[1] || '').trim();
+  const parts = t.replace(/\s*\|\s*LinkedIn.*$/i, '').split(/\s+(?:[|–—]|-|at|bij|chez)\s+/i).map(x => x.trim()).filter(Boolean); const body = (txt.split(/Markdown Content:/)[1] || txt).replace(/\s+/g, ' ').trim();
+  return { title: (parts[0] || '').replace(/^(vacature|vacancy|job|hiring)[:\s-]+/i, '').slice(0, 80), company: parts[1] || '', text: body.slice(0, 3000), link: u }; }
 function bdWizardHTML(m) {
   const f = bdWizInit(m), co = f.co && f.co !== '_new' && f.acc && f.acc !== '_new' ? ((accById(f.acc) || {}).contacts || []).find(c => c.id === f.co) : null;
   return `<h3>New opportunity</h3><p class="small muted" style="margin-top:-6px">Just the company and where it stands. Add the contacts, what you did and the next step inside the opportunity.</p>
@@ -9125,7 +9132,9 @@ function bdWizardHTML(m) {
       ${(ca => ca ? `<div class="small" style="grid-column:1/-1;margin:-2px 0 2px;color:#5B33D6"><b>${esc(ca.name)}</b> is already a client${ca.market ? ' in ' + esc(ca.market) : ''}. Pick the country and team you want to grow into.</div>
         <label class="field">Country for this opportunity<input class="inp" data-wz="oppMarket" list="bdmkw2" value="${esc(f.oppMarket ?? ca.market ?? '')}"><datalist id="bdmkw2">${bdMarkets().map(x => `<option value="${esc(x)}">`).join('')}</datalist></label>
         <label class="field">Department or team (optional)<input class="inp" data-wz="dept" value="${esc(f.dept || '')}" placeholder="e.g. Finance, IT, Sales"></label>` : '')(f.acc && f.acc !== '_new' && (accById(f.acc) || {}).status === 'client' ? accById(f.acc) : null)}
-      <label class="field">Opportunity name<input class="inp" data-wz="title" value="${esc(f.title)}" placeholder="e.g. Finance hires 2027"></label>
+      <label class="field wide" style="grid-column:1/-1">Role or scope (optional)<span style="display:flex;gap:6px;flex-wrap:wrap"><input class="inp" data-wz="role" id="bdw_role" value="${esc(f.role || '')}" placeholder="e.g. Modern Workplace, or Wide scope" style="flex:1;min-width:200px"><button class="btn sm quiet" data-act="bdwizrole" data-v="Wide scope">Wide scope</button></span></label>
+      <div class="cam-pdf wide" style="grid-column:1/-1"><input class="inp" data-wz="vacLink" value="${esc(f.vacLink || '')}" placeholder="Or paste a vacancy link to fill in the role (optional)" style="flex:1;min-width:200px"><button class="btn sm" data-act="bdwizvac" ${m.vreading ? 'disabled' : ''}>${m.vreading ? 'Reading…' : 'Read'}</button></div>
+      <div class="field wide bdw-name">Opportunity name<b id="bdw_name">${esc(oppName(f) || 'Pick a company')}</b><span class="small muted">Company plus role. Leave the role empty for just the company.</span></div>
       <label class="field">Stage<select class="inp" data-wz="stage" data-act-change="bdwizstage">${bdStages().map(s => `<option value="${s.id}" ${f.stage === s.id ? 'selected' : ''}>${esc(s.label)}</option>`).join('')}</select></label>
       ${f.stage === 'meeting' ? `<label class="field">Meeting date<input class="inp" type="date" data-wz="meetOn" value="${f.meetOn}"></label><label class="field">Meeting time<input class="inp" type="time" data-wz="meetTime" value="${f.meetTime}"></label>` : ''}
 </div>
@@ -9237,14 +9246,18 @@ const BD_ACT = {
     const d = { id: uid('dl'), accountId: a.id, title: f.title.trim() || [f.dept && f.dept.trim(), om && om !== a.market ? om : ''].filter(Boolean).join(' · ') || services()[0], service: services()[0], stage: f.stage, value: +f.value || 0, prob: null, nextStep: '', nextDate: null, contactId: co ? co.id : null, contactIds: co ? [co.id] : [], outcome: 'open', created: TODAY, since: TODAY, log: [] };
     if (isCl) { d.expansion = true; if (om && om !== a.market) d.market = om; if ((f.dept || '').trim()) d.dept = f.dept.trim(); if (d.market && !bdMarkets().includes(d.market)) S.settings.bdMarkets = [...(S.settings.bdMarkets || []), d.market]; }
     if (f.stage === 'meeting' && f.meetOn) { d.meetOn = f.meetOn; d.meetTime = f.meetTime || ''; }
-    const ex = openDeals(a)[0];
+    const role = (f.role || '').trim(), oname = [a.name, role].filter(Boolean).join(' '), ex = openDeals(a).find(x => (x.title || a.name).trim().toLowerCase() === oname.toLowerCase()) || (!role ? openDeals(a).find(x => !x.role) : null);
     if (ex) { if (co && !(ex.contactIds || []).includes(co.id)) { ex.contactIds = [...(ex.contactIds || []), co.id]; ex.contactId = ex.contactId || co.id; }
       if (bdStages().findIndex(x => x.id === f.stage) > dealIdx(ex)) { const from = dealStage(ex).label; ex.stage = f.stage; ex.since = TODAY; bdLog(ex, 'system', `Moved from ${from} to ${dealStage(ex).label}`); }
       if (f.stage === 'meeting' && f.meetOn) { ex.meetOn = f.meetOn; ex.meetTime = f.meetTime || ''; }
-      MODAL = null; BDD = null; bdOpenPanel({ deal: ex.id }); commit(); toast(`${a.name} already has an opportunity. Added it there`, true); return; }
-    if (!f.title.trim() && !isCl) d.title = a.name;
+      MODAL = null; BDD = null; bdOpenPanel({ deal: ex.id }); commit(); toast(`${oname} already exists. Added it there`, true); return; }
+    d.title = oname; if (role) d.role = role; if (f.vac) { d.vacLink = f.vac.link; if (f.vac.text) bdLog(d, 'note', `Vacancy: ${f.vac.link}`); }
     bdLog(d, 'system', `Created in ${dealStage(d).label}`); S.deals.push(d); d.autoSkip = [];
     MODAL = null; BDD = null; bdOpenPanel({ deal: d.id }); commit(); toast(`Opportunity added for ${a.name}. Now add the contacts you are working`, true); },
+  bdwizrole: el => { bdWizRead(); MODAL.f.role = el.dataset.v; render(); },
+  bdwizvac: async () => { bdWizRead(); const f = MODAL.f; if (!(f.vacLink || '').trim()) { toast('Paste a vacancy link first'); return; } MODAL.vreading = true; render();
+    try { const v = await readVacancy(f.vacLink); if (!MODAL || !MODAL.f) return; if (v.title) f.role = v.title; f.vac = v; if (v.company && f.acc === '_new' && !f.newAcc) f.newAcc = v.company; toast(v.title ? `Read: ${v.title}` : 'Could not find the role title on that page. Type it in.', !!v.title); } catch (e) { toast('Could not read that page. Type the role in.'); }
+    if (MODAL) { MODAL.vreading = false; render(); } },
   bdcaacc: () => { bdWizRead(); const a = accById(MODAL.f.acc); MODAL.f.co = a && (a.contacts || []).some(c => !c.inactive) ? '' : '_new'; render(); },
   bdcaco: () => { bdWizRead(); render(); },
   bdaltpick: el => { bdWizRead(); MODAL.f.co = el.dataset.v; if (!MODAL.f.nx) { MODAL.f.nx = ALT_FIRST.o[0][0]; MODAL.f.dn = ALT_FIRST.o[0][1]; } render(); if (el.dataset.v === '_new') setTimeout(() => { const i = document.querySelector('[data-wz=coName]'); i && i.focus(); }); },
