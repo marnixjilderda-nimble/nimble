@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-9Nme5kukLeS9edpkydC6omAMR89CuuwSQiLtUMH80nE=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-EqPAM2122BfBwRE7qMXCeULgaExkv77NHufF2o6fqHo=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -5419,7 +5419,7 @@ async function leadPublish(dir) {
     } catch (e) { console.error('root publish', e); } }
   try { const put = async (name, obj) => { if (sameAsWritten('root/' + name, obj)) return; const fh = await dir.getFileHandle(name, { create: true }), w = await fh.createWritable(); await w.write(JSON.stringify(obj)); await w.close(); };
     await put('pipetree-pool.json', pool); await put('pipetree-shared-settings.json', { kind: 'pipetree-teamsettings', at: S.settings.teamSetAt || S.settings.savedAt || '', from: S.settings.userName, settings: Object.fromEntries(TEAM_KEYS.filter(k => S.settings[k] !== undefined).map(k => [k, S.settings[k]])) }); } catch (e) { }
-  const folders = new Set([...TEAM.members.map(m => m.folder).filter(Boolean), ...(S.settings.invites || []).map(i => i.folder)]);
+  const folders = new Set([...TEAM.members.map(m => m.folder).filter(Boolean), ...(S.settings.invites || []).map(i => i.folder).filter(Boolean)].filter(fo => fo !== '.' && fo !== (TEAM.handle && TEAM.handle.name)));
   for (const fo of folders) { try { const sub = await teamSub(dir, fo).catch(() => null); if (!sub) continue; const wr = async (name, obj) => { if (typeof obj !== 'string' && sameAsWritten(fo + '/' + name, obj)) return; const fh = await sub.getFileHandle(name, { create: true }), w = await fh.createWritable(); await w.write(typeof obj === 'string' ? obj : JSON.stringify(obj)); await w.close(); };
     await wr(`pipetree-from-${slug(S.settings.userName)}.json`, { kind: 'pipetree-mgr', from: S.settings.userName, fromId: S.settings.userId, at: new Date().toISOString(), items: (S.mgrOut || []).filter(x => x.folder === fo), edits: (S.mgrEdits || []).filter(e => e.folder === fo && !e.acked).map(e => { e.sent = true; return e; }) });
     await wr('pipetree-pool.json', pool);
