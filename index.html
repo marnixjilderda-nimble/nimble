@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-OLwHa5Jf3ZtiL0zUgn3B6mjo0EdDr8SyjEpP4qninFQ=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-PPPmuHiniewdBKtviIiXJFsGOxDm7B3EfneAZ/apVVM=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1841,6 +1841,35 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 .wh-o{display:flex;gap:8px;align-items:flex-start;padding:6px;border-radius:8px;cursor:pointer}.wh-o:hover{background:color-mix(in srgb,var(--ink) 6%,transparent)}.wh-o span{display:grid;gap:1px}.wh-o small{font-size:11px;color:var(--muted)}
 .wh-add{padding:6px!important;text-align:left}
 @media (max-width:700px){.ux2 .u2-row{grid-template-columns:1fr}}
+.u3{padding:16px 16px 12px!important;display:grid;gap:0}
+.u3 .u3-s{display:grid;grid-template-columns:26px minmax(0,1fr);gap:12px;position:relative;padding-bottom:18px}
+.u3 .u3-s:has(+ .u3-s)::before{content:"";position:absolute;left:12.5px;top:28px;bottom:2px;width:1.5px;background:color-mix(in srgb,var(--cl) 35%,var(--line))}
+.u3 .u3-n{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:750;color:var(--cl);background:color-mix(in srgb,var(--cl) 13%,transparent);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--cl) 45%,transparent)}
+.u3 .u3-b{min-width:0;display:grid;gap:8px}
+.u3 .u3-h{font-size:15px;font-weight:700;line-height:26px;color:var(--ink)}
+.u3 .u3-c{display:grid;gap:10px;min-width:0}.u3 .u3-c.has-side{grid-template-columns:minmax(0,1fr) 220px;gap:18px;align-items:start}
+.u3 .u3-main{display:grid;gap:8px;min-width:0;justify-items:start}.u3 .u3-main>*{max-width:100%}
+.u3 .u3-sh{font-size:13px;font-weight:650;color:var(--muted);margin-bottom:6px}
+.u3 .qchip{font-size:13.5px;font-weight:600;padding:7px 13px;border-radius:10px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);background:color-mix(in srgb,var(--card,#fff) 80%,transparent);line-height:1.2}
+.u3 .qchip:hover{border-color:color-mix(in srgb,var(--cl) 60%,transparent)}
+.u3 .qchip.on{background:var(--ink);color:var(--bg,#fff);border-color:var(--ink)}.u3 .qchip.on small{color:inherit;opacity:.75}
+.u3 .qchip small.cd{font-weight:500;color:var(--muted);font-size:12px}
+.u3 .qchip.on small.cd{color:inherit;opacity:.7}
+.u3 .flow>.chips,.u3 .nxopts{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.u3 .u3-due{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.u3 .u3-due .cu-date{width:auto;padding:6px 10px}
+.u3 .u3-dl{font-size:13px;color:var(--muted)}
+.u3 .ph-tag{display:inline-block;font-size:12px;font-weight:650;color:var(--cl);margin-bottom:2px}
+.u3 .fmore,.u3 .u3-o{margin:0}.u3 .fmore>summary,.u3 .u3-o>summary{cursor:pointer;list-style:none;font-size:13px;font-weight:600;color:var(--cl);padding:2px 0}.u3 .fmore>summary::-webkit-details-marker,.u3 .u3-o>summary::-webkit-details-marker{display:none}
+.u3 .u3-o[open]>summary{margin-bottom:6px}.u3 .u3-o .inp{width:min(380px,100%)}
+.u3 .fmore[open]{display:grid;gap:8px}.u3 .fmore .fg{display:grid;gap:5px}.u3 .fmore .fg-h{font-size:12px;font-weight:650;color:var(--muted);text-transform:none;letter-spacing:0}.u3 .fmore .fg .chips{display:flex;flex-wrap:wrap;gap:5px}
+.u3 .flow-det{width:min(460px,100%)}
+.u3 .cu-hint:empty{display:none}.u3 .cu-hint{font-size:13px;color:var(--muted)}
+.u3 .u3-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 0 2px 38px;border-top:1px solid var(--line)}
+.u3 .u3-foot .btn.primary{padding:9px 22px;font-size:14px}
+.u3 .u3-ml{font-size:13px;color:var(--muted)}
+.u3 .ux-extra{margin-left:38px}
+.u3 .whom summary{padding:9px 12px;font-size:13.5px}
+@media (max-width:760px){.u3 .u3-c.has-side{grid-template-columns:1fr}.u3 .u3-foot{padding-left:0}.u3 .ux-extra{margin-left:0}}
 .tn-who{display:inline-grid;place-items:center;min-width:18px;height:16px;padding:0 4px;border-radius:8px;font-size:9.5px;font-weight:800;background:color-mix(in srgb,var(--ink) 12%,transparent);vertical-align:1px}.tn-who.h{background:color-mix(in srgb,#2FB7A0 26%,transparent)}
 .xbox .tsec{margin-bottom:2px}.tn.xrole .lab{opacity:.92}
 .c-own{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;font-size:9.5px;font-weight:800;background:color-mix(in srgb,#E8A33D 30%,transparent);margin-right:4px}
@@ -1892,7 +1921,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:9716435844*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:bb8be0bd21*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -7143,14 +7172,16 @@ function recFlowNext0(v, a) { const t = String(v || '').trim(); if (!a) return {
     if (n <= 1) return { o: [['Follow up', 2], ['Call', 2]], hint: 'No reply yet: follow up in 2 days.' };
     return { o: [['Reject if no response', 2], ['Follow up', 2]], hint: `${n === 2 ? '2nd' : n === 3 ? '3rd' : n + 'th'} contact moment without a reply: if they stay quiet, reject them on that day.` }; }
   return { o: [['Follow up', 2], ['Call', 2], ['Keep warm', 7]], hint: '' }; }
+/* the update box: three steps in order, each with a big title; free text hides behind "Other…" */
+const u3Step = (n, title, body, side) => `<div class="u3-s"><span class="u3-n">${n}</span><div class="u3-b"><div class="u3-h">${title}</div><div class="u3-c ${side ? 'has-side' : ''}"><div class="u3-main">${body}</div>${side ? `<div class="u3-side"><div class="u3-sh">With whom</div>${side}</div>` : ''}</div></div></div>`;
+const u3Other = (id, ph) => `<details class="u3-o"><summary>Other…</summary><input class="inp" id="${id}" placeholder="${ph}"></details>`;
 function recUpdHTML(a, p) { p = p || 'ru'; const dn = RUDUE[a.id] ?? 2, cur = FLOWU[p + a.id] || '', fl = recFlowNext(cur, a), nx = nextStageId(a), nxs = nx && stagesFor(a.roleId).find(x => x.id === nx);
-  return `<div class="coupd rcupd ux">
-    <div class="cu-l"><span class="cr-k">What happened</span><div class="cu-f">${flowUpdHTML(p, a.id, cur)}<input class="inp inp-other" id="${p}_u_${a.id}" placeholder="Something else? Type it here"></div></div>
-    <div class="small cu-hint" id="${p}_hint_${a.id}">${esc(fl.hint || '')}</div>
-    <div class="cu-l cu-next"><span class="cr-k">What's next</span><div class="cu-f"><div class="chips nxopts" id="${p}_nxo_${a.id}">${flowNxHTML(p, a.id, fl, FLOWN[p + a.id] || '')}</div>${flowNdetHTML(p, a.id, FLOWN[p + a.id] || '')}<input class="inp inp-other" id="${p}_n_${a.id}" placeholder="Or type your own next step">
-      <div class="chips cu-due"><span class="due-k">When</span>${CO_DUE_S.map(([n, l]) => `<button class="qchip ${dn === n ? 'on' : ''}" data-act="rcdue" data-p="${p}" data-a="${a.id}" data-n="${n}">${l}${chipDay(n)}</button>`).join('')}<input type="date" class="inp cu-date" id="${p}_dt_${a.id}" data-act-change="rcdate" data-p="${p}" data-a="${a.id}" min="${TODAY}" value="${isISO(dn) ? dn : ''}" title="Pick a date"><span class="small muted" id="${p}_dl_${a.id}">${dueLabel(dueOf(dn))}</span></div></div></div>
-    <label class="cu-alt" id="${p}_xw_${a.id}" ${fl.x ? '' : 'hidden'}><input type="checkbox" id="${p}_x_${a.id}" ${fl.x && fl.x.on ? 'checked' : ''} data-x="${esc(JSON.stringify(fl.x || null))}"> <span>${esc((fl.x || {}).label || '')}</span></label>
-    <div class="acts ux-acts"><button class="btn primary sm" data-act="recsave" data-p="${p}" data-a="${a.id}">Save</button>${p === 'ru' ? `<span class="ux-move"><span class="small muted">Move on</span>${nxs ? `<button class="btn sm" data-act="advance" data-a="${a.id}">→ ${esc(nxs.label)}</button>` : ''}<button class="btn sm quiet ux-rej" data-act="close" data-a="${a.id}">Reject</button></span>` : ''}</div>
+  const when = `<div class="chips u3-due">${CO_DUE_S.map(([n, l]) => `<button class="qchip ${dn === n ? 'on' : ''}" data-act="rcdue" data-p="${p}" data-a="${a.id}" data-n="${n}">${l}${chipDay(n)}</button>`).join('')}<input type="date" class="inp cu-date" id="${p}_dt_${a.id}" data-act-change="rcdate" data-p="${p}" data-a="${a.id}" min="${TODAY}" value="${isISO(dn) ? dn : ''}" title="Pick a date"></div><span class="u3-dl" id="${p}_dl_${a.id}">${dueLabel(dueOf(dn))}</span>`;
+  return `<div class="coupd rcupd ux u3">
+    ${u3Step(1, 'What happened', `${flowUpdHTML(p, a.id, cur)}${u3Other(`${p}_u_${a.id}`, 'Type what happened')}`)}
+    ${u3Step(2, "What's next", `<div class="small cu-hint" id="${p}_hint_${a.id}">${esc(fl.hint || '')}</div><div class="chips nxopts" id="${p}_nxo_${a.id}">${flowNxHTML(p, a.id, fl, FLOWN[p + a.id] || '')}</div>${flowNdetHTML(p, a.id, FLOWN[p + a.id] || '')}${u3Other(`${p}_n_${a.id}`, 'Type your own next step')}<label class="cu-alt" id="${p}_xw_${a.id}" ${fl.x ? '' : 'hidden'}><input type="checkbox" id="${p}_x_${a.id}" ${fl.x && fl.x.on ? 'checked' : ''} data-x="${esc(JSON.stringify(fl.x || null))}"> <span>${esc((fl.x || {}).label || '')}</span></label>`)}
+    ${u3Step(3, 'When', when)}
+    <div class="u3-foot"><button class="btn primary" data-act="recsave" data-p="${p}" data-a="${a.id}">Save</button>${p === 'ru' ? `<span class="ux-move"><span class="u3-ml">Move on</span>${nxs ? `<button class="btn sm" data-act="advance" data-a="${a.id}">To ${esc(nxs.label)}</button>` : ''}<button class="btn sm quiet ux-rej" data-act="close" data-a="${a.id}">Reject</button></span>` : ''}</div>
     ${p === 'ru' ? `<div class="ux-extra"><button class="ux-link" data-act="addtask" data-a="${a.id}">+ Task</button><details class="ux-note"><summary class="ux-link">+ Note</summary><div class="dnote"><input class="inp" id="ln_${a.id}" placeholder="Add a note, e.g. Wants hybrid, 80k base" data-enter="addnote" data-a="${a.id}"><button class="btn sm" data-act="addnote" data-a="${a.id}">Save note</button></div></details></div>` : ''}</div>`; }
 function recUpdHTML_old(a) { const dn = RUDUE[a.id] ?? 2;
   return `<div class="coupd rcupd"><div class="cu-h">Update</div>
@@ -8686,7 +8717,7 @@ function bdPhaseOf(d, c) { if (!d) return c && (c.log || []).some(l => l.type ==
 function coFind(cid) { for (const a of S.accounts || []) { const c = (a.contacts || []).find(x => x.id === cid); if (c) return { a, c }; } return {}; }
 function bdChipsHTML(p, key, cur) { let d = null, c = null; if (p === 'cu') { d = dealById(key); c = d && coById(d.accountId, coSel(d)[0]); } else { const f = coFind(key); c = f.c; d = f.a && (S.deals || []).find(x => x.accountId === f.a.id && x.outcome === 'open' && dealCoIds(x).includes(key)) || null; }
   const ph = bdPhaseOf(d, c), L = BD_FLOW[ph] || [], ch = ([l, v]) => `<button class="qchip ${cur === v ? 'on' : ''}" data-act="flowu" data-p="${p}" data-key="${key}" data-v="${esc(v)}">${esc(l)}</button>`, more = !!cur && !L.some(x => x[1] === cur);
-  return `<div class="flow"><div class="small muted ph-tag">${BD_PH_LBL[ph]}</div><div class="chips">${L.map(ch).join('')}</div><details class="fmore" ${more ? 'open' : ''}><summary class="small">More…</summary>${CO_GROUPS.map(([g, xs]) => `<div class="fg"><span class="fg-h">${g}</span><div class="chips">${xs.map(ch).join('')}</div></div>`).join('')}</details></div>${flowDetHTML(p, key, cur)}`; }
+  return `<div class="flow"><div class="ph-tag">${BD_PH_LBL[ph]} phase</div><div class="chips">${L.map(ch).join('')}</div><details class="fmore" ${more ? 'open' : ''}><summary class="small">More…</summary>${CO_GROUPS.map(([g, xs]) => `<div class="fg"><span class="fg-h">${g}</span><div class="chips">${xs.map(ch).join('')}</div></div>`).join('')}</details></div>${flowDetHTML(p, key, cur)}`; }
 function recChipsHTML(p, key, cur) { const a = appById(key), L = (a && REC_FLOW[recKey(a)]) || [], ch = ([l, v]) => `<button class="qchip ${cur === v ? 'on' : ''}" data-act="flowu" data-p="${p}" data-key="${key}" data-v="${esc(v)}">${esc(l)}</button>`, more = !L.some(x => x[1] === cur) && !!cur;
   return `<div class="flow"><div class="chips">${L.map(ch).join('')}</div><details class="fmore" ${more || !L.length ? 'open' : ''}><summary class="small">${L.length ? 'More…' : 'Pick what happened'}</summary>${REC_GROUPS.map(([g, xs]) => `<div class="fg"><span class="fg-h">${g}</span><div class="chips">${xs.map(ch).join('')}</div></div>`).join('')}</details></div>${flowDetHTML(p, key, cur)}`; }
 function flowNxHTML(p, key, fl, cur) { return fl.o.map(([v, n]) => `<button class="qchip nxo ${cur === v ? 'on' : ''}" data-act="flown" data-p="${p}" data-key="${key}" data-v="${esc(v)}" data-n="${n}">${esc(v)}${n === 0 ? ' <small class="cd">today</small>' : chipDay(n)}</button>`).join('') + (fl.none && !fl.nonone ? '<span class="small muted nx-tip">Pick what happened above to get the matching next steps.</span>' : '') + ((p === 'ru' || p === 'rm') ? `<button class="qchip nxnone ${cur === '__none' ? 'on' : ''}" data-act="flownone" data-p="${p}" data-key="${key}">No next step</button>` : ''); }
@@ -8772,16 +8803,11 @@ function coRowsHTML(d, a) {
   const oneLead = others.length && d.oneLeadOk !== mm.hotContact.id ? `<div class="onelead"><b>${esc(firstName(mm.hotContact.name || ''))} is moving towards a meeting.</b> Only one contact should go into meetings at a time. Pause ${others.map(c => esc(firstName(c.name || ''))).join(', ')} for now and try again in a month if this stalls?<span><button class="btn sm primary" data-act="copauseothers" data-d="${d.id}">Pause the other${others.length > 1 ? 's' : ''}</button><button class="btn sm quiet" data-act="oneleadok" data-d="${d.id}" data-c="${mm.hotContact.id}">Keep them</button></span></div>` : '';
   const who = sel.length === cos.length ? (cos.length === 1 ? firstName(cos[0].name || '') : `all ${cos.length} contacts`) : sel.length ? cos.filter(c => sel.includes(c.id)).map(c => firstName(c.name || '')).join(', ') : '', dn = CODUE[d.id] ?? 2;
   return `${oneLead}${planLine}${rows}${offLine}
-    <div class="coupd ux2">
-      <div class="u2-row"><div class="u2-l"><span class="cr-k">What happened</span>${flowUpdHTML('cu', d.id, FLOWU['cu' + d.id] || '')}<input class="inp inp-other" id="cu_u_${d.id}" placeholder="Something else? Type it here"></div>
-        <div class="u2-r"><span class="cr-k">With whom</span>${whomHTML(d, 'u')}</div></div>
-      <div class="small cu-hint" id="cu_hint_${d.id}">${esc(flowNext(FLOWU['cu' + d.id] || '', coById(a.id, sel[0]), d).hint || '')}</div>
-      <label class="cu-alt" id="cu_altw_${d.id}" ${isNegUpd(FLOWU['cu' + d.id] || '') ? '' : 'hidden'}><input type="checkbox" id="cu_alt_${d.id}" ${act.filter(c => !sel.includes(c.id)).length ? '' : 'checked'}> Approach someone else at ${esc(a.name || 'this company')} now</label>
-      <div class="u2-row"><div class="u2-l"><span class="cr-k">What's next</span><div class="chips nxopts" id="cu_nxo_${d.id}">${flowNxHTML('cu', d.id, flowNext(FLOWU['cu' + d.id] || '', coById(a.id, sel[0]), d), FLOWN['cu' + d.id] || '')}</div>${flowNdetHTML('cu', d.id, FLOWN['cu' + d.id] || '')}<input class="inp inp-other" id="cu_n_${d.id}" placeholder="Or type your own next step"></div>
-        <div class="u2-r"><span class="cr-k">With whom</span>${whomHTML(d, 'n')}</div></div>
-      <div class="u2-when"><span class="cr-k">When</span><div class="chips cu-due">${CO_DUE_S.map(([n, l]) => `<button class="qchip ${dn === n ? 'on' : ''}" data-act="cudue" data-d="${d.id}" data-n="${n}">${l}${chipDay(n)}</button>`).join('')}<input type="date" class="inp cu-date" id="cu_dt_${d.id}" data-act-change="cudate" data-d="${d.id}" min="${TODAY}" value="${isISO(dn) ? dn : isISO(dueOf(dn)) && ![0, 1, 7].includes(dn) ? dueOf(dn) : ''}" title="Pick a date"><span class="small muted" id="cu_dl_${d.id}">${dueLabel(dueOf(dn))}</span></div></div>
-      ${(alt => alt.length ? `<details class="u2-fb"><summary class="small">If they don't reply…</summary><div class="cu-f cu-fbw"><select class="inp" id="cu_fw_${d.id}" title="How long you give them">${[[2, 'within 2 days'], [3, 'within 3 days'], [7, 'within a week'], [14, 'within 2 weeks'], [30, 'within a month']].map(([n, l]) => `<option value="${n}" ${n === 3 ? 'selected' : ''}>${l}</option>`).join('')}</select><span class="small muted">reach out to</span><select class="inp" id="cu_fb_${d.id}"><option value="">nobody, no backup</option>${alt.map(c => `<option value="${c.id}">${esc(c.name || '?')}${c.title ? ' · ' + esc(c.title) : ''}</option>`).join('')}</select></div></details>` : '')(dealCosAct(d).filter(c => !sel.includes(c.id)))}
-      <div class="acts ux-acts"><button class="btn primary sm" id="cu_save_${d.id}" data-act="cosave" data-d="${d.id}" ${sel.length ? '' : 'disabled title="Pick with whom first"'}>Save</button>${(ns => `<span class="ux-move"><span class="small muted">Move on</span>${ns ? `<button class="btn sm" data-act="dealstage" data-d="${d.id}" data-s="${ns.id}">→ ${esc(ns.label)}</button>` : ''}<button class="btn sm" data-act="dealwon" data-d="${d.id}">Won</button><button class="btn sm quiet" data-act="dealpark" data-d="${d.id}">Park 3 months</button></span>`)(bdStages()[bdStages().findIndex(x => x.id === d.stage) + 1])}</div></div>`;
+    <div class="coupd ux2 u3">
+      ${u3Step(1, 'What happened', `${flowUpdHTML('cu', d.id, FLOWU['cu' + d.id] || '')}${u3Other(`cu_u_${d.id}`, 'Type what happened')}<label class="cu-alt" id="cu_altw_${d.id}" ${isNegUpd(FLOWU['cu' + d.id] || '') ? '' : 'hidden'}><input type="checkbox" id="cu_alt_${d.id}" ${act.filter(c => !sel.includes(c.id)).length ? '' : 'checked'}> Approach someone else at ${esc(a.name || 'this company')} now</label>`, whomHTML(d, 'u'))}
+      ${u3Step(2, "What's next", `<div class="small cu-hint" id="cu_hint_${d.id}">${esc(flowNext(FLOWU['cu' + d.id] || '', coById(a.id, sel[0]), d).hint || '')}</div><div class="chips nxopts" id="cu_nxo_${d.id}">${flowNxHTML('cu', d.id, flowNext(FLOWU['cu' + d.id] || '', coById(a.id, sel[0]), d), FLOWN['cu' + d.id] || '')}</div>${flowNdetHTML('cu', d.id, FLOWN['cu' + d.id] || '')}${u3Other(`cu_n_${d.id}`, 'Type your own next step')}`, whomHTML(d, 'n'))}
+      ${u3Step(3, 'When', `<div class="chips u3-due">${CO_DUE_S.map(([n, l]) => `<button class="qchip ${dn === n ? 'on' : ''}" data-act="cudue" data-d="${d.id}" data-n="${n}">${l}${chipDay(n)}</button>`).join('')}<input type="date" class="inp cu-date" id="cu_dt_${d.id}" data-act-change="cudate" data-d="${d.id}" min="${TODAY}" value="${isISO(dn) ? dn : isISO(dueOf(dn)) && ![0, 1, 7].includes(dn) ? dueOf(dn) : ''}" title="Pick a date"></div><span class="u3-dl" id="cu_dl_${d.id}">${dueLabel(dueOf(dn))}</span>${(alt => alt.length ? `<details class="u3-o u2-fb"><summary>If they don't reply…</summary><div class="cu-f cu-fbw"><select class="inp" id="cu_fw_${d.id}" title="How long you give them">${[[2, 'within 2 days'], [3, 'within 3 days'], [7, 'within a week'], [14, 'within 2 weeks'], [30, 'within a month']].map(([n, l]) => `<option value="${n}" ${n === 3 ? 'selected' : ''}>${l}</option>`).join('')}</select><span class="small muted">reach out to</span><select class="inp" id="cu_fb_${d.id}"><option value="">nobody, no backup</option>${alt.map(c => `<option value="${c.id}">${esc(c.name || '?')}${c.title ? ' (' + esc(c.title) + ')' : ''}</option>`).join('')}</select></div></details>` : '')(dealCosAct(d).filter(c => !sel.includes(c.id)))}`)}
+      <div class="u3-foot"><button class="btn primary" id="cu_save_${d.id}" data-act="cosave" data-d="${d.id}" ${sel.length ? '' : 'disabled title="Pick with whom first"'}>Save</button>${(ns => `<span class="ux-move"><span class="u3-ml">Move on</span>${ns ? `<button class="btn sm" data-act="dealstage" data-d="${d.id}" data-s="${ns.id}">To ${esc(ns.label)}</button>` : ''}<button class="btn sm" data-act="dealwon" data-d="${d.id}">Won</button><button class="btn sm quiet" data-act="dealpark" data-d="${d.id}">Park 3 months</button></span>`)(bdStages()[bdStages().findIndex(x => x.id === d.stage) + 1])}</div></div>`;
 }
 let BTF = '';
 function bdTasksHTML() {
