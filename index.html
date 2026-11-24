@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-C1z0COYBQ7OEfrcmCWmy7M0BNwsL4WNOeclq+089fqM=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-NdAUoHtfF6ghtHlvHzid8TAQP44/w9Y7sj8FCiHzFis=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1865,6 +1865,8 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 .u3 .fmore[open]{display:grid;gap:8px}.u3 .fmore .fg{display:grid;gap:5px}.u3 .fmore .fg-h{font-size:12px;font-weight:650;color:var(--muted);text-transform:none;letter-spacing:0}.u3 .fmore .fg .chips{display:flex;flex-wrap:wrap;gap:5px}
 .u3 .flow-det{width:min(460px,100%)}
 .u3 .cu-hint:empty{display:none}.u3 .cu-hint{font-size:13px;color:var(--muted)}
+.u3 .u3-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}.u3 .u3-pair .u3-s::before{display:none}.u3 .u3-pair .flow-det{width:100%}.u3 .u3-pair .flow-det .fd-k{display:none}
+@media (max-width:760px){.u3 .u3-pair{grid-template-columns:1fr}}
 .u3 .u3-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 0 2px 38px;border-top:1px solid var(--line)}
 .u3 .u3-foot .btn.primary{padding:9px 22px;font-size:14px}
 .u3 .u3-ml{font-size:13px;color:var(--muted)}
@@ -1926,7 +1928,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:e8d3aac5d0*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:073888a756*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -6332,10 +6334,11 @@ function drawerHTML() {
       <div class="dp-h"><div style="min-width:0">${linkTrail(a)}<div class="dp-sub">${a.outcome === 'closed' ? '<span class="chip">Closed</span>' : a.outcome === 'toreject' ? '<span class="chip">To be rejected</span>' : a.outcome === 'placed' ? '<span class="chip s-win">Placed</span>' : stageChip(a)}${idleHTML(a)}${a.onHold ? '<span class="tag">on hold</span>' : ''}${a.competingOffer ? '<span class="tag">other offer</span>' : ''}</div></div>
         <div class="dp-acts"><button class="btn ai-btn" data-act="aiopen" data-k="app" data-id="${a.id}" title="Draft messages with AI, using everything Nimble knows about this process">${ICO_AI}Ask AI</button><button class="btn" data-act="msg" data-a="${a.id}">Message</button></div></div>
       ${mgrForRef('app', a.id).map(x => `<div class="mgr-inline"><span class="mgr-tag">From ${esc(firstName(x.by || 'manager'))}</span>${x.kind === 'task' ? 'Task: ' : ''}${esc(x.text)}${x.due ? ' · ' + duePill(x.due) : ''}<button class="btn sm quiet" data-act="mgrdone" data-id="${x.id}">${x.kind === 'task' ? 'Done' : 'Seen'}</button></div>`).join('')}
-      <section class="dpart2 dtodo"><div class="dbh">To do <span class="tdn">${tasks.length}</span>${live ? `<button class="ux-link" style="margin-left:auto" data-act="addtask" data-a="${a.id}">+ Task</button>` : ''}</div>
-        ${tasks.map(taskRow).join('') || `<div class="dt-empty">${live ? 'Nothing planned. Log what happened below and pick the next step.' : 'Nothing open for this process.'}</div>`}
-        </section>
       ${a.outcome === 'active' ? `<section class="dpart2 dupd ux-sec"><div class="dbh">Update <span class="small muted" style="font-weight:500;text-transform:none;letter-spacing:0">What happened, and what's next</span></div>${recUpdHTML(a)}</section>` : ''}
+      <section class="dpart2 dtodo"><div class="dbh">To do <span class="tdn">${tasks.length}</span>${live ? `<button class="ux-link" style="margin-left:auto" data-act="addtask" data-a="${a.id}">+ Task</button>` : ''}</div>
+        ${tasks.map(taskRow).join('') || `<div class="dt-empty">${live ? 'Nothing planned. Log what happened above and pick the next step.' : 'Nothing open for this process.'}</div>`}
+        </section>
+
       <section class="dpart2"><div class="dbh">Activity</div>${a.outcome === 'active' ? '' : `<div class="dnote"><input class="inp" id="ln_${a.id}" placeholder="Add a note" data-enter="addnote" data-a="${a.id}"><button class="btn" data-act="addnote" data-a="${a.id}">Save note</button></div>`}
         <div class="dlog">${a.log.slice(0, 6).map(l => `<div class="dl ${l.type}"><span class="dl-d">${fmtDate(l.date)}</span><span class="dl-t">${esc(ltx(l))}</span></div>`).join('')}</div>
         ${a.log.length > 6 ? `<details class="dmorelog" data-k="dl_${a.id}" ${EXPANDED.has('dl_' + a.id) ? 'open' : ''}><summary class="small">Show ${a.log.length - 6} earlier</summary><div class="dlog">${a.log.slice(6, 60).map(l => `<div class="dl ${l.type}"><span class="dl-d">${fmtDate(l.date)}</span><span class="dl-t">${esc(ltx(l))}</span></div>`).join('')}</div></details>` : ''}</section>
@@ -7197,8 +7200,8 @@ const u3Other = (id, ph) => `<details class="u3-o"><summary>Other…</summary><i
 function recUpdHTML(a, p) { p = p || 'ru'; const dn = RUDUE[a.id] ?? 2, cur = FLOWU[p + a.id] || '', fl = recFlowNext(cur, a), nx = nextStageId(a), nxs = nx && stagesFor(a.roleId).find(x => x.id === nx);
   const when = `<div class="chips u3-due">${CO_DUE_S.map(([n, l]) => `<button class="qchip ${dn === n ? 'on' : ''}" data-act="rcdue" data-p="${p}" data-a="${a.id}" data-n="${n}">${l}${chipDay(n)}</button>`).join('')}<input type="date" class="inp cu-date" id="${p}_dt_${a.id}" data-act-change="rcdate" data-p="${p}" data-a="${a.id}" min="${TODAY}" value="${isISO(dn) ? dn : ''}" title="Pick a date"></div><span class="u3-dl" id="${p}_dl_${a.id}">${dueLabel(dueOf(dn))}</span>`;
   return `<div class="coupd rcupd ux u3">
-    ${u3Step(1, 'What happened', `${flowUpdHTML(p, a.id, cur)}${u3Other(`${p}_u_${a.id}`, 'Type what happened')}`)}
-    ${u3Step(2, "What's next", `<div class="small cu-hint" id="${p}_hint_${a.id}">${esc(fl.hint || '')}</div><div class="chips nxopts" id="${p}_nxo_${a.id}">${flowNxHTML(p, a.id, fl, FLOWN[p + a.id] || '')}</div>${flowNdetHTML(p, a.id, FLOWN[p + a.id] || '')}${u3Other(`${p}_n_${a.id}`, 'Type your own next step')}<label class="cu-alt" id="${p}_xw_${a.id}" ${fl.x ? '' : 'hidden'}><input type="checkbox" id="${p}_x_${a.id}" ${fl.x && fl.x.on ? 'checked' : ''} data-x="${esc(JSON.stringify(fl.x || null))}"> <span>${esc((fl.x || {}).label || '')}</span></label>`)}
+    <div class="u3-pair">${u3Step(1, 'What happened', `${flowUpdHTML(p, a.id, cur)}${u3Other(`${p}_u_${a.id}`, 'Type what happened')}`)}
+    ${u3Step(2, "What's next", `<div class="small cu-hint" id="${p}_hint_${a.id}">${esc(fl.hint || '')}</div><div class="chips nxopts" id="${p}_nxo_${a.id}">${flowNxHTML(p, a.id, fl, FLOWN[p + a.id] || '')}</div>${flowNdetHTML(p, a.id, FLOWN[p + a.id] || '')}${u3Other(`${p}_n_${a.id}`, 'Type your own next step')}<label class="cu-alt" id="${p}_xw_${a.id}" ${fl.x ? '' : 'hidden'}><input type="checkbox" id="${p}_x_${a.id}" ${fl.x && fl.x.on ? 'checked' : ''} data-x="${esc(JSON.stringify(fl.x || null))}"> <span>${esc((fl.x || {}).label || '')}</span></label>`)}</div>
     ${u3Step(3, 'When', when)}
     <div class="u3-foot"><button class="btn primary" data-act="recsave" data-p="${p}" data-a="${a.id}">Save</button>${p === 'ru' ? `<span class="ux-move"><span class="u3-ml">Move on</span>${nxs ? `<button class="btn sm" data-act="advance" data-a="${a.id}">To ${esc(nxs.label)}</button>` : ''}<button class="btn sm quiet ux-rej" data-act="close" data-a="${a.id}">Reject</button></span>` : ''}</div>
     ${p === 'ru' ? `<div class="ux-extra"><button class="ux-link" data-act="addtask" data-a="${a.id}">+ Task</button><details class="ux-note"><summary class="ux-link">+ Note</summary><div class="dnote"><input class="inp" id="ln_${a.id}" placeholder="Add a note, e.g. Wants hybrid, 80k base" data-enter="addnote" data-a="${a.id}"><button class="btn sm" data-act="addnote" data-a="${a.id}">Save note</button></div></details></div>` : ''}</div>`; }
@@ -9849,9 +9852,13 @@ document.addEventListener('fullscreenchange', () => { if (S) render(); });
   const probe = document.createElement('i'); probe.style.cssText = 'position:fixed;width:0;height:0;background:var(--bg)'; document.body.appendChild(probe); const probe2 = document.createElement('i'); probe2.style.cssText = 'position:fixed;width:0;height:0;background:var(--rail)'; document.body.appendChild(probe2);
   const cv = document.createElement('canvas'); cv.width = cv.height = 1; const cx = cv.getContext('2d', { willReadFrequently: true });
   const sync = () => { try { const c = getComputedStyle(probe).backgroundColor; if (!c) return; cx.clearRect(0, 0, 1, 1); cx.fillStyle = '#000'; cx.fillRect(0, 0, 1, 1); cx.fillStyle = c; cx.fillRect(0, 0, 1, 1); const c2 = getComputedStyle(probe2).backgroundColor; if (c2) { cx.fillStyle = c2; cx.fillRect(0, 0, 1, 1); }
-    const d = cx.getImageData(0, 0, 1, 1).data; meta.content = '#' + [d[0], d[1], d[2]].map(v => v.toString(16).padStart(2, '0')).join(''); } catch (e) {} wallTint(); };
+    const d = cx.getImageData(0, 0, 1, 1).data, hasPhoto = !!document.querySelector('#wall .w img'); if (!hasPhoto) meta.content = '#' + [d[0], d[1], d[2]].map(v => v.toString(16).padStart(2, '0')).join(''); else if (tintHex) meta.content = tintHex; } catch (e) {} wallTint(); };
   /* with a photo wallpaper, give the window buttons' corner the colour of the photo right behind it */
   let tintKey = '', tintImg = null, tintHex = ''; const big = document.createElement('canvas'), bx = big.getContext('2d', { willReadFrequently: true });
+  /* if the photo can't be read, never fall back to a light colour on a dark photo: use the wallpaper tint under the veil */
+  const hx = a => '#' + a.map(v => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join(''), rgbOf = h => { const m = /^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})/i.exec(h || ''); return m ? [1, 2, 3].map(i => parseInt(m[i], 16)) : null; };
+  const fallbackTint = dark => { const t = rgbOf(getComputedStyle(document.documentElement).getPropertyValue('--tint').trim() || CUR_TINT) || [90, 110, 130], v = dark ? [8, 12, 26] : [246, 248, 252]; return hx(t.map((c, i) => c * .45 + v[i] * .55)); };
+  const setCorner = h => { meta.content = tintHex = h; document.documentElement.style.setProperty('--cornr', h); };
   const wallTint = () => { try { const wl = document.querySelectorAll('#wall .w'), w = wl[wl.length - 1]; const im = w && w.querySelector('img'); if (!im || !im.src) return;
       const veil = w.querySelector('.veil'), dark = !veil || veil.classList.contains('dark'), wco = navigator.windowControlsOverlay;
       const r = wco && wco.visible ? wco.getTitlebarAreaRect() : null, W = innerWidth, H = innerHeight, x0 = r && r.width ? r.x + r.width : W * 0.86, h0 = r && r.height ? r.height : 34;
@@ -9861,11 +9868,13 @@ document.addEventListener('fullscreenchange', () => { if (S) render(); });
         const px = bx.getImageData(0, 0, 24, 4).data; let R = 0, G = 0, B = 0; for (let i = 0; i < px.length; i += 4) { R += px[i]; G += px[i + 1]; B += px[i + 2]; } const k = px.length / 4; R /= k; G /= k; B /= k;
         const vs = getComputedStyle(veil || document.body).backgroundImage || '', vm = vs.match(/rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?\)/), [vr, vg, vb, va] = vm ? [+vm[1], +vm[2], +vm[3], vm[4] === undefined ? 1 : +vm[4]] : dark ? [8, 12, 26, .55] : [246, 248, 252, .55]; let px3 = [R * (1 - va) + vr * va, G * (1 - va) + vg * va, B * (1 - va) + vb * va];
         /* no panel glass on top: the corner simply continues the photo of the bar next to it */
-        const m = v => Math.round(v), hex = px3.map(v => m(v).toString(16).padStart(2, '0')).join('');
-        meta.content = tintHex = '#' + hex; tintKey = key; document.documentElement.style.setProperty('--cornr', tintHex); };
+        const lum = (.2126 * px3[0] + .7152 * px3[1] + .0722 * px3[2]) / 255; if (dark && lum > .42) px3 = px3.map((c, i) => c * .45 + [8, 12, 26][i] * .55); else if (!dark && lum < .35) px3 = px3.map((c, i) => c * .5 + [246, 248, 252][i] * .5);
+        setCorner(hx(px3)); tintKey = key; };
       if (key === tintKey) { if (tintHex) meta.content = tintHex; return; }
       if (tintImg && tintImg.src === im.src && tintImg.complete) { go(tintImg); return; }
-      const im2 = new Image(); im2.crossOrigin = 'anonymous'; im2.onload = () => { tintImg = im2; try { go(im2); } catch (e) { } }; im2.src = im.src; } catch (e) { } };
+      if (!tintHex) setCorner(fallbackTint(dark));
+      const im2 = new Image(); im2.crossOrigin = 'anonymous'; im2.onload = () => { tintImg = im2; try { go(im2); } catch (e) { setCorner(fallbackTint(dark)); tintKey = key; } }; im2.onerror = () => { setCorner(fallbackTint(dark)); tintKey = key; }; im2.src = im.src; } catch (e) { try { const wl = document.querySelectorAll('#wall .w'), w = wl[wl.length - 1], v = w && w.querySelector('.veil'); setCorner(fallbackTint(!v || v.classList.contains('dark'))); } catch (e2) { } } };
+  addEventListener('focus', () => { tintKey = ''; wallTint(); }); document.addEventListener('visibilitychange', () => { if (!document.hidden) { tintKey = ''; wallTint(); } });
   addEventListener('resize', () => { tintKey = ''; wallTint(); }); try { navigator.windowControlsOverlay && navigator.windowControlsOverlay.addEventListener('geometrychange', () => { tintKey = ''; wallTint(); }); } catch (e) { }
   new MutationObserver(() => setTimeout(wallTint, 2500)).observe(document.getElementById('wall') || document.body, { childList: true });
   new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'style'] }); setTimeout(sync, 0);
