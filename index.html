@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VwuTHZQyvzxpFuMU1Y5kw4btgAreXqZxaSNhCuE/srU=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-4jH2D1tsM4cyLlE4biXYZbfLW0bVjU5dB7voRvjJ63I=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -5078,6 +5078,11 @@ function applyOp(it) { if (it.op === 'done') { S.inNotes = S.inNotes || []; S.in
       else if (it.op === 'join' && !on) { r.openTo.push(by); (r.openSince = r.openSince || {})[by] = TODAY; roleNotify(r, by, `${it.by} joined ${r.title} at ${(MC.get(r.clientId) || {}).name || ''} as sourcer`, 'joined'); }
       if (it.op === 'leave' && on) { r.openTo = r.openTo.filter(x => x !== by); roleNotify(r, by, `${it.by} stopped sourcing for ${r.title} at ${(MC.get(r.clientId) || {}).name || ''}`, 'left'); } }
     else if (it.op === 'hot' && mgr) { if (it.why) r.hot = { why: it.why, on: r.hot ? r.hot.on : TODAY, byId: by, by: it.by }; else delete r.hot; }
+    else if (it.op === 'remove' && a) { const own = candOwnerId(a) === by || a.addedById === by;
+      if (mgr || own) { const p = personOf(a); S.apps = S.apps.filter(x => x !== a); S.tasks = S.tasks.filter(t => t.appId !== a.id); if (DRAWER && DRAWER.a === a.id) DRAWER = null;
+        if (p && !S.apps.some(x => x.personId === p.id) && (p.addedById === by || p.ownerId === by || !p.cv)) S.people = S.people.filter(x => x !== p);
+        roleNotify(r, by, `${it.by} deleted ${it.name || 'a candidate'} from ${r.title}`, 'removed'); }
+      else pushNotice(by, a, `You can't delete ${personOf(a).name}: only the person who added them or the role manager can`, null, 'denied'); }
     else if (it.op === 'note' && a) { addLog(a, 'note', `${firstName(it.by)}: ${it.text}`); }
     else if (it.op === 'stage' && a) { const to = stagesFor(r.id).find(x => x.id === it.stage); if (!to) return; const own = candOwnerId(a) === by || a.addedById === by;
       if (mgr || (own && isPre(stageOf(a)) && isPre(to))) { NOPROMPT = true; setStage(a, to.id); NOPROMPT = false; addLog(a, 'system', `Moved by ${it.by}`); ASK = null; } else pushNotice(by, a, `Your move of ${personOf(a).name} to ${to.label} wasn't applied: only the role manager moves candidates past CV received`, null, 'denied'); }
@@ -5301,7 +5306,7 @@ const teamShared = () => (VIEWAS ? SHARE_OUT[VIEWAS.userId] : TEAM.shared) || {}
 const xCard = k => { const [o, r] = String(k).split('|'), c = (teamShared().roles || []).find(x => x.owner === o && x.roleId === r); if (!c) return c; const me = myUid(), have = new Set((c.apps || []).map(a => a.sid).filter(Boolean)), names = new Set((c.apps || []).map(a => String(a.n || '').trim().toLowerCase()));
   const add = (S.shareOut || []).filter(it => !it.type && it.owner === o && it.roleId === r && !have.has(it.id) && !(it.arrived && names.has(String(it.name || '').trim().toLowerCase())) && !(it.arrived && it.arrived < addDays(TODAY, -2))).map(it => { const st = (c.stages || []).find(x => x.id === it.stage) || (c.stages || [])[0] || {};
     return { id: it.id, sid: it.id, n: it.name, t: it.ctitle || '', e: it.employer || '', li: it.linkedin || '', stId: st.id, st: st.label, k: st.kind, o: 'active', by: it.by || '', byId: me, ownerId: it.ownerId || me, ownerName: it.ownerName || S.settings.userName || '', since: TODAY, ni: '', nt: '', tasks: [], log: [], c: (it.at || '').slice(0, 10) || TODAY, la: TODAY, ds: [st.id], dd: { [st.id]: TODAY }, dk: { [st.kind]: TODAY }, fresh: true }; });
-  return add.length ? { ...c, apps: [...(c.apps || []), ...add] } : c; };
+  const gone = new Set(S.xGone || []), all = [...(c.apps || []), ...add].filter(a => !gone.has(a.id) && !(a.sid && gone.has(a.sid))); return all.length !== (c.apps || []).length || add.length ? { ...c, apps: all } : c; };
 const xPending = c => (S.shareOut || []).filter(it => it.owner === c.owner && it.roleId === c.roleId && !it.arrived);
 function xBoardHTML(c) { const me = myUid(), mgr = c.mgrId === me || c.salesId === me || isLead(), cols = c.stages, pend = xPending(c);
   const isA = (it, a) => it.appId === a.id || (!!a.sid && it.appId === a.sid), eff = a => { const mv = pend.filter(it => isA(it, a) && it.op === 'stage').pop(); return mv ? { ...a, stId: mv.stage, moving: true } : a; }, live = c.apps.filter(a => a.o === 'active').map(eff);
@@ -5322,7 +5327,7 @@ function xDetailHTML(m) { const c = xCard(m.k); if (!c) return '<p>This role is 
       ${mgr ? `<label class="field">Interview planned on<span style="display:flex;gap:6px"><input type="date" id="xs_d" value="${esc(a.ni)}"><input id="xs_t" placeholder="10:00" value="${esc(a.nt)}" style="width:80px"></span></label>` : ''}
       <label class="field wide">Note<input id="xs_note" placeholder="Shows on ${esc(firstName(c.ownerName))}'s card"></label>
       <label class="field wide">Task<span style="display:flex;gap:6px"><input id="xs_task" placeholder="e.g. Get ${esc(firstName(a.n))}'s availability"><select id="xs_for">${ros.map(x => `<option value="${esc(x.id)}" ${x.id === (own ? me : a.ownerId) ? 'selected' : ''}>${esc(x.id === me ? 'Me' : firstName(x.name))}</option>`).join('')}</select><input type="date" id="xs_due" value="${addWorkdays(TODAY, 1)}" style="width:150px"></span></label></div>
-    <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Close</button><button class="btn primary" data-act="xsave" data-k="${esc(m.k)}" data-a="${esc(a.id)}">Save</button></div>`; }
+    <div class="acts" style="margin-top:14px">${own || mgr ? `<button class="btn quiet danger" style="margin-right:auto" data-act="xdel" data-k="${esc(m.k)}" data-a="${esc(a.id)}">Delete ${esc(firstName(a.n))}</button>` : ''}<button class="btn" data-act="modalclose">Close</button><button class="btn primary" data-act="xsave" data-k="${esc(m.k)}" data-a="${esc(a.id)}">Save</button></div>`; }
 function shareAddHTML(m) { const c = (teamShared().roles || []).find(x => x.owner === m.o && x.roleId === m.r); if (!c) return '<p>This role is no longer shared.</p>';
   return `<h3>Add a candidate to ${esc(c.client)} ${esc(c.title)}</h3><p class="small muted" style="margin-top:-6px">${esc(c.ownerName)} leads this role. The candidate lands in ${esc(firstName(c.ownerName))}'s pipeline with the next team sync, marked as added by you.</p>
     <div class="fgrid"><label class="field">Name<input id="sa_name" placeholder="First and last name"></label><label class="field">LinkedIn<input id="sa_li" placeholder="https://linkedin.com/in/…"></label>
@@ -6486,6 +6491,7 @@ function openAddCandidate(o) {
 function modalHTML() {
   const m = MODAL; let inner = '', wide = '';
   if (m.kind === 'rfpchase') { inner = rfpChaseHTML(m); }
+  else if (m.kind === 'xdetail') { inner = xDetailHTML(m); }
   else if (m.kind === 'rfptp') { wide = 'wide'; inner = rfpTpHTML(m); }
   else if (m.kind === 'rfpscan') { wide = 'wide'; inner = rfpScanHTML(m); }
   else if (m.kind === 'carimp') { wide = 'wide'; const roles = S.roles.filter(r => rOn(r));
@@ -7618,6 +7624,12 @@ const ACT = {
   hotleave: el => { const c = hotList().find(x => x.owner === el.dataset.o && x.roleId === el.dataset.r); if (!c) return; snapshot(); S.shareOut = S.shareOut || [];
     S.shareOut.push({ id: uid('sh'), type: 'op', op: 'leave', owner: c.owner, roleId: c.roleId, appId: '', by: S.settings.userName || '', byId: myUid(), at: new Date().toISOString(), title: c.title, client: c.client }); commit(); scheduleTeam(); toast(`Stopped sourcing for ${c.title}`); },
   xopen: el => { MODAL = { kind: 'xdetail', k: el.dataset.k, a: el.dataset.a }; render(); },
+  xdel: el => { const c = xCard(el.dataset.k), a = c && c.apps.find(x => x.id === el.dataset.a); if (!a) return; const k = el.dataset.k;
+    confirmBox(`Delete ${a.n} from ${c.title}?`, `This removes ${firstName(a.n)} and their process from ${firstName(c.ownerName)}'s role as well.`, 'Delete', () => { snapshot(); S.shareOut = S.shareOut || [];
+      const fresh = S.shareOut.find(x => !x.type && (x.id === a.id || x.id === a.sid) && !x.arrived);
+      if (fresh) S.shareOut = S.shareOut.filter(x => !(x === fresh || (x.type === 'op' && x.appId === a.id)));
+      else S.shareOut.push({ id: uid('sh'), type: 'op', op: 'remove', owner: c.owner, roleId: c.roleId, appId: a.sid || a.id, by: S.settings.userName || '', byId: myUid(), at: new Date().toISOString(), title: c.title, client: c.client, name: a.n });
+      S.xGone = [...new Set([...(S.xGone || []), a.id, ...(a.sid ? [a.sid] : [])])].slice(-300); MODAL = null; commit(); toast(`${a.n} deleted${fresh ? '' : `. Gone from ${firstName(c.ownerName)}'s Nimble within a minute`}`, true); if (TEAM.state === 'on') syncTeam(false); }, true); },
   xsave: el => { const c = xCard(el.dataset.k), a = c && c.apps.find(x => x.id === el.dataset.a); if (!a) return; const v = id => ((document.getElementById(id) || {}).value || '').trim(), base = { type: 'op', owner: c.owner, roleId: c.roleId, appId: a.id, by: S.settings.userName || '', byId: myUid(), at: new Date().toISOString(), title: c.title, client: c.client, name: a.n };
     S.shareOut = S.shareOut || []; const put = o => S.shareOut.push({ id: uid('sh'), ...base, ...o }); let n = 0;
     if (v('xs_st') && v('xs_st') !== a.stId) { put({ op: 'stage', stage: v('xs_st') }); n++; }
