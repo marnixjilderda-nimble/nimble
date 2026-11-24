@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-6v+wHTDJOy6Y+QQ2Yb/EPiMLM4sP6hIDDNAZT1N660c=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-C1z0COYBQ7OEfrcmCWmy7M0BNwsL4WNOeclq+089fqM=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1873,6 +1873,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 @media (max-width:760px){.u3 .u3-c.has-side{grid-template-columns:1fr}.u3 .u3-foot{padding-left:0}.u3 .ux-extra{margin-left:0}}
 .addc.intro-c{opacity:1!important;display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:8px;padding:9px 10px;border-radius:10px;font-size:13px;font-weight:700;color:#fff!important;background:var(--cl)!important;border:0!important;box-shadow:0 2px 8px color-mix(in srgb,var(--cl) 30%,transparent);cursor:pointer}.addc.intro-c:hover{filter:brightness(1.08)}.addc.intro-c svg{width:14px;height:14px}
 .dz.dz-ok{border-color:color-mix(in srgb,var(--win,#2e9b6a) 60%,transparent)}
+.rv-w{display:grid;gap:2px}.hok-l{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:0 12px 8px 30px;color:var(--muted)}
 .tn-who{display:inline-grid;place-items:center;min-width:18px;height:16px;padding:0 4px;border-radius:8px;font-size:9.5px;font-weight:800;background:color-mix(in srgb,var(--ink) 12%,transparent);vertical-align:1px}.tn-who.h{background:color-mix(in srgb,#2FB7A0 26%,transparent)}
 .xbox .tsec{margin-bottom:2px}.tn.xrole .lab{opacity:.92}
 .c-own{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;font-size:9.5px;font-weight:800;background:color-mix(in srgb,#E8A33D 30%,transparent);margin-right:4px}
@@ -1925,7 +1926,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:632d3929b5*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:e8d3aac5d0*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -3098,7 +3099,7 @@ function scrollRestore(root, snap) { if (!root || !snap.size) return; const seen
 let RSCROLL = null;
 let RENDERING = false, RERENDER = false;
 function render() { if (RENDERING) { RERENDER = true; return; } RENDERING = true; try { renderImpl(); } finally { RENDERING = false; if (RERENDER) { RERENDER = false; setTimeout(render, 0); } } }
-function renderImpl() {
+function renderImpl() { if (S && S.settings && !VIEWAS) HOK = S.settings.healthOk = S.settings.healthOk || {};
   if (needsTerms() && !LOCKED && (!MODAL || !['terms', 'start'].includes(MODAL.kind))) MODAL = { kind: 'terms' };
   if (WEB && !MODAL && !LOCKED && S && isFresh() && !S.settings.movedIn && !window.PT_START && !S.settings.inviteId && FS_OK) MODAL = { kind: 'movein' };
   if (!MODAL && !LOCKED && !VIEWAS && S && S.apps && !needsTerms()) { try { const q = oddsDue(); if (q.length) MODAL = { kind: 'odds', a: q[0].id, need: true, left: q.length }; } catch (e) { } }
@@ -5693,7 +5694,10 @@ function roleHealthCheck(r) { const L = stagesFor(r.id), all = S.apps.filter(a =
     else { c = 'red'; why = ever.intro ? `${now.iv} in interviews, ${ever.intro} introduced so far` : 'nobody introduced yet'; tip = 'needs a reset: source and introduce this week'; } }
   if (!placed && quiet != null && quiet >= 7) { c = 'red'; why += `, nothing moved for ${quiet} days`; tip = 'nothing moved in a week: chase every candidate this week'; } else if (!placed && quiet != null && quiet >= 3 && c === 'green') { c = 'amber'; why += `, quiet for ${quiet} days`; }
   if (ever.intro >= 8 && c !== 'green') why += ` (${ever.intro} introduced in total)`;
-  return { c, why, tip, wk, age, ever, now, rej, quiet }; }
+  const ok = (HOK || {})[r.id]; if (ok && isISO(ok.until) && ok.until >= TODAY && c !== 'green') return { c: 'green', why: `you marked it healthy${ok.note ? ': ' + ok.note : ''}`, tip: '', wk, age, ever, now, rej, quiet, ok, was: c };
+  return { c, why, tip, wk, age, ever, now, rej, quiet, ok: ok && ok.until >= TODAY ? ok : null }; }
+/* a red or amber role can be marked healthy by hand after a talk, until a check-in date; the colour comes back after that if nothing changed */
+let HOK = null;
 function roleScan(uid) { const Q = quietDays(), out = { own: [], help: [] }, RK = { offer: 0, final: 1, interview: 2, review: 3, early: 4, none: 5 };
   for (const m of teamDataSets()) withData(m.ds, () => { for (const r of S.roles.filter(rOn)) { const mgr = roleMgrId(r), mine = mgr === uid, helps = !mine && (r.openTo || []).includes(uid); if (!mine && !helps) continue;
     const c = MC.get(r.clientId) || {}, apps = S.apps.filter(a => a.roleId === r.id && isLive(a));
@@ -5712,9 +5716,13 @@ function roleSumText(o) { if (!o.rows.length) return 'No candidates in process';
   if (rest) p.push(`${off.length || fin.length ? 'the other ' : ''}${rest} ${o.cnt.interview ? 'at earlier interviews or before' : o.cnt.review ? 'with the client for review or before' : 'not with the client yet'}`);
   return p.join(' · '); }
 function roleZoom(o, uid) { const Q = quietDays(); return `<table class="rp-t rv-z">${o.rows.map(x => `<tr><td><b>${esc(x.n)}</b>${x.own !== uid ? ` <span class="muted small">by ${esc(firstName(nameOf(x.own)))}</span>` : ''}</td><td class="small">${esc(x.st)}${x.odds != null ? ` · ${x.odds}%` : ''}</td><td class="num small ${x.idle >= Q && x.b !== 'offer' ? 'rv-q' : 'muted'}">${x.idle ? x.idle + 'd quiet' : 'today'}</td></tr>`).join('')}</table>`; }
+function hokLine(o) { const rid = String(o.key || '').split(':').pop(), ok = o.h.ok; if (!rid) return '';
+  if (o.h.was || ok) return `<div class="hok-l small"><span>Marked healthy ${ok ? fmtDate(ok.at) : ''}${ok && ok.note ? ': ' + esc(ok.note) : ''}. Check again ${ok ? esc(dueLabel(ok.until)) : ''}${o.h.was ? ` (Nimble says ${o.h.was === 'red' ? 'needs action' : 'watch'})` : ''}.</span><button class="ux-link" data-act="hokopen" data-r="${esc(rid)}" data-t="${esc(o.title)}">Change</button><button class="ux-link" data-act="hokdel" data-r="${esc(rid)}">Undo</button></div>`;
+  if (o.h.c === 'green') return '';
+  return `<div class="hok-l small"><button class="ux-link" data-act="hokopen" data-r="${esc(rid)}" data-t="${esc(o.title)}">Talked about it: mark healthy</button></div>`; }
 function rolesGlanceHTML(x) { const uid = x.m.userId, sc = roleScan(uid), Q = quietDays(), fn = x.me ? 'you' : firstName(x.name);
   const HC = { red: 0, amber: 1, green: 2 }, HL = { green: 'Healthy', amber: 'Watch', red: 'Needs action' };
-  const roleRow = o => `<details class="rv-g hl-${o.h.c}"><summary><div class="rv-h"><span class="hdot ${o.h.c}" title="${HL[o.h.c]}"></span>${gradeTag(o.g)}<b>${esc(o.title)}</b><span class="small muted">week ${o.h.wk}</span>
+  const roleRow = o => `<div class="rv-w">${roleRow0(o)}${hokLine(o)}</div>`, roleRow0 = o => `<details class="rv-g hl-${o.h.c}"><summary><div class="rv-h"><span class="hdot ${o.h.c}" title="${HL[o.h.c]}"></span>${gradeTag(o.g)}<b>${esc(o.title)}</b><span class="small muted">week ${o.h.wk}</span>
       <span class="rv-chips">${o.helpers.length ? `<span class="small muted">Sourcers: ${o.helpers.map(h => `${esc(firstName(nameOf(h.id)))} (${h.live})`).join(', ')}</span>` : ''}</span></div>
       <div class="small rv-s"><b class="hw-${o.h.c}">${esc(HL[o.h.c])}:</b> ${esc(o.h.why)}${o.h.tip ? ` <span class="muted">→ ${esc(o.h.tip)}</span>` : ''}</div>
       <div class="small muted hnums">${o.h.ever.src} sourced · ${o.h.ever.scr} screened · ${o.h.ever.intro} introduced · ${o.h.ever.iv} interviewed${o.h.rej ? ` · ${o.h.rej} rejected after intro` : ''} · now ${o.h.now.pre} in sourcing, ${o.h.now.cl} with client, ${o.h.now.iv} in interviews</div></summary>${o.rows.length ? roleZoom(o, uid) : ''}</details>`;
@@ -6559,6 +6567,11 @@ function modalHTML() {
       ${a && rosterAll().length > 1 ? `<label class="field" style="margin-top:10px">For${ownerSelect('tk_for', myUid())}</label>` : ''}
       ${a ? '' : `<label class="field" style="margin-top:10px">Candidate (optional)<select id="tk_app"><option value="">No candidate, general task</option>${S.apps.filter(isLive).sort((x, y) => personOf(x).name.localeCompare(personOf(y).name)).map(x => `<option value="${x.id}">${esc(personOf(x).name)}, ${esc(roleName(x))}</option>`).join('')}</select></label>`}
       <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="savetask">Add task</button></div>`;
+  } else if (m.kind === 'hok') { const ok = (HOK || {})[m.r] || {}, u = m.until || ok.until || dueIn(7);
+    inner = `<h3>Mark ${esc(m.t || 'this role')} healthy</h3><p class="small muted" style="margin-top:-6px">For when there's a good reason it looks red or amber. It shows green until the check-in date, then Nimble looks at it again.</p>
+      <label class="field">Why it's fine<input class="inp" id="hok_note" value="${esc(m.note ?? ok.note ?? '')}" placeholder="e.g. Client has enough candidates for now"></label>
+      <div class="field">Check again<div class="chips" style="margin-top:6px">${[[7, 'Next week'], [14, 'In 2 weeks'], [30, 'In a month']].map(([n, l]) => `<button class="qchip ${u === dueIn(n) ? 'on' : ''}" data-act="hokdue" data-n="${n}">${l}${chipDay(n)}</button>`).join('')}<input type="date" class="inp cu-date" min="${TODAY}" value="${esc(u)}" id="hok_dt"></div></div>
+      <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="hoksave">Mark healthy</button></div>`;
   } else if (m.kind === 'donenext') { const a = appById(m.a); if (!a) { MODAL = null; return ''; }
     inner = `<h3>Done: ${esc(m.t)}</h3><p class="small muted" style="margin-top:-6px">${esc(personOf(a).name)} · ${esc(roleName(a))} · ${esc(stageOf(a).label)}. Anything to add, and what's next?</p>${recUpdHTML(a, 'rm')}<div class="acts" style="margin-top:10px"><button class="btn quiet" data-act="donenone" data-a="${a.id}">Skip</button></div>`;
   } else if (m.kind === 'firsttask') { const L = (m.ids || []).map(id => ftFind(id)).filter(t => t && !t.done); if (!L.length) { MODAL = null; return ''; }
@@ -9384,6 +9397,10 @@ const BD_ACT = {
     el.parentNode.querySelectorAll('.qchip').forEach(b => b.classList.toggle('on', b === el));
     const dk = { cu: 'd', cp: 'c', ru: 'a', rm: 'a' }[p], da = { cu: 'cudue', cp: 'cpdue', ru: 'rcdue', rm: 'rcdue' }[p], pq = (p === 'ru' || p === 'rm') ? `[data-p="${p}"]` : '', b = document.querySelector(`[data-act=${da}][data-${dk}="${key}"][data-n="${dn}"]${pq}`);
     if (b) ACT[da](b); else { const iso = dueIn(dn); if (p === 'ru' || p === 'rm') RUDUE[key] = iso; else CODUE[p === 'cu' ? key : 'cp_' + key] = iso; document.querySelectorAll(`[data-act=${da}][data-${dk}="${key}"]${pq}`).forEach(x => x.classList.remove('on')); const dt = document.getElementById(`${p}_dt_${key}`); if (dt) dt.value = iso; const l = document.getElementById(`${p}_dl_${key}`); if (l) l.textContent = dueLabel(iso); } },
+  hokopen: el => { MODAL = { kind: 'hok', r: el.dataset.r, t: el.dataset.t }; render(); setTimeout(() => { const i = document.getElementById('hok_note'); i && i.focus(); }, 30); },
+  hokdue: el => { if (!MODAL) return; MODAL.note = (document.getElementById('hok_note') || {}).value || ''; MODAL.until = dueIn(+el.dataset.n); render(); },
+  hoksave: () => { const m = MODAL; if (!m) return; const dt = (document.getElementById('hok_dt') || {}).value, note = ((document.getElementById('hok_note') || {}).value || '').trim(); snapshot(); S.settings.healthOk = S.settings.healthOk || {}; S.settings.healthOk[m.r] = { note, at: TODAY, until: isISO(dt) ? dt : (m.until || dueIn(7)), by: myUid() }; HOK = S.settings.healthOk; MODAL = null; commit(); toast(`Marked healthy until ${dueLabel(S.settings.healthOk[m.r].until)}`, true); },
+  hokdel: el => { snapshot(); if (S.settings.healthOk) delete S.settings.healthOk[el.dataset.r]; commit(); toast('Back to what Nimble sees', true); },
   donenone: el => { const a = appById(el.dataset.a); MODAL = null; if (a) { delete FLOWU['rm' + a.id]; delete FLOWN['rm' + a.id]; } render(); toast('Done. No next step planned', true); },
   ftdue: el => { const t = ftFind(el.dataset.t); if (!t) return; t.due = dueIn(+el.dataset.n); commit(); },
   ftdate: el => { const t = ftFind(el.dataset.t); if (!t || !isISO(el.value)) return; t.due = el.value; commit(); },
