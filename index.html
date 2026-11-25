@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bXU1qUdvtnbJTt5fm9ZLUWVjkxVhPLdFQEckyNyFrhE=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-543nerkInnOQnzvpFU0Il60mKDSJKyUZWMGDUTGLuoo=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1890,6 +1890,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 .fb-m{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--muted)}.fb-vote{margin-left:auto;border:1px solid var(--line);border-radius:999px;padding:2px 10px;background:none;font:inherit;font-weight:650;color:var(--muted);cursor:pointer}.fb-vote.on{color:var(--cl);border-color:color-mix(in srgb,var(--cl) 50%,transparent)}
 .fb-r{font-size:13px;padding:8px 10px;border-radius:8px;background:color-mix(in srgb,var(--cl) 9%,transparent)}.fb-l{display:flex;gap:6px;flex-wrap:wrap}.fb-l select{width:auto}.fb-l input{flex:1;min-width:180px}
 @media (max-width:900px){.fb-wrap{grid-template-columns:1fr}.fb-new{position:static}}
+.ito{display:grid;gap:4px;margin-top:6px}.ito-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 8px;border:1px solid var(--line);border-radius:10px;cursor:pointer}.ito-r.on{border-color:color-mix(in srgb,var(--cl) 50%,transparent);background:color-mix(in srgb,var(--cl) 7%,transparent)}.ito-r .inp{flex:1;min-width:180px}.ito-r input[type=checkbox]{width:auto!important;flex:0 0 auto;margin:0}.ito-r b{font-weight:650}.ito-n{display:flex;gap:6px}.ito-n .inp{flex:1}.ito .ux-link{justify-self:start;padding:4px 0}
 .tn-who{display:inline-grid;place-items:center;min-width:18px;height:16px;padding:0 4px;border-radius:8px;font-size:9.5px;font-weight:800;background:color-mix(in srgb,var(--ink) 12%,transparent);vertical-align:1px}.tn-who.h{background:color-mix(in srgb,#2FB7A0 26%,transparent)}
 .xbox .tsec{margin-bottom:2px}.tn.xrole .lab{opacity:.92}
 .c-own{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;font-size:9.5px;font-weight:800;background:color-mix(in srgb,#E8A33D 30%,transparent);margin-right:4px}
@@ -1942,7 +1943,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:c19171c82c*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:6cbd2e1118*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -3033,13 +3034,13 @@ function clientContacts(c) { if (!c) return []; if (!Array.isArray(c.contacts)) 
 function introPool(cid, rid) { return S.apps.filter(a => isLive(a) && roleOf(a) && roleOf(a).clientId === cid && stageOf(a).kind === 'cv' && (!rid || a.roleId === rid)).sort((x, y) => (stageOf(x).kind === 'cv' ? 0 : 1) - (stageOf(y).kind === 'cv' ? 0 : 1) || roleOf(x).title.localeCompare(roleOf(y).title) || stageOf(y).i - stageOf(x).i || personOf(x).name.localeCompare(personOf(y).name)); }
 function introKp(m, a) { const p = personOf(a); if (m.kp[a.id] == null) m.kp[a.id] = (p.kp && p.kp.trim()) ? p.kp : kpMake(p, a).join('\n'); return m.kp[a.id]; }
 function introText(m) {
-  const c = MC.get(m.c), sel = introPool(m.c, m.r).filter(a => m.sel.includes(a.id)), to = clientContacts(c).find(x => x.id === m.to), me = firstName(S.settings.userName || '') || '';
+  const c = MC.get(m.c), sel = introPool(m.c, m.r).filter(a => m.sel.includes(a.id)), tos = introTos(m).map(id => clientContacts(c).find(x => x.id === id)).filter(Boolean).concat((m.news || []).filter(r => r.n).map(r => ({ name: r.n }))), me = firstName(S.settings.userName || '') || '';
   const roles = [...new Set(sel.map(a => roleOf(a).title))], multi = roles.length > 1, cvN = sel.filter(a => personOf(a).cv).length, rl = roles.length > 1 ? roles.slice(0, -1).join(', ') + ' and ' + roles[roles.length - 1] : roles[0] || '';
   const att = cvN ? (cvN === sel.length ? (sel.length > 1 ? ', CVs attached' : ', CV attached') : `, ${cvN} CV${cvN > 1 ? 's' : ''} attached`) : '';
   const lead = sel.length === 1 ? `I'd like to introduce ${personOf(sel[0]).name} for the ${rl} role. A few key points below${att}.` : `As promised, here are ${sel.length} candidates for the ${rl} role${multi ? 's' : ''}. Key points per candidate below${att}.`;
   const blocks = sel.map(a => `${personOf(a).name}${multi ? ' – ' + roleOf(a).title : ''}\n` + introKp(m, a).split('\n').map(l => l.trim().replace(/^[-•*·]\s*/, '')).filter(Boolean).slice(0, 6).map(l => '• ' + l).join('\n'));
   const subj = `${sel.length > 1 ? 'Candidates' : 'Candidate'} for ${c.name} ${rl}`.trim();
-  return { subj, body: `Hi ${to ? firstName(to.name) : 'there'}, hope you're doing well!\n\n${lead}\n\n${blocks.join('\n\n')}\n\nHappy to set up interviews with whoever stands out, or to give more context on a quick call.\n\nLooking forward,\n${me}` };
+  return { subj, body: `Hi ${hiNames(tos)}, hope you're doing well!\n\n${lead}\n\n${blocks.join('\n\n')}\n\nHappy to set up interviews with whoever stands out, or to give more context on a quick call.\n\nLooking forward,\n${me}` };
 }
 function textToHtml(t) { const ls = String(t).split('\n'), out = []; let ul = false;
   ls.forEach((l, i) => { const b = /^\s*[•\-*]\s+/.test(l); if (b && !ul) { out.push('<ul style="margin:4px 0 12px 18px;padding:0">'); ul = true; } if (!b && ul) { out.push('</ul>'); ul = false; }
@@ -3055,7 +3056,7 @@ function buildEml({ to, subject, text, html, files }) {
   L.push(`--${b}--`, ''); return L.join('\r\n');
 }
 function introHTML(m) {
-  const c = MC.get(m.c), pool = introPool(m.c, m.r), cts = clientContacts(c); if (m.to == null) m.to = (cts[0] || {}).id || '';
+  const c = MC.get(m.c), pool = introPool(m.c, m.r), cts = clientContacts(c); introTos(m); m.news = m.news || []; if (!m.tos.length && !m.news.length && !m.toInit) { m.toInit = true; if (cts[0]) m.tos = [cts[0].id]; else m.news = [{ n: '', e: '' }]; }
   const sel = pool.filter(a => m.sel.includes(a.id)), tx = introText(m); m.gen = tx.body;
   const rows = pool.map(a => { const p = personOf(a), on = m.sel.includes(a.id), fn = esc(firstName(p.name)), kp = on ? introKp(m, a) : '';
     return `<div class="ir ${on ? 'on' : ''}"><label class="ir-h"><input type="checkbox" data-act-change="introsel" data-a="${a.id}" ${on ? 'checked' : ''}><b>${esc(p.name)}</b><span class="muted small">${esc(roleOf(a).title)} · ${esc(stageOf(a).label)}</span><span class="ir-tags">${p.cv ? '<span class="tag ok" style="margin:0">CV</span>' : '<span class="tag" style="margin:0">no CV</span>'}${hasNotes(p, a) ? '<span class="tag ok" style="margin:0">notes</span>' : ''}</span></label>
@@ -3064,8 +3065,9 @@ function introHTML(m) {
         <div class="ir-kp"><span class="small muted">Key points for the client (one per line, max 6)</span><textarea class="inp" id="kp_${a.id}" rows="${Math.min(7, Math.max(3, kp.split('\n').length + 1))}">${esc(kp)}</textarea><button class="btn sm quiet" data-act="introkp" data-a="${a.id}">Make again from CV and notes</button></div></div>` : ''}</div>`; }).join('');
   return `<h3>Introduce candidates to ${esc(c.name)}${m.r && MR.get(m.r) ? ' for ' + esc(MR.get(m.r).title) : ''}</h3><p class="small muted" style="margin-top:-6px">Everyone in CV received is ticked. Untick who you don't send. Nimble writes the email with short key points per candidate and attaches their CVs. Check the key points, then create the email.</p>
     <div class="irs">${rows || '<div class="small muted">Nobody in CV received yet.</div>'}</div>
-    <div class="fgrid" style="margin-top:14px"><label class="field">To<select id="ib_to" data-act-change="introto">${cts.map(x => `<option value="${x.id}" ${m.to === x.id ? 'selected' : ''}>${esc(x.name)}${x.email ? ' · ' + esc(x.email) : ' · no email yet'}</option>`).join('')}<option value="" ${!m.to ? 'selected' : ''}>New contact person…</option></select></label>
-      ${!m.to ? `<label class="field">Name<input id="ib_nn" placeholder="e.g. Sophie de Vries"></label><label class="field">Email<input id="ib_ne" type="email" placeholder="sophie@client.com"></label>` : (cts.find(x => x.id === m.to) || {}).email ? '' : `<label class="field">Email of ${esc(firstName((cts.find(x => x.id === m.to) || {}).name || ''))}<input id="ib_ne" type="email"></label>`}
+    <div class="fgrid" style="margin-top:14px"><div class="field wide"><span>To <span class="small muted">· pick one or more</span></span><div class="ito">${cts.map(x => { const on = m.tos.includes(x.id); return `<label class="ito-r ${on ? 'on' : ''}"><input type="checkbox" data-act-change="introto" data-id="${x.id}" ${on ? 'checked' : ''}><b>${esc(x.name)}</b>${x.title ? `<span class="small muted">${esc(x.title)}</span>` : ''}${x.email ? `<span class="small muted">${esc(x.email)}</span>` : on ? `<input class="inp" id="ib_e_${x.id}" type="email" placeholder="Email of ${esc(firstName(x.name))}">` : '<span class="small muted">no email yet</span>'}</label>`; }).join('')}
+        ${m.news.map((r, i) => `<div class="ito-n"><input class="inp" id="ib_nn_${i}" value="${esc(r.n)}" placeholder="Name, e.g. Sophie de Vries"><input class="inp" id="ib_ne_${i}" type="email" value="${esc(r.e)}" placeholder="sophie@client.com"><button class="ib" data-act="introdelnew" data-i="${i}" title="Remove">×</button></div>`).join('')}
+        <button class="ux-link" data-act="introaddnew">+ Add another person</button></div></div>
       <label class="field wide">Subject<input id="ib_subj" value="${esc(m.subj ?? tx.subj)}"></label>
       <label class="field wide">Message<textarea id="ib_body" rows="14">${esc(m.body ?? tx.body)}</textarea></label></div>
     ${m.body != null ? '<div class="small muted">You edited the message. <button class="btn sm quiet" data-act="introrebuild">Rebuild it from the key points</button></div>' : ''}
@@ -3074,7 +3076,15 @@ function introHTML(m) {
 }
 const introNext = a => { const l = stagesFor(a.roleId), cur = stageOf(a); return l.find(s => s.i > cur.i && s.kind === 'review') || null; };
 const introNextLabel = sel => { const n = sel.map(introNext).filter(Boolean); return n.length ? n[0].label : 'the client review stage'; };
-function introRead() { const m = MODAL; if (!m || m.kind !== 'intro') return; const v = id => (document.getElementById(id) || {}).value;
+/* introductions can go to several people at the client; new people are saved as the client's contacts */
+const introTos = m => { if (!Array.isArray(m.tos)) m.tos = m.to ? [m.to] : []; return m.tos; };
+function introRecips(m, keep) { const c = MC.get(m.c), cts = clientContacts(c), v = id => ((document.getElementById(id) || {}).value || '').trim(); introTos(m); m.news = m.news || [];
+  for (const id of m.tos) { const x = cts.find(z => z.id === id), e = v('ib_e_' + id); if (x && e && !x.email) { x.email = e; keep = true; } }
+  m.news = m.news.map((r, i) => ({ n: v('ib_nn_' + i) || r.n || '', e: v('ib_ne_' + i) || r.e || '' }));
+  if (keep) { for (const r of m.news.filter(r => r.n)) { const x = { id: uid('cc'), name: r.n, title: '', email: r.e, phone: '' }; cts.push(x); m.tos.push(x.id); if (!c.contact) c.contact = x.name; } m.news = m.news.filter(r => !r.n); save(); }
+  return [...m.tos.map(id => cts.find(z => z.id === id)).filter(Boolean), ...m.news.filter(r => r.n).map(r => ({ id: '', name: r.n, email: r.e }))]; }
+const hiNames = L => L.length === 1 ? firstName(L[0].name) : L.length === 2 ? `${firstName(L[0].name)} and ${firstName(L[1].name)}` : L.length ? 'all' : 'there';
+function introRead() { const m = MODAL; if (!m || m.kind !== 'intro') return; if (document.getElementById('ib_subj')) introRecips(m); const v = id => (document.getElementById(id) || {}).value;
   for (const id of m.sel) { const t = v('kp_' + id); if (t != null) { m.kp[id] = t; const a = appById(id); if (a) personOf(a).kp = t; } }
   const b = v('ib_body'); if (b != null && b !== m.gen) m.body = b; const sj = v('ib_subj'); if (sj != null && sj !== introText(m).subj) m.subj = sj; }
 function ccontactsHTML(m) {
@@ -7594,20 +7604,22 @@ const ACT = {
     const cts = clientContacts(MC.get(cid));
     MODAL = { kind: 'intro', c: cid, r: rid, sel: pool.map(x => x.id), kp: {}, to: cts[0] ? cts[0].id : null }; render(); },
   introsel: el => { introRead(); const id = el.dataset.a; MODAL.sel = el.checked ? [...new Set([...MODAL.sel, id])] : MODAL.sel.filter(x => x !== id); render(); },
-  introto: el => { introRead(); MODAL.to = el.value; render(); },
+  introto: el => { introRead(); introRecips(MODAL); const m = MODAL, id = el.dataset.id; m.tos = el.checked ? [...new Set([...m.tos, id])] : m.tos.filter(x => x !== id); m.body = m.body; render(); },
+  introaddnew: () => { introRead(); introRecips(MODAL); MODAL.news.push({ n: '', e: '' }); render(); setTimeout(() => { const i = document.getElementById('ib_nn_' + (MODAL.news.length - 1)); i && i.focus(); }, 30); },
+  introdelnew: el => { introRead(); introRecips(MODAL); MODAL.news.splice(+el.dataset.i, 1); render(); },
   introkp: el => { introRead(); const a = appById(el.dataset.a); if (!a) return; const p = personOf(a); if (el.dataset.n) { const t = ((document.getElementById('in_' + p.id) || {}).value || '').trim(); if (!t) { toast('Type a few notes first'); return; } p.transcript = [(p.transcript || '').trim(), t].filter(Boolean).join('\n'); }
     p.kp = kpMake(p, a).join('\n'); MODAL.kp[a.id] = p.kp; save(); render(); },
   introrebuild: () => { introRead(); MODAL.body = null; MODAL.subj = null; render(); },
-  introcopy: () => { introRead(); { const m = MODAL, c = MC.get(m.c), cts = clientContacts(c), v = id => ((document.getElementById(id) || {}).value || '').trim(); let to = cts.find(x => x.id === m.to); if (!to && v('ib_nn')) { to = { id: uid('cc'), name: v('ib_nn'), title: '', email: v('ib_ne'), phone: '' }; cts.push(to); m.to = to.id; if (!c.contact) c.contact = to.name; save(); } else if (to && !to.email && v('ib_ne')) { to.email = v('ib_ne'); save(); } } const tx = introText(MODAL); copyText(MODAL.body ?? tx.body); toast('Message copied'); },
+  introcopy: () => { introRead(); introRecips(MODAL, true); const tx = introText(MODAL); copyText(MODAL.body ?? tx.body); toast('Message copied'); },
   introeml: async () => { introRead(); const m = MODAL, c = MC.get(m.c), cts = clientContacts(c), v = id => ((document.getElementById(id) || {}).value || '').trim();
-    let to = cts.find(x => x.id === m.to); if (!to && v('ib_nn')) { to = { id: uid('cc'), name: v('ib_nn'), title: '', email: v('ib_ne'), phone: '' }; cts.push(to); m.to = to.id; if (!c.contact) c.contact = to.name; } if (to && !to.email && v('ib_ne')) to.email = v('ib_ne');
+    const tos = introRecips(m, true);
     const sel = introPool(m.c, m.r).filter(a => m.sel.includes(a.id)); if (!sel.length) { toast('Tick at least one candidate'); return; }
     const tx = introText(m), body = m.body ?? tx.body, subj = m.subj ?? tx.subj, files = [], missing = [];
     for (const a of sel) { const p = personOf(a); if (!p.cv) { missing.push(firstName(p.name)); continue; } const f = await kvGet('cv:' + p.id).catch(() => null); if (!f || !f.data) { missing.push(firstName(p.name)); continue; } const ext = (f.name.match(/\.\w+$/) || ['.pdf'])[0]; files.push({ name: `${p.name} - CV${ext}`, type: f.type, data: f.data }); }
-    const eml = buildEml({ to: to ? (to.email ? `${mimeWord(to.name)} <${to.email}>` : mimeWord(to.name)) : '', subject: subj, text: body, html: textToHtml(body), files });
+    const eml = buildEml({ to: tos.map(to => to.email ? `${mimeWord(to.name)} <${to.email}>` : mimeWord(to.name)).join(', '), subject: subj, text: body, html: textToHtml(body), files });
     downloadFile(`Introduction ${c.name} ${TODAY}.eml`, eml, 'message/rfc822'); m.made = true; save(); render();
     toast(`Email created${files.length ? ' with ' + files.length + ' CV' + (files.length > 1 ? 's' : '') : ''}. Open the downloaded file: it opens in Outlook as a draft.${missing.length ? ' No CV for ' + missing.join(', ') + '.' : ''}`); },
-  introsent: () => { const m = MODAL, c = MC.get(m.c), to = clientContacts(c).find(x => x.id === m.to), sel = introPool(m.c, m.r).filter(a => m.sel.includes(a.id)); snapshot(); let n = 0;
+  introsent: () => { const m = MODAL, c = MC.get(m.c), tl = introTos(m).map(id => clientContacts(c).find(x => x.id === id)).filter(Boolean), to = tl.length ? { name: tl.map(x => x.name).join(', ') } : null, sel = introPool(m.c, m.r).filter(a => m.sel.includes(a.id)); snapshot(); let n = 0;
     for (const a of sel) { const nx = introNext(a); addLog(a, 'contact', `Introduced to ${to ? to.name : c.name}`); if (nx) { setStage(a, nx.id); n++; } }
     MODAL = null; ASK = null; commit(); toast(`${sel.length} introduced${n ? ', moved to ' + introNextLabel(sel) : ''}. Chase-feedback tasks are set.`, true); },
   ccopen: el => { CTX = null; MODAL = { kind: 'ccontacts', c: el.dataset.c }; render(); },
