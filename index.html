@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ufANgIRBHWeTfv5VlT1y5Noq7IeJ25ARXW23F9ozi1s=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-WZLArVVF/ESocVs6vCN47fq+6e6orWN4bQ9V5gT8Ad0=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -3443,7 +3443,8 @@ function boardApps() {
 function shortTask(t) {
   const x = (t || '').trim();
   if (/chase .*client|client.*feedback|feedback/i.test(x)) return 'Chase client';
-  if (/\bcv\b|resume/i.test(x)) return 'Chase CV';
+  if (/(send|introduc).*\bcvs?\b|\bcvs?\b.*to (the )?client/i.test(x)) return /cvs\b|the cvs/i.test(x) ? 'Send CVs' : 'Send CV';
+  if (/\bcvs?\b|resume/i.test(x)) return 'Chase CV';
   if (/^plan( the)? .*(interview|assessment|meeting)/i.test(x)) return 'Plan interview';
   if (/^plan|plan the call|schedul/i.test(x)) return 'Plan call';
   if (/follow/i.test(x)) return 'Follow up';
