@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-8ecm8Xao1QKcaSDhOj9DIcyHMdqdbWCE1M+AtnLAD40=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ppFvU6dVrTKfrD4Av4fsDYCdvOf7ezUv0zv9wgOHER8=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1852,12 +1852,12 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 .u3 .u3-c{display:grid;gap:10px;min-width:0}.u3 .u3-c.has-side{grid-template-columns:minmax(0,1fr) 220px;gap:18px;align-items:start}
 .u3 .u3-main{display:grid;gap:8px;min-width:0;justify-items:start}.u3 .u3-main>*{max-width:100%}
 .u3 .u3-sh{font-size:13px;font-weight:650;color:var(--muted);margin-bottom:6px}
-.u3 .qchip{font-size:13.5px;font-weight:600;padding:7px 13px;border-radius:10px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);background:color-mix(in srgb,var(--card,#fff) 80%,transparent);line-height:1.2}
+.u3 .qchip{text-align:left;font-size:13px;font-weight:600;padding:5px 11px;border-radius:10px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);background:color-mix(in srgb,var(--card,#fff) 80%,transparent);line-height:1.2}
 .u3 .qchip:hover{border-color:color-mix(in srgb,var(--cl) 60%,transparent)}
 .u3 .qchip.on{background:var(--ink);color:var(--bg,#fff);border-color:var(--ink)}.u3 .qchip.on small{color:inherit;opacity:.75}
 .u3 .qchip small.cd{font-weight:500;color:var(--muted);font-size:12px}
 .u3 .qchip.on small.cd{color:inherit;opacity:.7}
-.u3 .flow>.chips,.u3 .nxopts{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.u3 .flow>.chips,.u3 .nxopts{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
 .u3 .u3-due{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.u3 .u3-due .cu-date{width:auto;padding:6px 10px}
 .u3 .u3-dl{font-size:13px;color:var(--muted)}
 .u3 .ph-tag{text-transform:none!important;letter-spacing:0!important;display:inline-block;font-size:12px;font-weight:650;color:var(--cl);margin-left:10px;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--cl) 12%,transparent);vertical-align:2px}
@@ -1949,7 +1949,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:36534780a8*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:7d008d2f9a*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -6733,7 +6733,7 @@ function modalHTML() {
       <label class="field">Why it's fine<input class="inp" id="hok_note" value="${esc(m.note ?? ok.note ?? '')}" placeholder="e.g. Client has enough candidates for now"></label>
       <div class="field">Check again<div class="chips" style="margin-top:6px">${[[7, 'Next week'], [14, 'In 2 weeks'], [30, 'In a month']].map(([n, l]) => `<button class="qchip ${u === dueIn(n) ? 'on' : ''}" data-act="hokdue" data-n="${n}">${l}${chipDay(n)}</button>`).join('')}<input type="date" class="inp cu-date" min="${TODAY}" value="${esc(u)}" id="hok_dt"></div></div>
       <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="hoksave">Mark healthy</button></div>`;
-  } else if (m.kind === 'donenext') { const a = appById(m.a); if (!a) { MODAL = null; return ''; }
+  } else if (m.kind === 'donenext') { const a = appById(m.a); if (!a) { MODAL = null; return ''; } wide = 'wide';
     inner = `<h3>${m.stage ? esc(personOf(a).name) + ': ' + esc(m.t) : 'Done: ' + esc(m.t)}</h3><p class="small muted" style="margin-top:-6px">${m.stage ? esc(roleName(a)) + '. What happened, and what\'s next?' : esc(personOf(a).name) + ' · ' + esc(roleName(a)) + ' · ' + esc(stageOf(a).label) + '. Anything to add, and what\'s next?'}</p>${recUpdHTML(a, 'rm')}<div class="acts" style="margin-top:10px"><button class="btn quiet" data-act="donenone" data-a="${a.id}">Skip</button></div>`;
   } else if (m.kind === 'firsttask') { const L = (m.ids || []).map(id => ftFind(id)).filter(t => t && !t.done); if (!L.length) { MODAL = null; return ''; }
     inner = `<h3>${L.length > 1 ? 'Next steps' : esc(L[0].text) + ': when?'}</h3>${L.map(t => { const a = t.appId && appById(t.appId), d = t.dealId && dealById(t.dealId), k = a ? stageOf(a).kind : '', lastScreen = a && k === 'cv' ? S.apps.filter(x => x.roleId === a.roleId && x.id !== a.id && isLive(x) && ['source', 'screen', 'cvwait'].includes(stageOf(x).kind) && isISO(x.nextInterview) && x.nextInterview >= TODAY).map(x => x.nextInterview).sort().pop() : null, waitN = a && k === 'cv' ? S.apps.filter(x => x.roleId === a.roleId && x.id !== a.id && isLive(x) && ['screen', 'cvwait'].includes(stageOf(x).kind)).length : 0;
@@ -7330,10 +7330,11 @@ const REC_FLOW = {
   cv: [['Waiting for more CVs', 'Waiting for more CVs', () => [['Send CVs to the client', 3]], { cancel: /send (the )?cvs? to (the )?client/i, hint: 'The “Send CV to the client” task goes away. Pick when you aim to send them together.' }]],
   review: [['Chased the client', 'Chased the client for feedback', () => [['Chase client for feedback', 2]]], ['Client has questions', 'Client has questions', () => [['Answer the client', 0]]]],
   interview: [['Interview rescheduled', 'Interview rescheduled', () => [], { askdate: true, hint: 'Save, then set the new date.' }], ['Done, waiting for feedback', 'Interview done, waiting for feedback', fn => [['Chase client for feedback', 1], ['Debrief with ' + fn, 0]]]],
-  offer: [['Offer details cleared with the client', 'Offer details cleared with the client', fn => [['Take the offer to ' + fn, 0]]], ['Offer across to the candidate', 'Offer across to the candidate', () => [['Follow up on the offer', 2]]], ['Compensation cleared with the candidate', 'Compensation cleared with the candidate', () => [['Get the written offer from the client', 1]]], ['Negotiating with the candidate', 'Negotiating with the candidate', () => [['Go back to the client', 1]]], ['Thinking it over', 'Candidate is thinking the offer over', () => [['Follow up on the offer', 2]]], ['Counter-offer from their employer', 'Counter-offer from their current employer', fn => [['Call ' + fn + ' about the counter-offer', 0]]], ['Notice and start date agreed', 'Notice period and start date agreed', () => [['Confirm the start date with the client', 1]]]]
+  offer: [['Spoke to the candidate', 'Spoke to the candidate about the offer', () => [['Pass the comp details to the client', 0], ['Follow up on the offer', 2]]], ['Spoke to the client', 'Spoke to the client about the offer', () => [['Pre-close the candidate', 0], ['Get the written offer across', 1]]], ['Comp details in from the candidate', 'Comp details received from the candidate', () => [['Pass the comp details to the client', 0]]], ['Offer details in from the client', 'Offer details received from the client', () => [['Pre-close the candidate', 0]]], ['Candidate pre-closed', 'Candidate pre-closed', () => [['Get the written offer across', 1]]], ['Written offer sent', 'Written offer sent to the candidate', () => [['Follow up on the offer', 2], ['Get back to the client on the answer', 2]]]]
 };
 const recFlowHit = v => { for (const k in REC_FLOW) { const h = REC_FLOW[k].find(x => x[1] === v); if (h) return h; } return null; };
 function recFlowNext(v, a) { const h = a && recFlowHit(String(v || '').trim()); if (h) { const fn = firstName(personOf(a).name || ''), o = h[2](fn), x = h[3] || {}; return { o, hint: x.hint || '', cancel: x.cancel || null, askdate: !!x.askdate, nonone: true }; }
+  if (a && !String(v || '').trim() && recKey(a) === 'offer') return { o: [['Get comp details clear with the candidate', 0], ['Get offer details clear with the client', 0], ['Pass the comp details to the client', 0], ['Pre-close the candidate', 0], ['Get the written offer across', 1], ['Follow up on the offer', 2], ['Get back to the client on the answer', 1]], hint: '', nonone: true };
   if (a && !String(v || '').trim()) { const fn = firstName(personOf(a).name || ''), seen = new Set(), o = []; for (const h2 of (REC_FLOW[recKey(a)] || [])) for (const n of h2[2](fn)) if (!seen.has(n[0])) { seen.add(n[0]); o.push(n); } if (!seen.has('Follow up')) o.push(['Follow up', 2]); return { o: o.slice(0, 4), hint: '', nonone: true }; }
   return recFlowNext1(v, a); }
 function recFlowNext1(v, a) { const r = recFlowNext0(v, a); if (a && r && Array.isArray(r.o)) { const p = personOf(a); const k = r.x && (r.x.k === 'rej' || r.x.k === 'close'); if (!(p.cv && p.cv.text) && !k && !r.o.some(o => /chase cv/i.test(o[0]))) r.o = [...r.o, ['Chase CV', 2]]; } return r; }
