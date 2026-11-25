@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-6Fg2KixKQeDKXXtHMwMoCufSt+1t+8AkekpMy5n8lBY=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-FyAKIQ5kiq69EEXU55nmZpBMCVq712bMkxKvrnt59l0=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -313,6 +313,9 @@ h2 .count{font-size:14px;color:var(--muted);font-weight:600;font-family:var(--bo
 .sr-name{all:unset;cursor:pointer;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sr-name:hover b{text-decoration:underline}.sr-need{font-weight:650;white-space:nowrap}.sr-now .sr-need{color:var(--urgent)}.sr-watch .sr-need{color:#C88A1E}.sr-ok .sr-need{color:var(--muted);font-weight:500}
 .sr-why{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sr-n{white-space:nowrap;font-variant-numeric:tabular-nums}.sr-last{white-space:nowrap}.sr-acts{display:flex;gap:6px;justify-content:flex-end}
 @media (max-width:1100px){.sr-row{grid-template-columns:minmax(0,1fr) auto;row-gap:2px}.sr-why,.sr-n,.sr-last{grid-column:1/-1}}
+.bdf-wrap{overflow-x:auto}.bdf{width:100%}.bdf td,.bdf th{white-space:nowrap}.bdf .num{text-align:center}.bdf th.bdf-late,.bdf td.bdf-late{background:color-mix(in srgb,var(--accent) 7%,transparent)}.bdf tr.bdf-tot td{font-weight:700;border-bottom:1px solid var(--line)}
+.bdf-n{all:unset;cursor:pointer;min-width:26px;display:inline-block;padding:2px 8px;border-radius:8px;font-variant-numeric:tabular-nums;font-weight:600}.bdf-n:hover{background:color-mix(in srgb,var(--accent) 14%,transparent)}.bdf-n.on{background:var(--ink);color:var(--bg,#fff)}.bdf-n.late{color:var(--accent)}.bdf-n.react{color:#C88A1E}.bdf-n.today{color:var(--urgent)}.bdf-n.on.late,.bdf-n.on.react,.bdf-n.on.today{color:var(--bg,#fff)}
+.bdf-mk{font-weight:600}.bdov-mk{margin-bottom:14px}.bdov-h{display:flex;align-items:baseline;gap:10px;margin:0 2px 6px}.bdov-t{width:100%;table-layout:fixed}.bdov-t td{vertical-align:top}.bdov-t td:nth-child(1){width:30%}.bdov-t td:nth-child(2){width:13%}.bdov-t td:nth-child(3){width:30%}
 .rc-x{border:0;background:none;color:var(--muted);font-size:16px;cursor:pointer;padding:0 4px;line-height:1}.rc-x:hover{color:var(--urgent)}.rc-p{grid-template-columns:22px minmax(0,1fr) auto 18px!important}.rc-add{display:flex;gap:6px;margin-top:4px}.rc-add select{flex:1}.rc-sm{display:flex;width:100%;min-width:0}.rc-sm button{padding:4px 6px;font-size:12.5px;min-width:0}.rc-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}.rc-why{font-size:13px;font-style:italic;color:var(--muted)}.rc-p{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:13px}
 .rc-sec textarea{width:100%;resize:vertical}.rc-open{all:unset;cursor:pointer}.rc-open:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}.jd-dot{font-size:11px;color:var(--urgent);margin-left:4px}
 @media (max-width:860px){.rc-grid{grid-template-columns:1fr}}
@@ -1978,7 +1981,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:836e4a19f1*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:39d971f8d3*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -8845,6 +8848,11 @@ function coMatches(q) { const toks = q.toLowerCase().split(/\s+/).filter(Boolean
 function oppMatches(q) { const toks = q.toLowerCase().split(/\s+/).filter(Boolean); if (!toks.length) return [];
   return S.deals.filter(d => { const a = accById(d.accountId) || {}, hay = [a.name, d.title, d.dept, dealMarket(d), sectorOf(a), dealStage(d).label, ...dealCos(d).map(c => c.name + ' ' + (c.title || ''))].join(' ').toLowerCase(); return toks.every(t => hay.includes(t)); })
     .sort((x, y) => (x.outcome === 'open' ? 0 : 1) - (y.outcome === 'open' ? 0 : 1) || ((accById(x.accountId) || {}).name || '').localeCompare((accById(y.accountId) || {}).name || '')); }
+/* how much is really happening with an opportunity: their reactions (replies, calls, meetings) across its contacts */
+let BDOV = null, BDOVN = 25;
+function dealEngage(d) { let score = 0, n = 0, nr = 0, last = null, c0 = null, cBest = -1;
+  for (const c of dealCosWork(d)) { let cs = 0; for (const l of (c.log || [])) { if (l.dealId && l.dealId !== d.id) continue; const w = signalWeight(l.text); if (w > 0) { cs += w; n++; if (w >= 2) nr++; if (!last || (l.date || '') > (last.date || '')) last = l; } } score += cs; if (cs > cBest) { cBest = cs; c0 = c; } }
+  return { score, n, nr, last, date: last ? last.date : '', c: cBest > 0 ? c0 : null }; }
 function dealsHTML() {
   ensureAccounts();
   const st = bdStages(), mk = bdMarkets();
@@ -8871,20 +8879,28 @@ function dealsHTML() {
   const svcs = [...new Set([...services(), ...S.deals.map(d => d.service).filter(Boolean)])];
   const isList = S.settings.bdView === 'list', sortBy = S.settings.bdSort || 'due', sIdx = id => st.findIndex(x => x.id === id);
   const listRows = open.slice().sort((x, y) => sortBy === 'company' ? ((accById(x.accountId) || {}).name || '').localeCompare((accById(y.accountId) || {}).name || '') : sortBy === 'stage' ? sIdx(y.stage) - sIdx(x.stage) || urg(x) - urg(y) : sortBy === 'momentum' ? MO_RANK[mo(x).level] - MO_RANK[mo(y).level] || mo(y).score - mo(x).score || urg(x) - urg(y) : urg(x) - urg(y) || ((nextOf(x) || {}).due || '9').localeCompare((nextOf(y) || {}).due || '9'));
-  const isAll = !BDSEL.market && !BDSEL.acc && !BDSEL.sector && !OPPQ.trim() && !bdfCount(), showCards = !isAll || S.settings.bdAllCards;
-  const overviewHTML = () => { const all = open.map(d => ({ d, a: accById(d.accountId) || {}, m: mo(d), t: nextOf(d) }));
-    const hot = all.filter(x => ['hot', 'warm', 'acc'].includes(x.m.level)).sort((x, y) => y.m.score - x.m.score || ((y.m.why[0] || '') > (x.m.why[0] || '') ? 1 : -1));
-    const mks = [...new Set([...bdMarkets(), ...all.map(x => dealMarket(x.d) || 'No country')])];
-    const row = x => `<tr class="clickrow dk-${x.t ? dueK(x.t.due) : 'none'}" data-act="bddeal" data-id="${x.d.id}" data-ctx="bdopp"><td>${moBadge(x.m, true)}</td><td><b>${esc(x.a.name || '?')}</b><div class="ctx">${esc([dealMarket(x.d), sectorOf(x.a), x.a.status === 'client' ? 'existing client' : ''].filter(Boolean).join(' · '))}</div></td><td><span class="chip">${esc(dealStage(x.d).label)}</span></td><td class="small">${esc(x.m.why.slice(0, 2).join(' · ') || '')}</td><td>${x.t ? `${esc(x.t.text)} ${duePill(x.t.due)}` : '<span class="dcn-none">No next step</span>'}</td></tr>`;
-    return `<section class="section"><div class="section-head"><h2>What is materialising <span class="count">${hot.length}</span></h2><span class="note">Hot, in conversation and accepted, in every country</span></div>
-      ${hot.length ? `<table class="tbl glass dlist ovhot"><tbody>${hot.slice(0, 15).map(row).join('')}</tbody></table>` : '<div class="glass empty">Nothing hot yet. Log replies, accepted requests, calls and meetings on contacts and they rise here.</div>'}</section>
-      <section class="section"><div class="section-head"><h2>Per country</h2><span class="note">Click a country to work it</span></div>
-      <table class="tbl glass ovtbl"><thead><tr><th>Country</th><th>Open</th><th>Hot</th><th>In conversation</th><th>Accepted</th><th>Action today</th>${st.map(x => `<th class="num">${esc(x.label)}</th>`).join('')}<th>Quiet</th><th>Sectors</th></tr></thead><tbody>
-      ${mks.map(mk => { const xs = all.filter(x => (dealMarket(x.d) || 'No country') === mk), secs = {}; xs.forEach(x => { const sc = sectorOf(x.a) || 'No sector'; secs[sc] = (secs[sc] || 0) + 1; });
-        return `<tr class="clickrow" data-act="bdsel" data-m="${esc(mk)}" data-a=""><td><b>${esc(mk)}</b></td><td>${xs.length}</td><td>${(n => n ? `<span class="mo mo-hot">${n}</span>` : '<span class="muted">–</span>')(xs.filter(x => x.m.level === 'hot').length)}</td><td>${(n => n ? `<span class="mo mo-warm">${n}</span>` : '<span class="muted">–</span>')(xs.filter(x => x.m.level === 'warm').length)}</td><td>${(n => n ? `<span class="mo mo-acc">${n}</span>` : '<span class="muted">–</span>')(xs.filter(x => x.m.level === 'acc').length)}</td>
-          <td>${(n => n ? `<span class="dchip over">${n}</span>` : '<span class="muted">–</span>')(xs.filter(x => urg(x.d) <= 2).length)}</td>${st.map(sg => `<td class="num">${xs.filter(x => x.d.stage === sg.id).length || '<span class="muted">·</span>'}</td>`).join('')}<td>${xs.filter(x => x.m.level === 'quiet').length || '<span class="muted">–</span>'}</td>
-          <td class="small">${Object.entries(secs).sort((p, q) => q[1] - p[1]).map(([k, n]) => `${esc(k)} ${n}`).join(' · ') || '<span class="muted">–</span>'}</td></tr>`; }).join('')}</tbody></table></section>
-      <div class="acts" style="justify-content:flex-start;margin:4px 0 12px"><button class="btn" data-act="bdallcards">${S.settings.bdAllCards ? 'Hide all cards' : `Show all ${open.length} opportunities`}</button></div>`; };
+  const isAll = !BDSEL.market && !BDSEL.acc && !BDSEL.sector && !OPPQ.trim() && !bdfCount(), showCards = !isAll;
+  const overviewHTML = () => { const all = open.map(d => ({ d, a: accById(d.accountId) || {}, m: mo(d), t: nextOf(d), e: dealEngage(d) }));
+    const mks = [...new Set([...bdMarkets(), ...all.map(x => dealMarket(x.d) || 'No country')])].filter(mk => all.some(x => (dealMarket(x.d) || 'No country') === mk));
+    const mi = st.findIndex(x => x.id === 'meeting' || /meeting/i.test(x.label)), late = id => mi >= 0 && st.findIndex(x => x.id === id) >= mi, early = x => !late(x.d.stage);
+    const inMk = mk => x => !mk || (dealMarket(x.d) || 'No country') === mk, sel = BDOV || {}, isOn = (mk, sid) => (sel.m || '') === (mk || '') && (sel.s || '') === (sid || '') && (sel.m || sel.s);
+    const cell = (mk, sid, n, cls) => n ? `<button class="bdf-n ${cls || ''} ${isOn(mk, sid) ? 'on' : ''}" data-act="bdov" data-m="${esc(mk || '')}" data-s="${esc(sid || '')}">${n}</button>` : '<span class="muted">·</span>';
+    const reacted = xs => xs.filter(x => early(x) && x.e.n > 0);
+    const line = (mk, lbl, xs) => `<tr class="${mk ? '' : 'bdf-tot'}"><td>${mk ? `<button class="lnk bdf-mk" data-act="bdsel" data-m="${esc(mk)}" data-a="" title="Open the ${esc(mk)} board">${esc(lbl)}</button>` : `<b>${esc(lbl)}</b>`}</td><td class="num">${cell(mk, '', xs.length)}</td>
+      ${st.map(sg => `<td class="num ${late(sg.id) ? 'bdf-late' : ''}">${cell(mk, sg.id, xs.filter(x => x.d.stage === sg.id).length, late(sg.id) ? 'late' : '')}</td>`).join('')}<td class="num bdf-r">${cell(mk, '_react', reacted(xs).length, 'react')}</td><td class="num">${cell(mk, '_today', xs.filter(x => urg(x.d) <= 1).length, 'today')}</td></tr>`;
+    const row = x => { const c = x.e.c || dealCo(x.d); return `<tr class="clickrow dk-${x.t ? dueK(x.t.due) : 'none'}" data-act="bddeal" data-id="${x.d.id}" data-ctx="bdopp"><td><b>${esc(x.a.name || '?')}</b><div class="ctx">${esc([c && c.name, c && c.title].filter(Boolean).join(' · '))}</div></td><td><span class="chip">${esc(dealStage(x.d).label)}</span></td><td>${moBadge(x.m, true)}${x.e.nr > 1 ? ` <span class="small muted" title="Replies and calls from them">${x.e.nr}× back and forth</span>` : ''}<div class="ctx">${esc(x.e.last ? ltx(x.e.last) + ' · ' + fmtDate(x.e.last.date) : '')}</div></td><td>${x.t ? `${esc(ttx(x.t))} ${duePill(x.t.due)}` : isISO(x.d.meetOn) && x.d.meetOn >= TODAY ? `Meeting ${meetChip(x.d)}` : '<span class="dcn-none">No next step</span>'}</td></tr>`; };
+    const sortE = (p, q) => q.e.score - p.e.score || (q.e.date || '').localeCompare(p.e.date || '') || urg(p.d) - urg(q.d);
+    const table = (xs, cap) => `<table class="tbl glass dlist bdov-t"><tbody>${xs.slice(0, cap).map(row).join('')}</tbody></table>${xs.length > cap ? `<button class="btn sm quiet" data-act="bdovmore" style="margin-top:6px">Show ${Math.min(50, xs.length - cap)} more of ${xs.length - cap}</button>` : ''}`;
+    let below = '';
+    if (sel.m || sel.s) { const xs = all.filter(inMk(sel.m)).filter(x => !sel.s ? true : sel.s === '_react' ? early(x) && x.e.n > 0 : sel.s === '_today' ? urg(x.d) <= 1 : x.d.stage === sel.s).sort(sel.s === '_today' ? ((p, q) => urg(p.d) - urg(q.d)) : sortE);
+      const lbl = [sel.m || 'All countries', sel.s === '_react' ? 'reacted' : sel.s === '_today' ? 'action today' : sel.s ? (st.find(x => x.id === sel.s) || {}).label : 'all stages'].join(' · ');
+      below = `<section class="section"><div class="section-head"><h2>${esc(lbl)} <span class="count">${xs.length}</span></h2><span class="note">Most back and forth on top</span><button class="btn sm quiet" data-act="bdov" data-m="" data-s="" style="margin-left:auto">Back to who reacted</button></div>${table(xs, BDOVN)}</section>`; }
+    else below = `<section class="section"><div class="section-head"><h2>Who reacted, per country</h2><span class="note">Outreach where something happens: most back and forth on top. The rest only counts.</span></div>
+      ${mks.map(mk => { const xs = all.filter(inMk(mk)), out = xs.filter(early), r = reacted(xs).sort(sortE); if (!out.length) return '';
+        return `<div class="bdov-mk"><div class="bdov-h"><button class="lnk bdf-mk" data-act="bdsel" data-m="${esc(mk)}" data-a=""><b>${esc(mk)}</b></button><span class="small muted">${r.length} reacted · ${out.length - r.length} no reaction yet</span>${r.length > 6 ? `<button class="btn sm quiet" data-act="bdov" data-m="${esc(mk)}" data-s="_react" style="margin-left:auto">All ${r.length}</button>` : ''}</div>${r.length ? table(r, 6) : '<div class="small muted" style="padding:4px 2px 10px">Nobody reacted yet.</div>'}</div>`; }).join('')}</section>`;
+    return `<section class="section"><div class="section-head"><h2>Funnel per country</h2><span class="note">Click a number to see those opportunities. Click a country to open its board.</span></div>
+      <div class="bdf-wrap"><table class="tbl glass bdf"><thead><tr><th>Country</th><th class="num">Open</th>${st.map(x => `<th class="num ${late(x.id) ? 'bdf-late' : ''}">${esc(x.label)}</th>`).join('')}<th class="num bdf-r" title="Lead or Contacted, and they replied, accepted or spoke">Reacted</th><th class="num">Action today</th></tr></thead><tbody>
+      ${line('', 'All countries', all)}${mks.map(mk => line(mk, mk, all.filter(inMk(mk)))).join('')}</tbody></table></div></section>${below}`; };
   const listHTML = () => `<table class="tbl glass dlist"><thead><tr>${[['company', 'Company'], ['momentum', 'Momentum'], ['', 'Opportunity'], ['stage', 'Stage'], ['', 'Main contact'], ['', 'Last update'], ['due', 'Next step']].map(([k, l]) => k ? `<th><button class="thsort ${sortBy === k ? 'on' : ''}" data-act="bdsort" data-v="${k}">${l}${sortBy === k ? ' ▾' : ''}</button></th>` : `<th>${l}</th>`).join('')}</tr></thead><tbody>
     ${listRows.map(d => { const a = accById(d.accountId) || {}, t = nextOf(d), c = t && t.coId ? coById(a.id, t.coId) : null, main = dealCo(d), l = main.id ? coLast(main, d.id) : null, n = dealCosAct(d).length;
       return `<tr class="clickrow dk-${t ? dueK(t.due) : 'none'}" data-act="bddeal" data-id="${d.id}" data-ctx="bdopp"><td><b>${esc(a.name || '?')}</b><div class="ctx">${esc(a.market || '')}</div></td><td>${moBadge(mo(d), true) || '<span class="muted small">–</span>'}</td><td>${esc(d.title || '')}</td><td><span class="chip">${esc(dealStage(d).label)}</span></td>
@@ -9500,6 +9516,8 @@ const BD_ACT = {
   bdcollapseothers: el => { bdMarkets().forEach(m => S.settings.collapsed['bdrg:' + m] = m !== el.dataset.m); save(); render(); },
   bdexpandall: () => { bdMarkets().forEach(m => S.settings.collapsed['bdrg:' + m] = false); save(); render(); },
   bdgo: el => { BDSEL.market = el.dataset.m; BDSEL.acc = ''; VIEW = 'deals'; render(); },
+  bdov: el => { const m = el.dataset.m || '', s0 = el.dataset.s || ''; BDOV = (m || s0) && !(BDOV && BDOV.m === m && BDOV.s === s0) ? { m, s: s0 } : null; BDOVN = 25; render(); },
+  bdovmore: () => { BDOVN += 50; render(); },
   bdsel: el => { BDSEL.market = el.dataset.m; BDSEL.acc = el.dataset.a; BDSEL.sector = ''; render(); },
   bdsvc: el => { BDSEL.service = el.dataset.v; render(); },
   accf: el => { ACCF[el.dataset.k] = el.dataset.v; render(); },
