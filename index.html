@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-d7NzS2ePWUub2maZMR3RRSMImLjd8pc0YVXQi/hD+aw=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-iR6XTVNTiqhY8+EvNROIeuAd+naZu/9l3jrDAEhPPvM=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -2089,14 +2089,17 @@ function roleWorkIn(o, rid) { const m = TEAM.members.find(x => x.userId === o); 
   const keep = VIEWAS ? VIEWAS.keep : S, back = VIEWAS ? VIEWAS.back : { view: VIEW, sel: { ...SEL }, navh: NAVH.slice() }; if (VIEWAS) { S = keep; reindex(); }
   const me = keep.settings.userId, lead = keep.settings.teamRole === 'lead';
   VIEWAS = { keep, back, member: m.member, at: m.publishedAt, folder: m.folder, userId: m.userId, follow: false, scope: { roleId: rid, me, meName: keep.settings.userName || 'Me', k: o + '|' + rid } };
-  S = mgrOverlay(prepForeign(m.data), (m.data || {}).mgrApplied); reindex(); const r = MR.get(rid), c = MC.get(r.clientId) || {};
+  S = scopeLook(mgrOverlay(prepForeign(m.data), (m.data || {}).mgrApplied), keep); reindex(); const r = MR.get(rid), c = MC.get(r.clientId) || {};
   VIEWAS.scope.mgr = lead || roleMgrId(r) === me || clientOwnerId(c) === me; VIEWAS.scope.title = r.title; VIEWAS.scope.client = c.name || '';
   VIEWAS.prev = JSON.stringify(mgrSlice(S)); UNDO = null; DRAWER = null; BDD = null; MODAL = null; CTX = null; JUMP = null; VIEW = 'pipeline'; SEL = { region: r.region, client: r.clientId, role: rid }; render(); return true; }
+/* in a colleague's role you keep your own way of looking at things: columns or rows, menu, theme, photo */
+const SCOPE_UI = ['pipeView', 'nav', 'railCollapsed', 'treeHidden', 'treeW', 'theme', 'wall', 'wallImage', 'wallKind', 'photoGlass', 'pins', 'space', 'zoom', 'uiZoom'];
+function scopeLook(d, keep) { for (const k of SCOPE_UI) { if (keep.settings[k] === undefined) delete d.settings[k]; else d.settings[k] = keep.settings[k]; } return d; }
 function scopeExit() { if (!VIEWAS || !VIEWAS.scope) return; S = VIEWAS.keep; VIEWAS = null; UNDO = null; reindex(); DRAWER = null; BDD = null; MODAL = null; CTX = null; SEL = {}; scheduleTeam(); }
 setInterval(async () => { try { if (!VIEWAS || !VIEWAS.scope || !TEAM.handle || TEAM.state !== 'on') return; const who = VIEWAS;
   for await (const [n, h] of TEAM.handle.entries()) { if (h.kind !== 'file' || !/^pipetree-team-.+\.json$/.test(n)) continue; const f = await h.getFile(); if (who.fileTime && f.lastModified <= who.fileTime) continue; const j = JSON.parse(await f.text()); if (j.userId !== who.userId) continue; who.fileTime = f.lastModified;
     if (VIEWAS !== who || (j.publishedAt || '') <= (who.at || '') || MODAL || /INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '')) return;
-    const sel = { ...SEL }, dr = DRAWER; who.at = j.publishedAt; S = mgrOverlay(prepForeign(j.data), (j.data || {}).mgrApplied); reindex(); who.prev = JSON.stringify(mgrSlice(S)); SEL = sel; if (dr && !S.apps.some(a => a.id === dr.a)) DRAWER = null; render(); return; } } catch (e) { } }, 5000);
+    const sel = { ...SEL }, dr = DRAWER; who.at = j.publishedAt; S = scopeLook(mgrOverlay(prepForeign(j.data), (j.data || {}).mgrApplied), who.keep); reindex(); who.prev = JSON.stringify(mgrSlice(S)); SEL = sel; if (dr && !S.apps.some(a => a.id === dr.a)) DRAWER = null; render(); return; } } catch (e) { } }, 5000);
 
 /* ---------- feedback: everyone can share ideas, problems and what they like; the lead sees it all, sets a status and answers ---------- */
 let FBFROM = 'today', FBD = { type: 'idea', weight: 'help', img: null }, FBF = { type: '', st: '', who: '' };
@@ -7820,7 +7823,7 @@ const ACT = {
     if (rs.length === 1 && !el.dataset.go) { goRole(rs[0].id); return; }
     CRUMB = el.dataset.go ? null : 'role'; save(); render();
   },
-  pipeview: () => { S.settings.pipeView = S.settings.pipeView === 'rows' ? 'cols' : 'rows'; save(); render(); },
+  pipeview: () => { S.settings.pipeView = S.settings.pipeView === 'rows' ? 'cols' : 'rows'; if (VIEWAS && VIEWAS.scope) VIEWAS.keep.settings.pipeView = S.settings.pipeView; save(); render(); },
   jumpcol: el => { const c = document.getElementById('col-' + el.dataset.col); if (!c) return; c.scrollIntoView({ behavior: 'smooth', inline: 'center', block: S.settings.pipeView === 'rows' ? 'start' : 'nearest' }); c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash'); },
   treetoggle: () => { S.settings.treeHidden = !S.settings.treeHidden; commit(); },
   togglepaused: () => { S.settings.showPaused = !showPaused(); commit(); },
