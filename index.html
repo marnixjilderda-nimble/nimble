@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-l3hqjbhMmHq7O0+s3j7XvbQTGAqj7hACW90LNUwaCBc=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-BsalF5OXLov9y82iz/q6Q5WVrxgvLNu/liSPN0XTGrQ=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1979,6 +1979,45 @@ select.inp:hover,.field select:hover{border-color:color-mix(in srgb,var(--ink) 2
 .iv-step{padding:12px 0;border-top:1px solid var(--line)}.iv-step:first-of-type{border-top:0;padding-top:4px}
 .ivrs{display:grid;gap:8px;margin:2px 0 6px}.ivr{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.ivr select.inp{flex:1.4 1 230px;width:auto}.ivr input.inp{flex:1 1 150px;width:auto;min-width:0}.ivr-e{padding-left:4px}.ivr .ib{flex:0 0 auto}
 .iv-seg{display:inline-flex;margin-top:2px}
+
+/* BD overview */
+.bo-scope{margin:2px 0 12px;flex-wrap:wrap}.bo-scope small{opacity:.6;margin-left:3px;font-variant-numeric:tabular-nums}
+.bo-tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.bo-tile{all:unset;cursor:pointer;display:grid;gap:2px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:color-mix(in srgb,var(--colbg,var(--panel)) 85%,transparent);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);transition:border-color .12s,background .12s}
+.bo-tile:hover{border-color:color-mix(in srgb,var(--ink) 30%,var(--line))}.bo-tile:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.bo-tile.on{border-color:var(--ink);background:color-mix(in srgb,var(--ink) 9%,var(--colbg,var(--panel)))}
+.bo-n{font-size:26px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}.bo-l{font-weight:650;font-size:13.5px}.bo-s{font-size:11.5px;color:var(--muted)}
+.bk-today .bo-n{color:var(--urgent)}.bk-react .bo-n{color:#C88A1E}.bk-meet .bo-n{color:#7C6CF2}
+.bo-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:start}
+.bo-main{padding:4px 0 6px;border-radius:14px;overflow:hidden}.bo-h{display:flex;align-items:baseline;gap:10px;padding:10px 14px 8px}.bo-h h2,.bo-h h3{margin:0}.bo-h h2{font-size:17px}.bo-h h3{font-size:14px}
+.bo-row{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr) minmax(0,1.3fr) minmax(0,1.2fr);gap:12px;align-items:start;padding:10px 14px;border-top:1px solid var(--line);font-size:13px}
+.bo-row:hover{background:color-mix(in srgb,var(--ink) 4%,transparent)}.bo-co{display:grid;min-width:0}.bo-co span,.bo-last span{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis}
+.bo-st{display:flex;flex-direction:column;align-items:flex-start;gap:4px}.bo-mk{font-size:11.5px;color:var(--muted)}.bo-last{display:grid;gap:3px;justify-items:start;min-width:0}
+.bo-empty{padding:18px 14px;color:var(--muted);border-top:1px solid var(--line)}
+.bo-side{display:grid;gap:14px}.bo-card{border-radius:14px;padding-bottom:6px}
+.bo-bars{display:grid;padding:0 8px 6px}.bo-bar{all:unset;cursor:pointer;display:grid;grid-template-columns:96px minmax(0,1fr) 28px;gap:8px;align-items:center;padding:5px 6px;border-radius:8px;font-size:12.5px}
+.bo-bar:hover{background:color-mix(in srgb,var(--ink) 6%,transparent)}.bo-bar.on{background:color-mix(in srgb,var(--ink) 12%,transparent)}.bo-bl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bo-bt{height:8px;border-radius:5px;background:color-mix(in srgb,var(--ink) 8%,transparent);overflow:hidden}.bo-bt span{display:block;height:100%;border-radius:5px;background:color-mix(in srgb,var(--ink) 45%,transparent)}.bo-bar.late .bo-bt span{background:#7C6CF2}
+.bo-bn{text-align:right;font-weight:650;font-variant-numeric:tabular-nums}
+.bo-meet{all:unset;cursor:pointer;display:grid;grid-template-columns:84px minmax(0,1fr) auto;gap:8px;align-items:baseline;padding:6px 14px;font-size:13px}.bo-meet:hover{background:color-mix(in srgb,var(--ink) 5%,transparent)}.bo-md{font-size:12px;color:#8F82F5;font-weight:600}.bo-meet b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:1100px){.bo-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.bo-grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:700px){.bo-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.bo-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+/* filter popover: one label column, chips aligned next to it */
+.fltr-pop .fl-g{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;align-items:start;margin:0;padding:9px 0;border-top:1px solid var(--line)}.fltr-pop .fl-g:first-child{border-top:0;padding-top:2px}
+.fltr-pop .fl-h{margin:0;padding-top:6px}.fltr-pop .chips{display:flex;flex-wrap:wrap;gap:6px}.fltr-pop .fl-note{grid-column:2;margin-top:-4px;font-size:12px;color:var(--muted)}
+.fltr-pop .acts{border-top:1px solid var(--line);padding-top:10px;margin-top:2px!important;justify-content:flex-end}
+
+.mk-hotbar{margin-bottom:16px}.mk-sh{font-weight:650;margin:0 2px 8px;display:flex;gap:6px;align-items:center}.mk-grid-s{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));margin-bottom:8px}
+.mk-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 10px}
+.mk-grp{border-radius:14px;margin-bottom:10px;overflow:hidden}.mk-gh{all:unset;cursor:pointer;display:flex;gap:10px;align-items:baseline;width:100%;box-sizing:border-box;padding:11px 14px}.mk-gh:hover{background:color-mix(in srgb,var(--ink) 4%,transparent)}.mk-gh .car{width:12px;color:var(--muted)}
+.mk-gt{font-size:11.5px;padding:1px 8px;border-radius:999px;background:color-mix(in srgb,var(--ink) 8%,transparent)}.mk-gt.hot{background:color-mix(in srgb,var(--urgent) 18%,transparent);color:var(--urgent)}
+.mk-t{width:100%;margin:0}.mk-t td{border-top:1px solid var(--line);padding:9px 14px;vertical-align:middle}.mk-rt{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.mk-cnts{white-space:nowrap;font-size:12.5px;color:var(--muted)}.mk-cnts span{margin-right:12px}.mk-cnts b{color:var(--ink);font-variant-numeric:tabular-nums}.mk-need b{color:var(--urgent)}
+.mk-on{white-space:nowrap}.mk-av{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 5px;border-radius:12px;font-size:10.5px;font-weight:700;background:color-mix(in srgb,var(--ink) 10%,transparent);margin-right:3px}
+.mk-act{width:1%;white-space:nowrap}.mk-act .acts{justify-content:flex-end;gap:6px;flex-wrap:nowrap}.mk-rhot td:first-child{box-shadow:inset 2px 0 0 color-mix(in srgb,var(--urgent) 75%,transparent)}
+@media (max-width:900px){.mk-t tr{display:grid;grid-template-columns:1fr auto}.mk-t td{border-top:0}.mk-t tr{border-top:1px solid var(--line)}.mk-cnts,.mk-on{grid-column:1/-1;padding-top:0!important}}
+.mk-hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:8px}.mk-hc{padding:11px 13px;border-radius:12px;display:grid;gap:3px;box-shadow:inset 2px 0 0 color-mix(in srgb,var(--urgent) 75%,transparent)}
+.mk-hw{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mk-hf{display:flex;align-items:center;justify-content:space-between;gap:6px 8px;margin-top:4px;flex-wrap:wrap}.mk-hf .mk-cnts span{margin-right:8px}.mk-hf .acts{gap:6px;flex-wrap:nowrap}.mk-hf .btn,.mk-act .btn{white-space:nowrap}
 </style>
 <div id="wall"></div>
 <div id="app"></div>
@@ -2001,7 +2040,7 @@ select.inp:hover,.field select:hover{border-color:color-mix(in srgb,var(--ink) 2
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:b819c6b363*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:d491b29f1c*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -5168,7 +5207,7 @@ async function initTeam() {
 function peerOverlay(ds, ownerId, skip) { const L = [], done = ds.mgrApplied || {}; for (const f of TEAM.peerIn || []) { if (!f || !f.fromId || f.fromId === ownerId || f.fromId === skip) continue; for (const e of f.edits || []) if (e.memberId === ownerId && e.scope && done[e.id] !== e.v) L.push({ e, from: f.fromId }); }
   if (!L.length) return ds; const lead = (teamRoster().find(x => x.lead) || {}).id, ord = { clients: -3, roles: -2, accounts: -1, apps: 0, people: 1, tasks: 2 };
   L.sort((a, b) => (ord[a.e.c] ?? 3) - (ord[b.e.c] ?? 3) || (a.e.at || '').localeCompare(b.e.at || ''));
-  withData(ds, () => { for (const { e, from } of L) { if (e.c === 'settings') continue; const r = MR.get(e.scope); if (!r) continue; const val = e.undone ? e.before : e.after, cur = (S[e.c] || []).find(x => x.id === e.rid) || null;
+  withData(ds, () => { const R0 = new Map(S.roles.map(x => [x.id, x])); for (const { e, from } of L) { if (e.c === 'settings') continue; const r = MR.get(e.scope) || R0.get(e.scope); if (!r) continue; const val = e.undone ? e.before : e.after, cur = (S[e.c] || []).find(x => x.id === e.rid) || null;
     if (!peerMgrOk(e.c, cur, val, from, lead) && !(((r.openTo || []).includes(from) || rOpenEff(r)) && peerOk(e.c, cur, val, from, r))) continue; mgrPut(S, e.c, e.rid, val); if (e.c === 'roles' || e.c === 'clients') reindex(); } });
   return ds; }
 function rebuildMembers() {
@@ -5369,7 +5408,9 @@ function roleNotify(r, actor, text, kind) { const c = MC.get(r.clientId) || {}, 
 /* hot roles: every hot role in the team, wherever it lives */
 function hotList() { if (isLead()) { const out = []; for (const m of teamDataSets()) withData(m.ds, () => { for (const r of S.roles.filter(x => rOn(x) && x.hot)) out.push(shareRoleCard(r, m.userId)); }); return out; }
   const mine = S.roles.filter(x => rOn(x) && x.hot).map(r => shareRoleCard(r, myUid())); return [...mine, ...(((TEAM.shared || {}).hot) || []).filter(c => c.owner !== myUid())]; }
-const canHot = r => { const me = myUid(); return roleMgrId(r) === me || clientOwnerId(MC.get(r.clientId)) === me || !r.mgrId; };
+/* the team lead is the administrator: may change or delete anything, in anyone's Nimble */
+const amAdmin = () => (((VIEWAS ? VIEWAS.keep : S) || {}).settings || {}).teamRole === 'lead';
+const canHot = r => { const me = myUid(); return amAdmin() || roleMgrId(r) === me || clientOwnerId(MC.get(r.clientId)) === me || !r.mgrId; };
 function hotHTML() { const L = hotList().sort((x, y) => (y.hot.on || '').localeCompare(x.hot.on || '')), me = myUid(), pend = new Set((S.shareOut || []).filter(it => it.type === 'op' && (it.op === 'join' || it.op === 'leave') && !it.arrived).map(it => it.op + '|' + it.owner + '|' + it.roleId));
   const card = c => { const own = c.owner === me && (c.mgrId === me || c.salesId === me), on = c.helpers.some(h => h.id === me), k = c.owner + '|' + c.roleId, live = c.apps.filter(a => a.o === 'active'), cnt = k2 => live.filter(a => a.k === k2).length;
     const pre = live.filter(a => ['source', 'screen', 'cvwait', 'cv'].includes(a.k)).length, joining = pend.has('join|' + k), leaving = pend.has('leave|' + k);
@@ -5481,9 +5522,25 @@ function teamRolesAll() { const me = myUid();
   const mine = S.roles.filter(rOn).map(r => liteCard(shareRoleCard(r, me))), sh = TEAM.shared || {};
   const others = sh.all ? sh.all : [...(sh.roles || []).map(liteCard), ...(sh.hot || []).map(liteCard)];
   const seen = new Set(); return [...mine, ...others.filter(c => c.owner !== me)].filter(c => { const k = c.owner + '|' + c.roleId; if (seen.has(k)) return false; seen.add(k); return true; }); }
-let TRF = { f: 'urgent', who: 'all', q: '' }, MBCONF = null;
+let TRF = { f: 'all', who: 'all', q: '', g: 'region', need: false, mine: false, closed: [] }, MBCONF = null;
 /* urgent first, then the client's grade, then the role's grade (A, B, C), then client and role name */
 const teamSort = (x, y) => (!!y.hot - !!x.hot) || (x.cpri || 'B').localeCompare(y.cpri || 'B') || (x.priority || 'B').localeCompare(y.priority || 'B') || (x.client || '').localeCompare(y.client || '') || (x.title || '').localeCompare(y.title || '');
+/* the marketplace as it grows: urgent roles up top, the rest grouped (country, client or role manager) in compact rows you can scan and filter */
+const mkNeed = c => (c.cnt || {}).pre < 5 * Math.max(1, c.openings || 1);
+function mkTable(L0, act, hot, card, none) { const me = myUid(), g = TRF.g || 'region', keyOf = c => g === 'client' ? c.client || '–' : g === 'mgr' ? (c.mgrId === me ? 'You' : c.mgrName || c.ownerName || '–') : c.region || 'No country';
+  const L = L0.filter(c => (!TRF.need || mkNeed(c)) && (!TRF.mine || !(c.helpers || []).some(h => h.id === me) && !(c.openTo || []).includes(me) && c.owner !== me && c.mgrId !== me));
+  const groups = new Map(); for (const c of L) { const k = keyOf(c); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(c); }
+  const G = [...groups.entries()].sort((x, y) => y[1].filter(c => c.hot).length - x[1].filter(c => c.hot).length || y[1].length - x[1].length || x[0].localeCompare(y[0]));
+  const tg = (k, l) => `<button class="${(k === 'need' ? TRF.need : TRF.mine) ? 'on' : ''}" data-act="trtog" data-k="${k}">${l}</button>`;
+  const row = c => `<tr class="${c.hot ? 'mk-rhot' : ''}"><td><div class="mk-rt">${c.hot ? `<span class="hotm" title="Urgent">${HOTI}</span>` : ''}${g === 'client' ? '' : `<b>${esc(c.client)}</b> `}${g === 'client' ? `<b>${esc(c.title)}</b>` : esc(c.title)} ${gradeTag(c.priority || 'B')}</div><div class="small muted">${[g !== 'region' ? esc(c.region || '') : '', g !== 'mgr' ? 'role manager ' + esc(c.mgrId === me ? 'you' : firstName(c.mgrName || c.ownerName || '')) : '', c.fee ? money(c.fee) + ' per hire' : '', (c.openings || 1) > 1 ? c.openings + ' openings' : ''].filter(Boolean).join(' · ')}</div></td>
+    <td class="mk-cnts"><span title="In sourcing" class="${mkNeed(c) ? 'mk-need' : ''}"><b>${c.cnt.pre}</b> sourcing</span><span title="With the client"><b>${c.cnt.client}</b> client</span><span title="Interviews"><b>${c.cnt.iv}</b> interview</span>${c.cnt.offer ? `<span><b>${c.cnt.offer}</b> offer</span>` : ''}</td>
+    <td class="mk-on">${(c.helpers || []).length ? c.helpers.map(h => `<span class="mk-av" title="${esc(h.id === me ? 'You' : h.name || '')}">${esc(h.id === me ? 'You' : initials(h.name || '?'))}</span>`).join('') : '<span class="small muted">nobody yet</span>'}</td>
+    <td class="mk-act"><div class="acts">${act(c)}</div></td></tr>`;
+  return `${hot.length ? `<div class="mk-hotbar"><div class="mk-sh">${HOTI} Urgent <span class="muted">${hot.length}</span></div><div class="mk-hgrid">${hot.sort(teamSort).slice(0, 6).map(c => `<div class="glass mk-hc"><div class="mk-rt"><b>${esc(c.client)}</b> ${esc(c.title)} ${gradeTag(c.priority || 'B')}</div><div class="small muted">${esc(c.region || '')} · ${esc(c.mgrId === me ? 'you' : firstName(c.mgrName || c.ownerName || ''))}${c.goal && c.gp ? ' · ' + c.gp.left + ' days left' : ''}</div>${c.hot && c.hot.why ? `<div class="mk-hw">${esc(c.hot.why)}</div>` : ''}<div class="mk-hf"><span class="mk-cnts"><span class="${mkNeed(c) ? 'mk-need' : ''}"><b>${c.cnt.pre}</b> sourcing</span><span><b>${c.cnt.client}</b> client</span></span><div class="acts">${act(c)}</div></div></div>`).join('')}</div>${hot.length > 6 ? `<button class="btn sm quiet" data-act="trf" data-k="f" data-v="urgent">All ${hot.length} urgent roles</button>` : ''}</div>` : ''}
+    <div class="mk-tools"><span class="small muted">Group by</span><div class="segc">${[['region', 'Country'], ['client', 'Client'], ['mgr', 'Role manager']].map(([v, l]) => `<button class="${g === v ? 'on' : ''}" data-act="trf" data-k="g" data-v="${v}">${l}</button>`).join('')}</div><div class="segc">${tg('need', 'Needs sourcing')}${tg('mine', "I'm not on it yet")}</div><span class="small muted" style="margin-left:auto">${L.length} role${L.length === 1 ? '' : 's'}</span></div>
+    ${G.length ? G.map(([k, xs]) => { const shut = (TRF.closed || []).includes(g + ':' + k), nh = xs.filter(c => c.hot).length, nn = xs.filter(mkNeed).length;
+      return `<section class="glass mk-grp"><button class="mk-gh" data-act="trgrp" data-k="${esc(g + ':' + k)}"><span class="car">${shut ? '▸' : '▾'}</span><b>${esc(k)}</b><span class="muted">${xs.length} role${xs.length === 1 ? '' : 's'}</span>${nh ? `<span class="mk-gt hot">${nh} urgent</span>` : ''}${nn ? `<span class="mk-gt">${nn} need sourcing</span>` : ''}</button>
+        ${shut ? '' : `<table class="tbl mk-t"><tbody>${xs.sort(teamSort).map(row).join('')}</tbody></table>`}</section>`; }).join('') : `<div class="glass empty">${TRF.need || TRF.mine ? 'No roles match these filters.' : none}</div>`}`; }
 function teamrolesHTML() { const me = myUid(), all = teamRolesAll(), pend = new Set((S.shareOut || []).filter(it => it.type === 'op' && (it.op === 'join' || it.op === 'leave') && !it.arrived).map(it => it.op + '|' + it.owner + '|' + it.roleId));
   const q = TRF.q.trim().toLowerCase(), isMine = c => c.owner === me, pj = myJoins(), helps = c => c.helpers.some(h => h.id === me) || (c.openTo || []).includes(me) || pj.has(c.owner + '|' + c.roleId);
   const open = all.filter(c => c.hot || c.teamOpen || (teamAllOn() && c.priv === false)), urgent = open.filter(c => c.hot);
@@ -5503,7 +5560,7 @@ function teamrolesHTML() { const me = myUid(), all = teamRolesAll(), pend = new 
   const none = TEAM.state !== 'on' && !isLead() ? 'Connect your team folder (Team → Settings) to see the roles of your team.' : TRF.f === 'urgent' ? `No urgent roles right now.${open.length ? ' See All open roles.' : ''}` : 'No roles are open to the team yet. Open one of yours below, or ask a role manager to.';
   return `<div class="head"><div><h1>Marketplace</h1><div class="sub">Roles that role managers opened to the team. Join one and it shows up in your pipeline and under Working together; the role manager is told.</div></div></div>
     <div class="tr-bar"><div class="segc">${chip('f', 'urgent', `${HOTI} Urgent roles <b>${urgent.length}</b>`)}${chip('f', 'all', `All open roles <b>${open.length}</b>`)}</div><div class="segc">${chip('who', 'all', 'Everyone')}${chip('who', 'others', 'Colleagues only')}</div><input class="inp" id="trq" placeholder="Search client, role, country or person" value="${esc(TRF.q)}"></div>
-    ${L.length ? `<div class="mk-grid">${L.map(card).join('')}</div>` : `<div class="glass empty">${none}</div>`}
+    ${TRF.f === 'urgent' ? (L.length ? `<div class="mk-grid">${L.map(card).join('')}</div>` : `<div class="glass empty">${none}</div>`) : mkTable(L, act, open.filter(c => c.hot && (TRF.who === 'all' || !isMine(c))), card, none)}
     ${priv.length ? `<details class="mk-priv" ${TRF.privOpen ? 'open' : ''}><summary><b>Your private roles</b> <span class="muted small">${priv.length} · only you work on these. Open one to the team, or mark it urgent.</span></summary><div class="glass tr-wrap"><table class="tbl tr-t"><tbody>${priv.map(r => `<tr><td><b>${esc((MC.get(r.clientId) || {}).name || '')}</b> ${esc(r.title)} ${gradeTag(r.priority || 'B')}<div class="small muted">${esc(r.region || '')}${(r.openTo || []).length ? ' · with ' + esc(r.openTo.map(id => firstName(nameOf(id))).join(', ')) : ''}</div></td><td><div class="acts" style="justify-content:flex-end"><button class="btn sm" data-act="rsopen" data-r="${r.id}" data-mode="open">Open to team</button><button class="btn sm" data-act="rsopen" data-r="${r.id}" data-mode="urgent">${HOTI} Urgent</button></div></td></tr>`).join('')}</tbody></table></div></details>` : ''}`; }
 /* ===== Working together: the roles you share, with who does what and the traction it brings ===== */
 function togetherCards() { const me = myUid(), out = [];
@@ -5834,7 +5891,7 @@ function peerOk(c, cur, val, from, r) { const pre = a => { const st = stagesFor(
   if (c === 'people') { if (!cur) return true; const L = S.apps.filter(a => a.personId === cur.id); return L.some(own) && (val || L.every(own)); }
   if (c === 'tasks') { const a = S.apps.find(z => z.id === (val || cur).appId); return own(a); } return false; }
 /* what a role manager or client manager may change in the owner's Nimble: everything on their roles, and for a client manager the client itself, its roles, contacts and new roles */
-function peerMgrOk(c, cur, val, from, lead) { if (from && from === lead) return ['apps', 'people', 'tasks', 'roles', 'clients', 'accounts'].includes(c); const t = val || cur; if (!t) return false;
+function peerMgrOk(c, cur, val, from, lead) { if (from && from === lead) return c !== 'settings'; const t = val || cur; if (!t) return false;
   const cOk = cid => !!cid && !!MC.get(cid) && clientOwnerId(MC.get(cid)) === from, rOk = r => !!r && (roleMgrId(r) === from || cOk(r.clientId));
   if (c === 'apps') return rOk(MR.get((cur || val).roleId)) && (!cur || !val || cur.roleId === val.roleId || rOk(MR.get(val.roleId)));
   if (c === 'tasks') { const a = S.apps.find(z => z.id === t.appId); return !!a && rOk(MR.get(a.roleId)); }
@@ -5845,7 +5902,7 @@ function peerMgrOk(c, cur, val, from, lead) { if (from && from === lead) return 
   return false; }
 function peerApply(f) { if (VIEWAS || !f || f.kind !== 'pipetree-peer') return 0; const me = myUid(), from = f.fromId, L = (f.edits || []).filter(e => e.memberId === me && e.scope); if (!L.length || from === me) return 0;
   S.mgrApplied = S.mgrApplied || {}; const lead = (teamRoster().find(x => x.lead) || {}).id, ord = { clients: -3, roles: -2, accounts: -1, apps: 0, people: 1, tasks: 2 }; let n = 0;
-  for (const e of L.sort((a, b) => (ord[a.c] ?? 3) - (ord[b.c] ?? 3) || (a.at || '').localeCompare(b.at || ''))) { if (S.mgrApplied[e.id] === e.v) continue; S.mgrApplied[e.id] = e.v; const r = MR.get(e.scope); if (!r) continue;
+  const R0 = new Map(S.roles.map(x => [x.id, x])); for (const e of L.sort((a, b) => (ord[a.c] ?? 3) - (ord[b.c] ?? 3) || (a.at || '').localeCompare(b.at || ''))) { if (S.mgrApplied[e.id] === e.v) continue; S.mgrApplied[e.id] = e.v; const r = MR.get(e.scope) || R0.get(e.scope); if (!r) continue;
     const helper = (r.openTo || []).includes(from) || rOpenEff(r);
     const val = e.undone ? e.before : e.after, cur = e.c === 'settings' ? null : (S[e.c] || []).find(x => x.id === e.rid) || null;
     if (!peerMgrOk(e.c, cur, val, from, lead) && !(helper && peerOk(e.c, cur, val, from, r))) continue;
@@ -8265,6 +8322,8 @@ const ACT = {
   wtall: el => { const ks = [...document.querySelectorAll('[data-wtdrag]')].map(x => x.dataset.wtdrag); if (el.dataset.v === 'open') ks.forEach(k => TOGETHER_OPEN.add(k)); else TOGETHER_OPEN.clear(); render(); },
   wtreset: () => { delete S.settings.wtOrder; save(); render(); toast('Automatic order again: urgent first, then client and role grade', true); },
   trf: el => { TRF[el.dataset.k] = el.dataset.v; render(); },
+  trtog: el => { TRF[el.dataset.k] = !TRF[el.dataset.k]; render(); },
+  trgrp: el => { const k = el.dataset.k, L = TRF.closed || []; TRF.closed = L.includes(k) ? L.filter(x => x !== k) : [...L, k]; render(); },
   trjoin: el => { const c = teamRolesAll().find(x => x.owner === el.dataset.o && x.roleId === el.dataset.r); if (!c) return; snapshot(); S.shareOut = S.shareOut || [];
     S.shareOut.push({ id: uid('sh'), type: 'op', op: 'join', owner: c.owner, roleId: c.roleId, appId: '', by: S.settings.userName || '', byId: myUid(), at: new Date().toISOString(), title: c.title, client: c.client }); commit(); scheduleTeam(); scheduleTeam(true); toast(`You work on ${c.title} now. It's in your pipeline; ${firstName(c.mgrName || c.ownerName)} is told`, true); },
   trleave: el => { const c = teamRolesAll().find(x => x.owner === el.dataset.o && x.roleId === el.dataset.r); if (!c) return; snapshot(); S.shareOut = S.shareOut || [];
@@ -9019,9 +9078,8 @@ function bdfHTML(openDeals) { const n = bdfCount(), chip = (k, v, l, cnt) => `<b
   const mks = [...new Set(openDeals.map(d => dealMarket(d) || 'No country'))].sort(), noSec = secFixList('').length;
   const btn = `<button class="btn ${n ? 'primary' : 'quiet'} fltr-b" data-act="bdfopen">Filter${n ? ' · ' + n : ''}</button>${n ? '<button class="btn quiet fltr-x" data-act="bdfclear" title="Clear filters">Clear</button>' : ''}`;
   if (!BDF.open) return btn;
-  const grp = (t, body) => `<div class="fl-g"><div class="fl-h">${t}</div><div class="chips">${body}</div></div>`;
-  return btn + `<div class="fltr-pop glass">${grp('Sector', secs.map(x => chip('sector', x, x, cnt(d => (sectorOf(accById(d.accountId) || {}) || 'No sector') === x))).join(''))}
-    ${noSec ? `<div class="small muted" style="margin:-4px 0 8px">${noSec} compan${noSec === 1 ? 'y has' : 'ies have'} no sector yet. <button class="lnk" data-act="secfixopen" data-m="">Sort them</button></div>` : ''}
+  const grp = (t, body, note) => `<div class="fl-g"><div class="fl-h">${t}</div><div class="chips">${body}</div>${note || ''}</div>`;
+  return btn + `<div class="fltr-pop glass">${grp('Sector', secs.map(x => chip('sector', x, x, cnt(d => (sectorOf(accById(d.accountId) || {}) || 'No sector') === x))).join(''), noSec ? `<div class="fl-note">${noSec} compan${noSec === 1 ? 'y has' : 'ies have'} no sector yet. <button class="lnk" data-act="secfixopen" data-m="">Sort them</button></div>` : '')}
     ${mks.length > 1 ? grp('Country', mks.map(x => chip('market', x, x, cnt(d => (dealMarket(d) || 'No country') === x))).join('')) : ''}
     ${grp('Stage', bdStages().filter(st => openDeals.some(d => d.stage === st.id)).map(st => chip('stage', st.id, st.label, cnt(d => d.stage === st.id))).join(''))}
     ${(sts => sts.length ? grp('Status', sts.map(x => chip('status', x, x, cnt(d => dealStats(d).has(x)))).join('')) : '')([...new Set(openDeals.flatMap(d => [...dealStats(d)]))].sort(statOrder))}
@@ -9064,27 +9122,35 @@ function dealsHTML() {
   const isList = S.settings.bdView === 'list', sortBy = S.settings.bdSort || 'due', sIdx = id => st.findIndex(x => x.id === id);
   const listRows = open.slice().sort((x, y) => sortBy === 'company' ? ((accById(x.accountId) || {}).name || '').localeCompare((accById(y.accountId) || {}).name || '') : sortBy === 'stage' ? sIdx(y.stage) - sIdx(x.stage) || urg(x) - urg(y) : sortBy === 'momentum' ? MO_RANK[mo(x).level] - MO_RANK[mo(y).level] || mo(y).score - mo(x).score || urg(x) - urg(y) : urg(x) - urg(y) || ((nextOf(x) || {}).due || '9').localeCompare((nextOf(y) || {}).due || '9'));
   const isAll = !BDSEL.market && !BDSEL.acc && !BDSEL.sector && !OPPQ.trim() && !bdfCount(), showCards = !isAll;
-  const overviewHTML = () => { const all = open.map(d => ({ d, a: accById(d.accountId) || {}, m: mo(d), t: nextOf(d), e: dealEngage(d) }));
-    const mks = [...new Set([...bdMarkets(), ...all.map(x => dealMarket(x.d) || 'No country')])].filter(mk => all.some(x => (dealMarket(x.d) || 'No country') === mk));
+  /* All opportunities: what needs you, not a table per country. Country is a scope on top; the tiles say where to look; one list shows it. */
+  const overviewHTML = () => { const all0 = open.map(d => ({ d, a: accById(d.accountId) || {}, m: mo(d), t: nextOf(d), e: dealEngage(d) })), mkOf = x => dealMarket(x.d) || 'No country';
+    const sel = BDOV || {}, scope = sel.m || '', all = all0.filter(x => !scope || mkOf(x) === scope);
+    const mks = [...new Set([...bdMarkets(), ...all0.map(mkOf)])].filter(mk => all0.some(x => mkOf(x) === mk));
     const mi = st.findIndex(x => x.id === 'meeting' || /meeting/i.test(x.label)), late = id => mi >= 0 && st.findIndex(x => x.id === id) >= mi, early = x => !late(x.d.stage);
-    const inMk = mk => x => !mk || (dealMarket(x.d) || 'No country') === mk, sel = BDOV || {}, isOn = (mk, sid) => (sel.m || '') === (mk || '') && (sel.s || '') === (sid || '') && (sel.m || sel.s);
-    const cell = (mk, sid, n, cls) => n ? `<button class="bdf-n ${cls || ''} ${isOn(mk, sid) ? 'on' : ''}" data-act="bdov" data-m="${esc(mk || '')}" data-s="${esc(sid || '')}">${n}</button>` : '<span class="muted">·</span>';
-    const reacted = xs => xs.filter(x => early(x) && x.e.n > 0);
-    const line = (mk, lbl, xs) => `<tr class="${mk ? '' : 'bdf-tot'}"><td>${mk ? `<button class="lnk bdf-mk" data-act="bdsel" data-m="${esc(mk)}" data-a="" title="Open the ${esc(mk)} board">${esc(lbl)}</button>` : `<b>${esc(lbl)}</b>`}</td><td class="num">${cell(mk, '', xs.length)}</td>
-      ${st.map(sg => `<td class="num ${late(sg.id) ? 'bdf-late' : ''}">${cell(mk, sg.id, xs.filter(x => x.d.stage === sg.id).length, late(sg.id) ? 'late' : '')}</td>`).join('')}<td class="num bdf-r">${cell(mk, '_react', reacted(xs).length, 'react')}</td><td class="num">${cell(mk, '_today', xs.filter(x => urg(x.d) <= 1).length, 'today')}</td></tr>`;
-    const row = x => { const c = x.e.c || dealCo(x.d); return `<tr class="clickrow dk-${x.t ? dueK(x.t.due) : 'none'}" data-act="bddeal" data-id="${x.d.id}" data-ctx="bdopp"><td><b>${esc(x.a.name || '?')}</b><div class="ctx">${esc([c && c.name, c && c.title].filter(Boolean).join(' · '))}</div></td><td><span class="chip">${esc(dealStage(x.d).label)}</span></td><td>${moBadge(x.m, true)}${x.e.nr > 1 ? ` <span class="small muted" title="Replies and calls from them">${x.e.nr}× back and forth</span>` : ''}<div class="ctx">${esc(x.e.last ? ltx(x.e.last) + ' · ' + fmtDate(x.e.last.date) : '')}</div></td><td>${x.t ? `${esc(ttx(x.t))} ${duePill(x.t.due)}` : isISO(x.d.meetOn) && x.d.meetOn >= TODAY ? `Meeting ${meetChip(x.d)}` : '<span class="dcn-none">No next step</span>'}</td></tr>`; };
-    const sortE = (p, q) => q.e.score - p.e.score || (q.e.date || '').localeCompare(p.e.date || '') || urg(p.d) - urg(q.d);
-    const table = (xs, cap) => `<table class="tbl glass dlist bdov-t"><tbody>${xs.slice(0, cap).map(row).join('')}</tbody></table>${xs.length > cap ? `<button class="btn sm quiet" data-act="bdovmore" style="margin-top:6px">Show ${Math.min(50, xs.length - cap)} more of ${xs.length - cap}</button>` : ''}`;
-    let below = '';
-    if (sel.m || sel.s) { const xs = all.filter(inMk(sel.m)).filter(x => !sel.s ? true : sel.s === '_react' ? early(x) && x.e.n > 0 : sel.s === '_today' ? urg(x.d) <= 1 : x.d.stage === sel.s).sort(sel.s === '_today' ? ((p, q) => urg(p.d) - urg(q.d)) : sortE);
-      const lbl = [sel.m || 'All countries', sel.s === '_react' ? 'reacted' : sel.s === '_today' ? 'action today' : sel.s ? (st.find(x => x.id === sel.s) || {}).label : 'all stages'].join(' · ');
-      below = `<section class="section"><div class="section-head"><h2>${esc(lbl)} <span class="count">${xs.length}</span></h2><span class="note">Most back and forth on top</span><button class="btn sm quiet" data-act="bdov" data-m="" data-s="" style="margin-left:auto">Back to who reacted</button></div>${table(xs, BDOVN)}</section>`; }
-    else below = `<section class="section"><div class="section-head"><h2>Who reacted, per country</h2><span class="note">Outreach where something happens: most back and forth on top. The rest only counts.</span></div>
-      ${mks.map(mk => { const xs = all.filter(inMk(mk)), out = xs.filter(early), r = reacted(xs).sort(sortE); if (!out.length) return '';
-        return `<div class="bdov-mk"><div class="bdov-h"><button class="lnk bdf-mk" data-act="bdsel" data-m="${esc(mk)}" data-a=""><b>${esc(mk)}</b></button><span class="small muted">${r.length} reacted · ${out.length - r.length} no reaction yet</span>${r.length > 6 ? `<button class="btn sm quiet" data-act="bdov" data-m="${esc(mk)}" data-s="_react" style="margin-left:auto">All ${r.length}</button>` : ''}</div>${r.length ? table(r, 6) : '<div class="small muted" style="padding:4px 2px 10px">Nobody reacted yet.</div>'}</div>`; }).join('')}</section>`;
-    return `<section class="section"><div class="section-head"><h2>Funnel per country</h2><span class="note">Click a number to see those opportunities. Click a country to open its board.</span></div>
-      <div class="bdf-wrap"><table class="tbl glass bdf"><thead><tr><th>Country</th><th class="num">Open</th>${st.map(x => `<th class="num ${late(x.id) ? 'bdf-late' : ''}">${esc(x.label)}</th>`).join('')}<th class="num bdf-r" title="Lead or Contacted, and they replied, accepted or spoke">Reacted</th><th class="num">Action today</th></tr></thead><tbody>
-      ${line('', 'All countries', all)}${mks.map(mk => line(mk, mk, all.filter(inMk(mk)))).join('')}</tbody></table></div></section>${below}`; };
+    const recent = x => x.e.date && x.e.date >= addDays(TODAY, -21);
+    const G = { _today: { l: 'Action today', sub: 'overdue or due today', f: x => urg(x.d) <= 1, sort: (p, q) => urg(p.d) - urg(q.d) || (q.e.score - p.e.score) },
+      _react: { l: 'They reacted', sub: 'replied, accepted or spoke, last 3 weeks', f: x => early(x) && x.e.n > 0 && recent(x), sort: (p, q) => (q.e.date || '').localeCompare(p.e.date || '') || q.e.score - p.e.score },
+      _meet: { l: 'Meetings coming up', sub: 'booked, from today', f: x => isISO(x.d.meetOn) && x.d.meetOn >= TODAY, sort: (p, q) => p.d.meetOn.localeCompare(q.d.meetOn) },
+      _none: { l: 'No next step', sub: 'open, nothing planned', f: x => !x.t && !(isISO(x.d.meetOn) && x.d.meetOn >= TODAY), sort: (p, q) => q.e.score - p.e.score },
+      _quiet: { l: 'Gone quiet', sub: 'no reaction for 3+ weeks', f: x => x.m.level === 'quiet', sort: (p, q) => (p.e.date || '').localeCompare(q.e.date || '') } };
+    const cnt = k => all.filter(G[k].f).length, cur = sel.s || (cnt('_today') ? '_today' : cnt('_react') ? '_react' : '_meet');
+    const tile = k => `<button class="bo-tile ${cur === k ? 'on' : ''} bk-${k.slice(1)}" data-act="bdov" data-m="${esc(scope)}" data-s="${k}"><span class="bo-n">${cnt(k)}</span><span class="bo-l">${G[k].l}</span><span class="bo-s">${G[k].sub}</span></button>`;
+    const row = x => { const c = x.e.c || dealCo(x.d), last = x.e.last; return `<div class="bo-row clickrow dk-${x.t ? dueK(x.t.due) : 'none'}" data-act="bddeal" data-id="${x.d.id}" data-ctx="bdopp">
+      <div class="bo-co"><b>${esc(x.a.name || '?')}</b><span>${esc([c && c.name, c && c.title].filter(Boolean).join(' · ') || '')}</span></div>
+      <div class="bo-st"><span class="chip">${esc(dealStage(x.d).label)}</span>${scope ? '' : `<span class="bo-mk">${esc(mkOf(x))}</span>`}</div>
+      <div class="bo-last">${moBadge(x.m, true)}${last ? `<span>${esc(ltx(last))} · ${fmtDate(last.date)}</span>` : '<span class="muted">No reaction yet</span>'}</div>
+      <div class="bo-next">${x.t ? `${esc(ttx(x.t))} ${duePill(x.t.due)}` : isISO(x.d.meetOn) && x.d.meetOn >= TODAY ? `Meeting ${meetChip(x.d)}` : '<span class="dcn-none">No next step</span>'}</div></div>`; };
+    const isStage = !G[cur], xs = all.filter(isStage ? (x => x.d.stage === cur) : G[cur].f).sort(isStage ? ((p, q) => urg(p.d) - urg(q.d) || q.e.score - p.e.score) : G[cur].sort);
+    const title = isStage ? (st.find(x => x.id === cur) || {}).label || '' : G[cur].l;
+    const maxSt = Math.max(1, ...st.map(sg => all.filter(x => x.d.stage === sg.id).length));
+    const funnel = st.map(sg => { const n = all.filter(x => x.d.stage === sg.id).length; return `<button class="bo-bar ${cur === sg.id ? 'on' : ''} ${late(sg.id) ? 'late' : ''}" data-act="bdov" data-m="${esc(scope)}" data-s="${esc(sg.id)}"><span class="bo-bl">${esc(sg.label)}</span><span class="bo-bt"><span style="width:${n ? Math.max(6, n / maxSt * 100) : 0}%"></span></span><span class="bo-bn">${n}</span></button>`; }).join('');
+    const meets = all0.filter(x => (!scope || mkOf(x) === scope) && isISO(x.d.meetOn) && x.d.meetOn >= TODAY).sort((p, q) => p.d.meetOn.localeCompare(q.d.meetOn)).slice(0, 5);
+    const scopeBar = mks.length > 1 ? `<div class="bo-scope segc"><button class="${!scope ? 'on' : ''}" data-act="bdovm" data-m="">All countries <small>${all0.length}</small></button>${mks.map(mk => `<button class="${scope === mk ? 'on' : ''}" data-act="bdovm" data-m="${esc(mk)}">${esc(mk)} <small>${all0.filter(x => mkOf(x) === mk).length}</small></button>`).join('')}</div>` : '';
+    return `${scopeBar}<div class="bo-tiles">${['_today', '_react', '_meet', '_none', '_quiet'].map(tile).join('')}</div>
+      <div class="bo-grid"><section class="bo-main glass"><div class="bo-h"><h2>${esc(title)} <span class="count">${xs.length}</span></h2>${scope ? `<span class="small muted">${esc(scope)}</span>` : ''}${scope ? `<button class="btn sm quiet" data-act="bdsel" data-m="${esc(scope)}" data-a="" style="margin-left:auto">Open the ${esc(scope)} board</button>` : ''}</div>
+        ${xs.length ? xs.slice(0, BDOVN).map(row).join('') + (xs.length > BDOVN ? `<button class="btn sm quiet" data-act="bdovmore" style="margin:8px 12px 12px">Show ${Math.min(50, xs.length - BDOVN)} more of ${xs.length - BDOVN}</button>` : '') : `<div class="bo-empty">${cur === '_today' ? 'Nothing due today. ' : ''}Nothing here right now.</div>`}</section>
+        <aside class="bo-side"><section class="glass bo-card"><div class="bo-h"><h3>Pipeline</h3><span class="small muted">${all.length} open</span></div><div class="bo-bars">${funnel}</div></section>
+          <section class="glass bo-card"><div class="bo-h"><h3>Next meetings</h3></div>${meets.length ? meets.map(x => `<button class="bo-meet" data-act="bddeal" data-id="${x.d.id}"><span class="bo-md">${DOW[new Date(x.d.meetOn + 'T12:00:00').getDay()]} ${fmtDate(x.d.meetOn)}</span><b>${esc(x.a.name || '?')}</b>${scope ? '' : `<span class="small muted">${esc(mkOf(x))}</span>`}</button>`).join('') : '<div class="small muted" style="padding:2px 14px 12px">No meetings booked yet.</div>'}</section></aside></div>`; };
   const listHTML = () => `<table class="tbl glass dlist"><thead><tr>${[['company', 'Company'], ['momentum', 'Momentum'], ['', 'Opportunity'], ['stage', 'Stage'], ['', 'Main contact'], ['', 'Last update'], ['due', 'Next step']].map(([k, l]) => k ? `<th><button class="thsort ${sortBy === k ? 'on' : ''}" data-act="bdsort" data-v="${k}">${l}${sortBy === k ? ' ▾' : ''}</button></th>` : `<th>${l}</th>`).join('')}</tr></thead><tbody>
     ${listRows.map(d => { const a = accById(d.accountId) || {}, t = nextOf(d), c = t && t.coId ? coById(a.id, t.coId) : null, main = dealCo(d), l = main.id ? coLast(main, d.id) : null, n = dealCosAct(d).length;
       return `<tr class="clickrow dk-${t ? dueK(t.due) : 'none'}" data-act="bddeal" data-id="${d.id}" data-ctx="bdopp"><td><b>${esc(a.name || '?')}</b><div class="ctx">${esc(a.market || '')}</div></td><td>${moBadge(mo(d), true) || '<span class="muted small">–</span>'}</td><td>${esc(d.title || '')}</td><td><span class="chip">${esc(dealStage(d).label)}</span></td>
@@ -9714,7 +9780,8 @@ const BD_ACT = {
   bdcollapseothers: el => { bdMarkets().forEach(m => S.settings.collapsed['bdrg:' + m] = m !== el.dataset.m); save(); render(); },
   bdexpandall: () => { bdMarkets().forEach(m => S.settings.collapsed['bdrg:' + m] = false); save(); render(); },
   bdgo: el => { BDSEL.market = el.dataset.m; BDSEL.acc = ''; VIEW = 'deals'; render(); },
-  bdov: el => { const m = el.dataset.m || '', s0 = el.dataset.s || ''; BDOV = (m || s0) && !(BDOV && BDOV.m === m && BDOV.s === s0) ? { m, s: s0 } : null; BDOVN = 25; render(); },
+  bdov: el => { const m = el.dataset.m || '', s0 = el.dataset.s || ''; BDOV = { m, s: s0 }; BDOVN = 25; render(); },
+  bdovm: el => { BDOV = { m: el.dataset.m || '', s: '' }; BDOVN = 25; render(); },
   bdovmore: () => { BDOVN += 50; render(); },
   bdsel: el => { BDSEL.market = el.dataset.m; BDSEL.acc = el.dataset.a; BDSEL.sector = ''; render(); },
   bdsvc: el => { BDSEL.service = el.dataset.v; render(); },
