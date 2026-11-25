@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ppFvU6dVrTKfrD4Av4fsDYCdvOf7ezUv0zv9wgOHER8=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-vY8GVctbMpZtTnqLYNuKxHY3ATBFqkjDF/2KKRPqOqs=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1897,6 +1897,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 .tsw{display:flex;align-items:center;gap:6px;margin-bottom:8px}.tsw-seg{flex:1;display:flex;padding:3px;border-radius:10px;background:color-mix(in srgb,var(--ink) 7%,transparent)}.tsw-seg button{flex:1;border:0;background:none;font:inherit;font-size:12.5px;font-weight:650;padding:6px 6px;border-radius:8px;color:var(--muted);cursor:pointer;white-space:nowrap}.tsw-seg button.on{background:var(--card,#fff);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1)}.tsw-seg span{opacity:.65;margin-left:2px}
 .tsw-l{flex:1;font-size:12.5px;font-weight:650;color:var(--muted);padding-left:4px}.tsw-m{border:1px solid var(--line);background:none;border-radius:8px;width:28px;height:28px;display:grid;place-items:center;color:var(--muted);cursor:pointer}.tsw-m:hover{color:var(--ink)}
 .tn .bul.xb{background:#2FB7A0!important}.xcountry .tn.region{color:var(--ink)}
+.board.srcall{display:grid;grid-template-columns:repeat(6,minmax(150px,1fr));gap:10px}.srcall .col{min-height:300px}.srcall .colh{display:flex;justify-content:space-between;padding:8px 10px;font-weight:650;font-size:13px}.srcall .cards{display:grid;gap:6px;padding:0 6px 8px}.xcard{cursor:pointer;padding:8px 10px;display:grid;gap:3px}.xcard .xtask{color:var(--cl)}
 .tn-who{display:inline-grid;place-items:center;min-width:18px;height:16px;padding:0 4px;border-radius:8px;font-size:9.5px;font-weight:800;background:color-mix(in srgb,var(--ink) 12%,transparent);vertical-align:1px}.tn-who.h{background:color-mix(in srgb,#2FB7A0 26%,transparent)}
 .xbox .tsec{margin-bottom:2px}.tn.xrole .lab{opacity:.92}
 .c-own{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;font-size:9.5px;font-weight:800;background:color-mix(in srgb,#E8A33D 30%,transparent);margin-right:4px}
@@ -1949,7 +1950,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:7d008d2f9a*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:59f23172fe*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -3387,6 +3388,15 @@ function isCollapsed(key, containsSel) {
   if (v !== undefined) return v;
   return !(containsSel || S.roles.filter(r => rOn(r)).length <= 25);
 }
+function treeSideNow() { const xrAll = (teamShared().roles || []).filter(c => c.owner !== myUid()); return (S.settings.treeMode || 'split') === 'mixed' || !xrAll.length ? 'mine' : (S.settings.treeSide || (S.roles.filter(rOn).length ? 'mine' : 'src')); }
+/* Sourcing for, nothing picked: only your own candidates, on every colleague role you work on */
+function srcAllHTML() { const me = myUid(), xr = (teamShared().roles || []).filter(c => c.owner !== me), mine = [];
+  for (const c of xr) { const cc = xCard(c.owner + '|' + c.roleId) || c; for (const a of cc.apps || []) if (a.o === 'active' && (a.ownerId === me || a.byId === me)) mine.push({ c: cc, a }); }
+  const cols = [['source', 'Sourced'], ['planning', 'Planning call'], ['screen', 'Phone screen'], ['cvwait', 'Waiting for CV'], ['cv', 'CV received'], ['client', 'With the client']];
+  const colOf = x => { const k = x.a.k, st = (x.c.stages || []).find(z => z.id === x.a.stId) || {}; if (k === 'source') return /plan|call/i.test(st.label || x.a.st || '') ? 'planning' : 'source'; if (['screen', 'cvwait', 'cv'].includes(k)) return k; return 'client'; };
+  const card = x => { const t = (x.a.tasks || [])[0]; return `<div class="card xcard" data-act="xopenapp" data-k="${esc(x.c.owner + '|' + x.c.roleId)}" data-a="${esc(x.a.id)}"><div class="cn"><b>${esc(x.a.n)}</b></div><div class="small muted">${esc(x.c.client)} ${esc(x.c.title)} <span class="tn-who x">${esc(initials(x.c.ownerName))}</span></div>${x.a.k === 'client' || colOf(x) === 'client' ? `<div class="small">${esc(x.a.st)}</div>` : ''}${t ? `<div class="small xtask">${esc(t.text)}${t.due ? ' · ' + esc(dueLabel(t.due)) : ''}</div>` : ''}</div>`; };
+  return `<div class="head"><div><h1>Sourcing for</h1><div class="sub">Your candidates on ${xr.length} colleague role${xr.length === 1 ? '' : 's'}: ${mine.length} in play. Pick a role on the left to work in it.</div></div></div>
+    <div class="board srcall">${cols.map(([k, l]) => { const L = mine.filter(x => colOf(x) === k); return `<div class="col"><div class="colh"><span>${l}</span><span class="cnt">${L.length}</span></div><div class="cards">${L.map(card).join('') || '<div class="small muted" style="padding:6px 8px">·</div>'}</div></div>`; }).join('')}</div>`; }
 function treeHTML() {
   const q = TREE_Q.trim().toLowerCase();
   const match = r => !q || (r.title + ' ' + (MC.get(r.clientId) || {}).name + ' ' + r.region + ' ' + (r.subregion || '')).toLowerCase().includes(q);
@@ -4026,6 +4036,7 @@ function careersHTML() {
 function carImportText(t) { const rows = appsFromCsv(t); if (!rows.length) { toast('No applicants found in that file. Is it the CSV export?'); return; } MODAL = { kind: 'carimp', rows }; render(); }
 function pipelineHTML() {
   const navMode = S.settings.nav, showTree = navMode !== 'path' && !S.settings.treeHidden, showPath = navMode !== 'tree' || S.settings.treeHidden;
+  if (!(VIEWAS && VIEWAS.scope) && !SEL.role && !SEL.xrole && !SEL.client && !SEL.region && treeSideNow() === 'src') return `<div class="pipe ${showTree ? '' : 'notree'}" style="--treew:${Math.max(160, Math.min(560, +S.settings.treeW || 208))}px">${showTree ? treeHTML() + '<div class="tree-rs" data-treers aria-hidden="true"></div>' : ''}<div class="pmain" style="min-width:0">${srcAllHTML()}</div></div>`;
   if (SEL.xrole && !(VIEWAS && VIEWAS.scope)) { const xc = xCard(SEL.xrole); if (xc) return `<div class="pipe ${showTree ? '' : 'notree'}" style="--treew:${Math.max(160, Math.min(560, +S.settings.treeW || 208))}px">${showTree ? treeHTML() + '<div class="tree-rs" data-treers aria-hidden="true"></div>' : ''}<div class="pmain" style="min-width:0">${xBoardHTML(xc)}</div></div>`; SEL.xrole = null; }
   const role = SEL.role ? MR.get(SEL.role) : null;
   if (SEL.role && !role) SEL.role = null;
@@ -9610,7 +9621,8 @@ const BD_ACT = {
   fbcopy: async () => { const t = fbRows().map(r => `- [${r.Type}${r.Importance ? ', ' + r.Importance : ''}] ${r.About}: ${r.Feedback.replace(/\n/g, ' ')} (${r.From}, ${r.Date}${r.PlusOnes ? ', +' + r.PlusOnes : ''}${r.Status !== 'New' ? ', ' + r.Status : ''})`).join('\n'); try { await navigator.clipboard.writeText(`Nimble feedback, ${fmtDate(TODAY)}\n\n${t}`); toast('Copied. Paste it wherever you like', true); } catch (e) { toast('Could not copy'); } },
   fbcsv: () => { const R = fbRows(), H = Object.keys(R[0] || { Date: 1 }), q = v => `"${String(v ?? '').replace(/"/g, '""')}"`, csv = [H.map(q).join(','), ...R.map(r => H.map(h => q(r[h])).join(','))].join('\r\n'), b = new Blob(['﻿' + csv], { type: 'text/csv' }), a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `Nimble feedback ${TODAY}.csv`; document.body.appendChild(a); a.click(); a.remove(); },
   wttab: el => { S.settings.wtTab = el.dataset.v; save(); render(); },
-  treeside: el => { S.settings.treeSide = el.dataset.v; SEL = {}; save(); render(); },
+  treeside: el => { S.settings.treeSide = el.dataset.v; SEL = {}; VIEW = 'pipeline'; save(); render(); },
+  xopenapp: el => { const [o, r] = String(el.dataset.k).split('|'), id = el.dataset.a; if (roleWorkIn(o, r)) { const a = S.apps.find(x => x.id === id || x.shareId === id); if (a) { DRAWER = { p: a.personId, a: a.id }; render(); } } else { SEL = { xrole: el.dataset.k }; render(); } },
   treemode: () => { S.settings.treeMode = (S.settings.treeMode || 'split') === 'split' ? 'mixed' : 'split'; save(); render(); toast(S.settings.treeMode === 'mixed' ? 'Colleagues\' roles now sit between yours' : 'My roles and Sourcing for are separate again', true); },
   togglekey: el => { const k = el.dataset.key; S.settings.collapsed[k] = !isCollapsed(k, true); save(); render(); },
   donenone: el => { const a = appById(el.dataset.a); MODAL = null; if (a) { delete FLOWU['rm' + a.id]; delete FLOWN['rm' + a.id]; } render(); toast('Done. No next step planned', true); },
