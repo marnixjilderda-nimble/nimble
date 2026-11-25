@@ -17,9 +17,11 @@ processes. Earlier working names were PipeTree, Pace and HQ.
 - It was built with **his own accounts and tools**: his personal Anthropic (Claude) account,
   his own GitHub account (`marnixjilderda-nimble`) and his own hosting (GitHub Pages).
   No employer budget or developer was used to create it.
-- Before Nimble there was a simple prototype dashboard (v2) that he made with Microsoft
-  Copilot. Nimble is a separate program built with Claude on his personal account. It can
-  import data exported from that prototype.
+- Before Nimble there was a very basic personal tracker (v2) that he made with Microsoft
+  Copilot, to keep track of his own work. Nimble is a separate, completely different program,
+  built with a Claude subscription he pays for himself. The two share only the general idea
+  of dragging candidates through a pipeline. Nimble can import data exported from the old
+  tracker.
 - Work on Nimble is recorded since at least early October 2026 (personal claude.ai project
   "Nimble", then this repository from 18 November 2026). Every change is in this
   repository's history with its date and time.
