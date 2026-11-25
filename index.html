@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-543nerkInnOQnzvpFU0Il60mKDSJKyUZWMGDUTGLuoo=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-aCKereAmS5ASv2qMArBucAUyfJqczAtd5DLmfqn5jv4=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1891,6 +1891,8 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 .fb-r{font-size:13px;padding:8px 10px;border-radius:8px;background:color-mix(in srgb,var(--cl) 9%,transparent)}.fb-l{display:flex;gap:6px;flex-wrap:wrap}.fb-l select{width:auto}.fb-l input{flex:1;min-width:180px}
 @media (max-width:900px){.fb-wrap{grid-template-columns:1fr}.fb-new{position:static}}
 .ito{display:grid;gap:4px;margin-top:6px}.ito-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 8px;border:1px solid var(--line);border-radius:10px;cursor:pointer}.ito-r.on{border-color:color-mix(in srgb,var(--cl) 50%,transparent);background:color-mix(in srgb,var(--cl) 7%,transparent)}.ito-r .inp{flex:1;min-width:180px}.ito-r input[type=checkbox]{width:auto!important;flex:0 0 auto;margin:0}.ito-r b{font-weight:650}.ito-n{display:flex;gap:6px}.ito-n .inp{flex:1}.ito .ux-link{justify-self:start;padding:4px 0}
+.ib-step{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);display:grid;gap:8px}.ib-sh{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}.ib-sh .u3-n{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12.5px;font-weight:750;color:var(--cl);background:color-mix(in srgb,var(--cl) 13%,transparent);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--cl) 45%,transparent)}
+.ib-jd{display:grid;gap:8px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--warn,#d9a03b) 12%,transparent)}.ib-jdr{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.ib-ok{padding:6px 0}.ir-note{display:grid;gap:6px;font-size:12.5px;color:var(--muted);padding:8px 10px;border-radius:10px;background:color-mix(in srgb,var(--ink) 4%,transparent)}
 .tn-who{display:inline-grid;place-items:center;min-width:18px;height:16px;padding:0 4px;border-radius:8px;font-size:9.5px;font-weight:800;background:color-mix(in srgb,var(--ink) 12%,transparent);vertical-align:1px}.tn-who.h{background:color-mix(in srgb,#2FB7A0 26%,transparent)}
 .xbox .tsec{margin-bottom:2px}.tn.xrole .lab{opacity:.92}
 .c-own{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;font-size:9.5px;font-weight:800;background:color-mix(in srgb,#E8A33D 30%,transparent);margin-right:4px}
@@ -1943,7 +1945,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:6cbd2e1118*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:f99de73794*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -3015,7 +3017,10 @@ function kpMake(p, a) {
   if (title) out.push(cut(`${title}${emp ? ' at ' + emp : ''}`));
   const yrs = yearsExp(cvt + ' ' + exp.map(e => e.dates || '').join(' ')), prev = [...new Set(exp.slice(1).map(e => e.company).filter(x => x && x !== emp))].slice(0, 3), spec = (p.specs || [])[0];
   if (yrs || prev.length) out.push(cut(`${yrs ? yrs + '+ years' : 'Experience'}${spec ? ' in ' + spec : ''}${prev.length ? ', before at ' + prev.join(', ') : ''}`));
-  const sk = (p.skillsFound || []).slice(0, 6), ce = (p.certs || []).slice(0, 3);
+  const jd = (((a && roleOf(a)) || {}).jdText || '').toLowerCase(), inJd = x => jd && new RegExp('\\b' + String(x).toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b').test(jd);
+  const allSk = [...new Set([...(p.skillsFound || []), ...(p.certs || [])])], fit = allSk.filter(inJd).slice(0, 5);
+  if (fit.length >= 2) out.push(cut(`Fits the role on ${fit.slice(0, -1).join(', ')} and ${fit[fit.length - 1]}`));
+  const sk = (p.skillsFound || []).filter(x => !fit.includes(x)).slice(0, fit.length >= 2 ? 4 : 6), ce = (p.certs || []).filter(x => !fit.includes(x)).slice(0, 3);
   if (sk.length) out.push(cut(`Hands-on with ${sk.join(', ')}${ce.length ? '; certified ' + ce.join(', ') : ''}`)); else if (ce.length) out.push(cut('Certified ' + ce.join(', ')));
   const src = [p.transcript && cleanTranscript(p.transcript), p.notes, a ? (a.log || []).filter(l => l.type === 'note').map(l => l.text).join('. ') : ''].filter(Boolean);
   const sents = src.flatMap(x => x.split(/(?<=[.!?])\s+|\n+/)).map(x => x.trim()).filter(x => x.length > 12 && x.length < 260), used = new Set();
@@ -3057,15 +3062,22 @@ function buildEml({ to, subject, text, html, files }) {
 }
 function introHTML(m) {
   const c = MC.get(m.c), pool = introPool(m.c, m.r), cts = clientContacts(c); introTos(m); m.news = m.news || []; if (!m.tos.length && !m.news.length && !m.toInit) { m.toInit = true; if (cts[0]) m.tos = [cts[0].id]; else m.news = [{ n: '', e: '' }]; }
-  const sel = pool.filter(a => m.sel.includes(a.id)), tx = introText(m); m.gen = tx.body;
+  const sel = pool.filter(a => m.sel.includes(a.id));
+  { const rl0 = [...new Set(sel.map(a => a.roleId))]; if (!m.jdMiss) m.jdMiss = rl0.filter(id => !hasJD(MR.get(id)));
+    for (const id of m.jdMiss.filter(id => hasJD(MR.get(id)))) { for (const a of sel.filter(x => x.roleId === id)) { const p = personOf(a); p.kp = kpMake(p, a).join('\n'); m.kp[a.id] = p.kp; } m.jdMiss = m.jdMiss.filter(x => x !== id); m.body = null; setTimeout(() => toast('JD added. Key points made again with it', true), 0); } }
+  const tx = introText(m); m.gen = tx.body;
   const rows = pool.map(a => { const p = personOf(a), on = m.sel.includes(a.id), fn = esc(firstName(p.name)), kp = on ? introKp(m, a) : '';
     return `<div class="ir ${on ? 'on' : ''}"><label class="ir-h"><input type="checkbox" data-act-change="introsel" data-a="${a.id}" ${on ? 'checked' : ''}><b>${esc(p.name)}</b><span class="muted small">${esc(roleOf(a).title)} · ${esc(stageOf(a).label)}</span><span class="ir-tags">${p.cv ? '<span class="tag ok" style="margin:0">CV</span>' : '<span class="tag" style="margin:0">no CV</span>'}${hasNotes(p, a) ? '<span class="tag ok" style="margin:0">notes</span>' : ''}</span></label>
       ${on ? `<div class="ir-b">${!p.cv ? `<div class="ir-warn">No CV for ${fn} yet. <button class="btn sm" data-act="cvpick" data-p="${p.id}">Upload CV</button></div>` : ''}
-        ${!hasNotes(p, a) ? `<div class="ir-warn">I see there's no transcript or notes for ${fn}. Want to add a few notes? They make the key points better.<textarea class="inp" id="in_${p.id}" rows="2" placeholder="e.g. Wants more architecture work, notice 1 month, 75k, hybrid 2 days"></textarea><div><button class="btn sm" data-act="introkp" data-a="${a.id}" data-n="1">Use these notes</button></div></div>` : ''}
+        <div class="${hasNotes(p, a) ? 'ir-note' : 'ir-warn'}">${hasNotes(p, a) ? `Your notes or transcript for ${fn} are in. Anything to add?` : `No notes or transcript for ${fn} yet. Paste your call notes or the transcript: they make the key points much better.`}<textarea class="inp" id="in_${p.id}" rows="${hasNotes(p, a) ? 2 : 3}" placeholder="e.g. Wants more architecture work, notice 1 month, 75k, hybrid 2 days"></textarea><div><button class="btn sm" data-act="introkp" data-a="${a.id}" data-n="1">Use these notes</button></div></div>
         <div class="ir-kp"><span class="small muted">Key points for the client (one per line, max 6)</span><textarea class="inp" id="kp_${a.id}" rows="${Math.min(7, Math.max(3, kp.split('\n').length + 1))}">${esc(kp)}</textarea><button class="btn sm quiet" data-act="introkp" data-a="${a.id}">Make again from CV and notes</button></div></div>` : ''}</div>`; }).join('');
-  return `<h3>Introduce candidates to ${esc(c.name)}${m.r && MR.get(m.r) ? ' for ' + esc(MR.get(m.r).title) : ''}</h3><p class="small muted" style="margin-top:-6px">Everyone in CV received is ticked. Untick who you don't send. Nimble writes the email with short key points per candidate and attaches their CVs. Check the key points, then create the email.</p>
-    <div class="irs">${rows || '<div class="small muted">Nobody in CV received yet.</div>'}</div>
-    <div class="fgrid" style="margin-top:14px"><div class="field wide"><span>To <span class="small muted">· pick one or more</span></span><div class="ito">${cts.map(x => { const on = m.tos.includes(x.id); return `<label class="ito-r ${on ? 'on' : ''}"><input type="checkbox" data-act-change="introto" data-id="${x.id}" ${on ? 'checked' : ''}><b>${esc(x.name)}</b>${x.title ? `<span class="small muted">${esc(x.title)}</span>` : ''}${x.email ? `<span class="small muted">${esc(x.email)}</span>` : on ? `<input class="inp" id="ib_e_${x.id}" type="email" placeholder="Email of ${esc(firstName(x.name))}">` : '<span class="small muted">no email yet</span>'}</label>`; }).join('')}
+  const rls = [...new Map(sel.map(a => [a.roleId, roleOf(a)])).values()].filter(Boolean), noJd = rls.filter(r => !hasJD(r) && !(m.jdSkip || []).includes(r.id));
+  const jdBox = rls.length ? `<div class="ib-step"><div class="ib-sh"><span class="u3-n">1</span>Job description</div>${rls.map(r => hasJD(r) ? `<div class="ib-ok small">${esc(r.title)}: JD added. <button class="ux-link" data-act="jdshow" data-r="${r.id}">View</button></div>` : (m.jdSkip || []).includes(r.id) ? `<div class="ib-ok small muted">${esc(r.title)}: no JD, skipped. <button class="ux-link" data-act="introjdask" data-r="${r.id}">Add it after all</button></div>` : `<div class="ib-jd"><div class="small"><b>${esc(r.title)}</b> has no job description yet. Add it so the key points show how each candidate fits the role.</div><div class="ib-jdr"><button class="btn sm" data-act="jdpick" data-r="${r.id}">Upload JD</button><span class="small muted">or paste it:</span></div><textarea class="inp" rows="3" data-bind="role|${r.id}|jdText|text" placeholder="Paste the job description">${esc(r.jdText || '')}</textarea><div class="ib-jdr"><button class="btn sm primary" data-act="introjdok">Use this JD</button><button class="btn sm quiet" data-act="introjdskip" data-r="${r.id}">Skip, no JD</button></div></div>`).join('')}</div>` : '';
+  return `<h3>Introduce candidates to ${esc(c.name)}${m.r && MR.get(m.r) ? ' for ' + esc(MR.get(m.r).title) : ''}</h3><p class="small muted" style="margin-top:-6px">Three steps: the job description, your notes per candidate, then Nimble writes the email from the JD, the CVs and your notes.</p>
+    ${jdBox}<div class="ib-step"><div class="ib-sh"><span class="u3-n">2</span>Candidates and your notes <span class="small muted">· everyone in CV received is ticked</span></div>
+    <div class="irs">${rows || '<div class="small muted">Nobody in CV received yet.</div>'}</div></div>
+    <div class="ib-step"><div class="ib-sh"><span class="u3-n">3</span>The email</div>${noJd.length ? '<div class="small muted">Add or skip the JD above first; the key points get better with it.</div>' : ''}
+    <div class="fgrid" style="margin-top:10px"><div class="field wide"><span>To <span class="small muted">· pick one or more</span></span><div class="ito">${cts.map(x => { const on = m.tos.includes(x.id); return `<label class="ito-r ${on ? 'on' : ''}"><input type="checkbox" data-act-change="introto" data-id="${x.id}" ${on ? 'checked' : ''}><b>${esc(x.name)}</b>${x.title ? `<span class="small muted">${esc(x.title)}</span>` : ''}${x.email ? `<span class="small muted">${esc(x.email)}</span>` : on ? `<input class="inp" id="ib_e_${x.id}" type="email" placeholder="Email of ${esc(firstName(x.name))}">` : '<span class="small muted">no email yet</span>'}</label>`; }).join('')}
         ${m.news.map((r, i) => `<div class="ito-n"><input class="inp" id="ib_nn_${i}" value="${esc(r.n)}" placeholder="Name, e.g. Sophie de Vries"><input class="inp" id="ib_ne_${i}" type="email" value="${esc(r.e)}" placeholder="sophie@client.com"><button class="ib" data-act="introdelnew" data-i="${i}" title="Remove">×</button></div>`).join('')}
         <button class="ux-link" data-act="introaddnew">+ Add another person</button></div></div>
       <label class="field wide">Subject<input id="ib_subj" value="${esc(m.subj ?? tx.subj)}"></label>
@@ -3471,18 +3483,18 @@ async function jdFile(f, rid) {
   const buf = await f.arrayBuffer(); let text = ''; try { text = await cvTextOf(f, buf); } catch (e) { console.error(e); }
   try { await kvSet('jd:' + r.id, { name: f.name, type: f.type || cvMime(f.name), data: buf }); } catch (e) { toast('Could not store the JD file in this browser'); return; }
   snapshot(); r.jdFile = { name: f.name, type: f.type || cvMime(f.name), size: f.size, addedOn: TODAY }; if (text) r.jdText = text.slice(0, 30000); r.jdOn = TODAY;
-  commit(); toast(text ? `JD added to ${r.title}` : 'JD file saved. No text could be read (scanned PDF?), paste the text if you want it searchable.', true);
+  commit(); if (MODAL && MODAL.kind === 'intro' && text) { ACT.introjdok(); return; } toast(text ? `JD added to ${r.title}` : 'JD file saved. No text could be read (scanned PDF?), paste the text if you want it searchable.', true);
 }
 async function jdOpen(rid) { try { const f = await kvGet('jd:' + rid); if (!f) { toast('The JD file is not in this browser, only its text.'); return; } const url = URL.createObjectURL(new Blob([f.data], { type: f.type }));
   if (/pdf/.test(f.type)) window.open(url, '_blank'); else { const l = document.createElement('a'); l.href = url; l.download = f.name || 'JD.docx'; document.body.appendChild(l); l.click(); l.remove(); } setTimeout(() => URL.revokeObjectURL(url), 60000); } catch (e) { toast('Could not open the JD'); } }
 const hasJD = r => !!(r && ((r.jdText || '').trim() || r.jdFile));
 function jdModalHTML(m) {
   const r = MR.get(m.r); if (!r) return ''; const c = MC.get(r.clientId), f = r.jdFile, has = hasJD(r);
-  return `<h3>Job description: ${esc(c.name)} ${esc(r.title)}</h3>
+  return `<h3>${m.fresh ? 'Add the job description' : 'Job description'}: ${esc(c.name)} ${esc(r.title)}</h3>${m.fresh ? '<p class="small muted" style="margin-top:-6px">Nimble uses it for sourcing and to write the introduction emails. No JD yet? Skip it, Nimble asks again when you introduce candidates.</p>' : ''}
     ${f ? `<div class="jd-file"><span class="small"><b>${esc(f.name)}</b> · added ${fmtDate(f.addedOn)}</span><span class="acts" style="margin:0"><button class="btn sm" data-act="jdopen" data-r="${r.id}">Open file</button><button class="btn sm quiet" data-act="jdpick" data-r="${r.id}">Replace</button></span></div>`
       : `<button class="cvdz jddz" data-act="jdpick" data-r="${r.id}"><b>Upload the JD</b> or drop it here<span>PDF, Word (.docx) or text. Nimble keeps the file and reads the text.</span></button>`}
     <label class="field" style="margin-top:12px">${has ? 'Text' : 'Or paste the JD text'}<textarea class="inp jdtext" rows="16" data-bind="role|${r.id}|jdText|text" placeholder="Paste the job description here">${esc(r.jdText || '')}</textarea></label>
-    <div class="acts" style="margin-top:12px">${has ? `<button class="btn quiet danger" data-act="jddel" data-r="${r.id}">Remove JD</button><button class="btn" data-act="jdcopy" data-r="${r.id}">Copy text</button>` : ''}<button class="btn primary" data-act="modalclose">Done</button></div>`;
+    <div class="acts" style="margin-top:12px">${has ? `<button class="btn quiet danger" data-act="jddel" data-r="${r.id}">Remove JD</button><button class="btn" data-act="jdcopy" data-r="${r.id}">Copy text</button>` : ''}${m.fresh && !has ? '<button class="btn" data-act="modalclose">Skip for now</button>' : ''}<button class="btn primary" data-act="modalclose">Done</button></div>`;
 }
 
 /* ===== Review: walk through your updates and the follow-up each one led to ===== */
@@ -7609,6 +7621,9 @@ const ACT = {
   introdelnew: el => { introRead(); introRecips(MODAL); MODAL.news.splice(+el.dataset.i, 1); render(); },
   introkp: el => { introRead(); const a = appById(el.dataset.a); if (!a) return; const p = personOf(a); if (el.dataset.n) { const t = ((document.getElementById('in_' + p.id) || {}).value || '').trim(); if (!t) { toast('Type a few notes first'); return; } p.transcript = [(p.transcript || '').trim(), t].filter(Boolean).join('\n'); }
     p.kp = kpMake(p, a).join('\n'); MODAL.kp[a.id] = p.kp; save(); render(); },
+  introjdskip: el => { introRead(); MODAL.jdSkip = [...new Set([...(MODAL.jdSkip || []), el.dataset.r])]; render(); },
+  introjdask: el => { introRead(); MODAL.jdSkip = (MODAL.jdSkip || []).filter(x => x !== el.dataset.r); render(); },
+  introjdok: () => { introRead(); const m = MODAL; for (const id of m.sel) { const a = appById(id); if (a) { const p = personOf(a); p.kp = kpMake(p, a).join('\n'); m.kp[a.id] = p.kp; } } m.body = null; save(); render(); toast('JD added. Key points made again with it', true); },
   introrebuild: () => { introRead(); MODAL.body = null; MODAL.subj = null; render(); },
   introcopy: () => { introRead(); introRecips(MODAL, true); const tx = introText(MODAL); copyText(MODAL.body ?? tx.body); toast('Message copied'); },
   introeml: async () => { introRead(); const m = MODAL, c = MC.get(m.c), cts = clientContacts(c), v = id => ((document.getElementById(id) || {}).value || '').trim();
@@ -8130,7 +8145,7 @@ const ACT = {
     const copy = document.getElementById('nr_copy'), src = copy && copy.value && MR.get(copy.value);
     const r = { id: uid('r'), clientId: cid, region: document.getElementById('nr_region').value.trim() || 'Other', subregion: document.getElementById('nr_sub').value.trim(), title, openings: 1, status: 'active', pausedSince: null,
       priority: document.getElementById('nr_pri').value, fee: +document.getElementById('nr_fee').value || null, sourcingTarget: null, notes: '', stages: cloneStages(src ? src.stages : S.settings.defaultStages), owner: S.settings.userId, created: TODAY };
-    S.roles.push(r); MODAL = null; save(); reindex(); goRole(r.id); toast('Role added');
+    S.roles.push(r); MODAL = null; save(); reindex(); goRole(r.id); MODAL = { kind: 'jd', r: r.id, fresh: true }; render(); toast('Role added', true);
   },
   /* stages editor */
   stages: el => { CTX = null; const r = el.dataset.r; MODAL = { kind: 'stages', r, draft: cloneStages(r === '_default' ? S.settings.defaultStages : MR.get(r).stages) }; render(); },
