@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Zf+KEBc5wIris3EvtnkDiWmEkpYQz+AQ1Wpu0Mcuz/Q=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-/DOZaHBiwNLayOhQ9neneD7LQEc+k9p1mUcSBxs1XfE=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -309,7 +309,7 @@ h2 .count{font-size:14px;color:var(--muted);font-weight:600;font-family:var(--bo
 .rc-kv{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;font-size:13px;align-items:baseline}.rc-kv>span:first-child{color:var(--muted)}.rc-kv select{width:100%}.rc-tip{margin-top:-2px}
 .rc-seg{display:flex;gap:2px;border:1px solid var(--line);border-radius:10px;padding:2px}.rc-seg button{flex:1;white-space:nowrap;border:0;background:none;color:inherit;font:inherit;font-size:13px;font-weight:600;padding:6px 8px;border-radius:8px;cursor:pointer;display:inline-flex;gap:5px;align-items:center;justify-content:center}.rc-seg button.on{background:var(--ink);color:var(--bg,#fff)}.rc-seg button:disabled{opacity:.5;cursor:default}
 .sr-sec{margin-top:16px}.sr-sec>summary{display:flex;align-items:baseline;gap:12px;cursor:pointer;list-style:none;margin-bottom:8px}.sr-sec>summary::-webkit-details-marker{display:none}.sr-sec>summary h2{margin:0}.sr-sec>summary h2::before{content:'▸ ';font-size:12px;color:var(--muted)}.sr-sec[open]>summary h2::before{content:'▾ '}
-.sr-list{padding:4px 14px}.sr-row{display:grid;grid-template-columns:minmax(0,2.2fr) 130px minmax(0,1.6fr) 190px 110px auto;gap:12px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px}.sr-row:first-child{border-top:0}
+.sr-list{padding:4px 14px}.sr-sw button{padding:3px 8px;font-size:12px}.sr-row{display:grid;grid-template-columns:minmax(0,2.4fr) 120px minmax(0,1.3fr) 180px 110px auto;gap:12px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px}.sr-row:first-child{border-top:0}
 .sr-name{all:unset;cursor:pointer;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sr-name:hover b{text-decoration:underline}.sr-need{font-weight:650;white-space:nowrap}.sr-now .sr-need{color:var(--urgent)}.sr-watch .sr-need{color:#C88A1E}.sr-ok .sr-need{color:var(--muted);font-weight:500}
 .sr-why{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sr-n{white-space:nowrap;font-variant-numeric:tabular-nums}.sr-last{white-space:nowrap}.sr-acts{display:flex;gap:6px;justify-content:flex-end}
 @media (max-width:1100px){.sr-row{grid-template-columns:minmax(0,1fr) auto;row-gap:2px}.sr-why,.sr-n,.sr-last{grid-column:1/-1}}
@@ -1975,7 +1975,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:98bda40410*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:0c190bd4ae*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -2581,10 +2581,11 @@ function roleHealth(r) {
   const pre = apps.filter(a => PRE.has(stageOf(a).kind)).length;
   const proc = apps.filter(a => !PRE.has(stageOf(a).kind) && stageOf(a).kind !== 'placed').length;
   const late = apps.filter(a => ['interview', 'offer'].includes(stageOf(a).kind)).length;
-  const target = r.sourcingTarget ?? S.settings.sourcingTarget ?? 5;
+  const placedN = S.apps.filter(a => a.roleId === r.id && a.outcome === 'placed').length, openLeft = Math.max(0, (+r.openings || 1) - placedN);
+  const per = r.sourcingTarget ?? S.settings.sourcingTarget ?? 5, target = per * Math.max(1, openLeft);
   const lastAdded = apps.map(a => a.created || a.since).filter(isISO).sort().pop();
-  const covered = !!(r.covered && pre < target);
-  return { apps, pre, proc, late, target, healthy: pre >= target || covered, covered, gap: covered ? 0 : Math.max(0, target - pre), lastAdded };
+  const need = r.srcSet === 'need', covered = !need && (r.srcSet === 'enough' || !!(r.covered && pre < target));
+  return { apps, pre, proc, late, target, per, openLeft, placedN, healthy: !need && (pre >= target || covered), covered, need, gap: covered ? 0 : Math.max(need ? 1 : 0, target - pre), lastAdded };
 }
 
 /* ================= checks ================= */
@@ -4116,15 +4117,17 @@ function pipelineHTML() {
 /* sourcing asks one thing: does this role need new candidates now? Waiting on a client or a quiet week is not a sourcing problem. */
 function srcNeed(r) { const h = roleHealth(r), live = h.apps, k = x => live.filter(a => stageOf(a).kind === x).length, ok = (HOK || {})[r.id];
   const fin = live.filter(a => moneyStage(a)).length, iv = k('interview') + k('offer'), cl = k('review'), placed = S.apps.some(a => a.roleId === r.id && a.outcome === 'placed');
-  const base = { h, pre: h.pre, cl, iv, fin, gap: h.gap, target: h.target };
-  if (placed && (r.openings || 1) <= S.apps.filter(a => a.roleId === r.id && a.outcome === 'placed').length) return { ...base, g: 'ok', why: 'filled' };
-  if (h.covered) return { ...base, g: 'ok', why: 'you marked it as enough in process' };
+  const base = { h, pre: h.pre, cl, iv, fin, gap: h.gap, target: h.target, set: r.srcSet || (r.covered ? 'enough' : '') }, multi = h.openLeft > 1 ? ` for ${h.openLeft} open positions` : '';
+  if (h.need) return { ...base, g: 'now', why: 'you set it to needs sourcing' + (multi ? multi.replace(' for', ',') : '') };
+  if (h.covered) return { ...base, g: 'ok', why: 'you set it to enough' };
+  if (placed && !h.openLeft) return { ...base, g: 'ok', why: 'all positions filled' };
   if (ok && isISO(ok.until) && ok.until >= TODAY) return { ...base, g: 'ok', why: 'you marked it healthy' + (ok.note ? ': ' + ok.note : '') };
-  if (h.pre >= h.target) return { ...base, g: 'ok', why: `${h.pre} in sourcing` };
-  if (fin) return { ...base, g: 'ok', why: `${fin} in the final or at offer` };
-  if (iv >= 2) return { ...base, g: 'watch', why: `${iv} in interviews, ${h.pre} behind them` };
-  if (iv + cl >= 3) return { ...base, g: 'watch', why: `${iv + cl} with the client, ${h.pre} behind them` };
-  return { ...base, g: 'now', why: !live.length ? 'nobody in process' : iv ? 'nobody near an offer yet' : cl ? 'only a few with the client' : 'nobody with the client yet' }; }
+  if (h.pre >= h.target) return { ...base, g: 'ok', why: `${h.pre} in sourcing${multi}` };
+  if (fin >= Math.max(1, h.openLeft)) return { ...base, g: 'ok', why: `${fin} in the final or at offer` };
+  if (iv >= 2 * Math.max(1, h.openLeft)) return { ...base, g: 'watch', why: `${iv} in interviews, ${h.pre} behind them${multi}` };
+  if (iv + cl >= 3 * Math.max(1, h.openLeft)) return { ...base, g: 'watch', why: `${iv + cl} with the client, ${h.pre} behind them${multi}` };
+  return { ...base, g: 'now', why: (!live.length ? 'nobody in process' : iv ? 'nobody near an offer yet' : cl ? 'only a few with the client' : 'nobody with the client yet') + multi }; }
+const srcSwitch = (r, set) => `<span class="segc rc-seg sr-sw" title="Auto: Nimble decides from the pipeline and open positions">${[['', 'Auto'], ['need', 'Source'], ['enough', 'Enough']].map(([v, l]) => `<button class="${(set || '') === v ? 'on' : ''}" data-act="srcset" data-r="${r.id}" data-v="${v}">${l}</button>`).join('')}</span>`;
 function sourcingHTML() {
   const G = { now: 0, watch: 1, ok: 2 }, roles = S.roles.filter(rOn).map(r => ({ r, n: srcNeed(r) }))
     .sort((x, y) => G[x.n.g] - G[y.n.g] || (PRI[x.r.priority] ?? 1) - (PRI[y.r.priority] ?? 1) || (PRI[MC.get(x.r.clientId).priority] ?? 1) - (PRI[MC.get(y.r.clientId).priority] ?? 1) || y.n.gap - x.n.gap);
@@ -4134,13 +4137,13 @@ function sourcingHTML() {
       <button class="sr-name" data-act="selrole" data-r="${r.id}" data-go="1"><b>${esc(c.name || '')}</b> ${esc(r.title)}${r.hot ? ' <span class="hotm">' + HOTI + '</span>' : ''}<span class="small muted"> · ${esc(r.region || '')}${(r.priority || 'B') !== 'B' ? ' · Grade ' + r.priority : ''}</span></button>
       <span class="sr-need">${n.g === 'now' ? `Source <b>${n.gap}</b> more` : n.g === 'watch' ? 'Keep sourcing' : 'Enough'}</span>
       <span class="sr-why small muted">${esc(n.why)}</span>
-      <span class="sr-n" title="In sourcing (before the client) / with the client / interviews and offer"><b>${n.pre}</b>/${n.target}<span class="muted"> · ${n.cl} client · ${n.iv} interview</span></span>
+      <span class="sr-n" title="In sourcing (before the client) / with the client / interviews and offer${n.h.openLeft > 1 ? `. ${n.h.per} per open position × ${n.h.openLeft}` : ''}"><b>${n.pre}</b>/${n.target}<span class="muted"> · ${n.cl} client · ${n.iv} interview</span></span>
       <span class="small muted sr-last">${last ? 'added ' + rel(last) : 'none added'}</span>
-      <span class="sr-acts">${n.g !== 'ok' ? `<button class="btn sm quiet" data-act="rolecover" data-r="${r.id}" title="Enough in process for now">Enough</button>` : r.covered ? `<button class="btn sm quiet" data-act="rolecover" data-r="${r.id}">Needs sourcing</button>` : ''}<button class="btn sm ${n.g === 'now' ? 'primary' : ''}" data-act="addcand" data-r="${r.id}">Add</button></span></div>`; };
+      <span class="sr-acts">${srcSwitch(r, n.set)}<button class="btn sm ${n.g === 'now' ? 'primary' : ''}" data-act="addcand" data-r="${r.id}">Add</button></span></div>`; };
   const sec = (title, sub, L, open) => L.length ? `<details class="sr-sec" ${open ? 'open' : ''}><summary><h2>${title} <span class="count">${L.length}</span></h2><span class="small muted">${sub}</span></summary><div class="sr-list glass">${L.map(row).join('')}</div></details>` : '';
   const now = grp('now'), watch = grp('watch'), ok = grp('ok');
-  return `<div class="head"><div><h1>Sourcing</h1><div class="sub">${now.length ? `<b>${now.length}</b> role${now.length === 1 ? ' needs' : 's need'} new candidates now.` : 'No role needs new candidates right now.'} A role needs sourcing when fewer than ${S.settings.sourcingTarget} are in sourcing and nobody is far enough with the client to carry it.</div></div>
-    <label class="field">Enough in sourcing at<input type="number" min="1" max="50" value="${S.settings.sourcingTarget}" data-bind="settings|_|sourcingTarget|num" style="width:90px"></label></div>
+  return `<div class="head"><div><h1>Sourcing</h1><div class="sub">${now.length ? `<b>${now.length}</b> role${now.length === 1 ? ' needs' : 's need'} new candidates now.` : 'No role needs new candidates right now.'} Nimble wants ${S.settings.sourcingTarget} in sourcing per open position, unless someone is far enough with the client. Overrule it per role with Source or Enough.</div></div>
+    <label class="field">Per open position<input type="number" min="1" max="50" value="${S.settings.sourcingTarget}" data-bind="settings|_|sourcingTarget|num" style="width:90px"></label></div>
     ${sec('Source now', 'Thin pipeline and nothing close to an offer', now, true)}${sec('Keep sourcing', 'Candidates with the client, but few behind them', watch, !now.length || watch.length <= 6)}${sec('Enough in process', 'No sourcing needed', ok, false)}
     ${roles.length ? '' : '<div class="glass empty">No live roles yet.</div>'}`;
 }
@@ -5538,8 +5541,10 @@ function roleCardHTML(m) { const r = MR.get(m.r); if (!r) return ''; const c = M
     <section class="rc-sec"><div class="rc-h">Notes and must-haves</div><textarea class="inp" rows="3" data-bind="role|${r.id}|notes|text" placeholder="What the client really wants, deal-breakers, selling points">${esc(r.notes || '')}</textarea></section>
     <section class="rc-sec"><div class="rc-h">Manage</div>
       <div class="rc-kv"><span>Grade</span><span class="segc rc-seg rc-sm">${['A', 'B', 'C'].map(g => `<button class="${(r.priority || 'B') === g ? 'on' : ''}" data-act="rcset" data-r="${r.id}" data-k="priority" data-v="${g}">${g}</button>`).join('')}</span></div>
+      <div class="rc-kv"><span>Sourcing</span><span>${srcSwitch(r, r.srcSet || (r.covered ? 'enough' : ''))}</span></div>
+      <div class="rc-kv"><span>Open positions</span><span><input class="inp sm num" type="number" min="1" max="99" style="width:70px" value="${r.openings || 1}" data-bind="role|${r.id}|openings|num"> <span class="small muted">${(n => n.placedN ? `${n.placedN} filled, ${n.openLeft} open · ` : '')(roleHealth(r))}Nimble wants ${roleHealth(r).target} in sourcing</span></span></div>
       <div class="rc-kv"><span>Status</span><span class="segc rc-seg rc-sm">${['active', 'paused', 'filled', 'closed'].map(g => `<button class="${r.status === g ? 'on' : ''}" data-act="rcset" data-r="${r.id}" data-k="status" data-v="${g}">${g[0].toUpperCase() + g.slice(1)}</button>`).join('')}</span></div>
-      <div class="rc-btns"><button class="btn sm quiet" data-act="matches" data-r="${r.id}">Find matches in talent pool</button><button class="btn sm quiet" data-act="pin" data-r="${r.id}">${S.settings.pins.includes(r.id) ? 'Unpin' : 'Pin to top'}</button><button class="btn sm quiet" data-act="rolecover" data-r="${r.id}">${r.covered ? 'Needs sourcing again' : 'Mark as healthy'}</button><button class="btn sm quiet" data-act="addrole" data-c="${r.clientId}" data-rg="${esc(r.region || '')}">Another role at ${esc(c.name || 'this client')}</button><button class="btn sm quiet" data-act="duprole" data-r="${r.id}">Duplicate</button><button class="btn sm quiet danger" data-act="delrole" data-r="${r.id}">Delete…</button></div></section>
+      <div class="rc-btns"><button class="btn sm quiet" data-act="matches" data-r="${r.id}">Find matches in talent pool</button><button class="btn sm quiet" data-act="pin" data-r="${r.id}">${S.settings.pins.includes(r.id) ? 'Unpin' : 'Pin to top'}</button><button class="btn sm quiet" data-act="addrole" data-c="${r.clientId}" data-rg="${esc(r.region || '')}">Another role at ${esc(c.name || 'this client')}</button><button class="btn sm quiet" data-act="duprole" data-r="${r.id}">Duplicate</button><button class="btn sm quiet danger" data-act="delrole" data-r="${r.id}">Delete…</button></div></section>
   </div><div class="rc-col">
     <section class="rc-sec"><div class="rc-h">Who runs it</div>
       ${kv('Client manager', esc(nameOf(clientOwnerId(c))) + (team ? ` <button class="lnk small" data-act="cmgropen" data-c="${c.id}">Hand over</button>` : ''))}
@@ -7849,6 +7854,7 @@ const ACT = {
   rcpeople: el => { const r = MR.get(el.dataset.r); if (!r || !canHot(r)) return; const sel = document.getElementById('rc_add_' + r.id), v = el.dataset.v || (sel && sel.value); if (!v) { toast('Pick someone first'); return; } snapshot();
     const on = (r.openTo || []).includes(v); r.openTo = on ? r.openTo.filter(x => x !== v) : [...(r.openTo || []), v]; if (!on) { r.openSince = r.openSince || {}; r.openSince[v] = r.openSince[v] || TODAY; } if (!r.openTo.length) delete r.openTo;
     addLogRole(r); commit(); scheduleTeam(); toast(on ? `${firstName(nameOf(v))} is off ${r.title}` : `${firstName(nameOf(v))} works on ${r.title} now`, true); },
+  srcset: el => { const r = MR.get(el.dataset.r); if (!r) return; const v = el.dataset.v; snapshot(); if (v) r.srcSet = v; else delete r.srcSet; delete r.covered; commit(); toast(v === 'need' ? `${r.title}: needs sourcing` : v === 'enough' ? `${r.title}: enough in process` : `${r.title}: Nimble decides`, true); },
   rcset: el => { const r = MR.get(el.dataset.r); if (!r) return; const k = el.dataset.k, v = el.dataset.v; if (r[k] === v) return; snapshot(); r[k] = v; if (k === 'status') r.pausedSince = v === 'paused' ? TODAY : null; commit(); },
   rolecard: el => { CTX = null; const r = MR.get(el.dataset.r); if (!r) return; MODAL = { kind: 'rolecard', r: r.id }; render(); },
   rcaccess: el => { const r = MR.get(el.dataset.r); if (!r || !canHot(r)) return; const v = el.dataset.v; if (v === 'urgent') { if (r.hot) return; MODAL = { kind: 'roleshare', r: r.id, sel: (r.openTo || []).slice(), mode: 'urgent', back: 'rolecard' }; render(); setTimeout(() => { const i = document.getElementById('rs_why'); i && i.focus(); }, 30); return; }
