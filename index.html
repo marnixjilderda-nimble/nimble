@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ohm1CLOpofCKw1Dy4blhSUfIxkFqpGZM08fUcarKGMY=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-vaETv331+uOwKQ2PKX2cg4FWBUGOknrVlBdeisGkVz4=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -5210,9 +5210,12 @@ const xMine = c => c.mgrId === myUid() || c.salesId === myUid();
 const roleMgrId = r => (r && r.mgrId) || clientOwnerId(r && MC.get(r.clientId));
 const candOwnerId = a => a.cOwnerId || a.addedById || homeId();
 const candOwnerName = a => a.cOwnerName || (a.cOwnerId || a.addedById ? nameOf(candOwnerId(a)) : (S.settings.userName || 'Me'));
-const rosterAll = () => { const r = teamRoster(); return r.some(x => x.id === myUid()) ? r : [{ id: myUid(), name: S.settings.userName || 'Me' }, ...r]; };
+/* who is really at the keyboard: in a colleague's role (workspace) S is the colleague's data, but the person adding is still you */
+const realUid = () => (VIEWAS && VIEWAS.scope && VIEWAS.scope.me) || myUid();
+const realName = () => (VIEWAS && VIEWAS.scope && VIEWAS.scope.meName) || S.settings.userName || 'Me';
+const rosterAll = () => { let r = teamRoster(); if (!r.some(x => x.id === myUid())) r = [{ id: myUid(), name: S.settings.userName || 'Me' }, ...r]; if (realUid() !== myUid() && !r.some(x => x.id === realUid())) r = [{ id: realUid(), name: realName() }, ...r]; const seen = new Set(); return r.filter(x => x.id && !seen.has(x.id) && seen.add(x.id)); };
 const isPre = st => PRE.has(st.kind);
-function ownerSelect(id, cur, extra) { const ros = rosterAll(); return `<select id="${id}" ${extra || ''}>${ros.map(x => `<option value="${esc(x.id)}" ${x.id === (cur || myUid()) ? 'selected' : ''}>${esc(x.name)}${x.id === myUid() ? ' (me)' : ''}</option>`).join('')}</select>`; }
+function ownerSelect(id, cur, extra) { const ros = rosterAll(), me = realUid(); return `<select id="${id}" ${extra || ''}>${ros.map(x => `<option value="${esc(x.id)}" ${x.id === (cur || me) ? 'selected' : ''}>${esc(x.id === me ? realName() : x.name)}${x.id === me ? ' (me)' : ''}</option>`).join('')}</select>`; }
 function shareRoleCard(r, owner, ds) { const c = MC.get(r.clientId) || {}, l = stagesFor(r.id);
   return { owner, ownerName: owner === myUid() ? (S.settings.userName || 'Me') : rosterName(owner), roleId: r.id, title: r.title, client: c.name || '', cpri: c.priority || 'B', region: r.region || '', priority: r.priority || 'B', openTo: r.openTo || [],
     stages: l.filter(x => x.kind !== 'placed').map(x => ({ id: x.id, label: x.label, kind: x.kind })),
@@ -5675,7 +5678,7 @@ function mgrDesc(c, x, y, pv) { const v = y || x || {}, P = [...(S.people || [])
 function scopeCheck(c, x, y, prev) { const sc = VIEWAS.scope, me = sc.me, rid = sc.roleId; if (c === 'settings') return 'quiet'; if (sc.mgr && c !== 'apps' && c !== 'people' && c !== 'tasks') return peerMgrOk(c, x, y, me, sc.lead ? me : null) ? '' : 'other'; return scopeCheck0(c, x, y, prev); }
 function scopeCheck0(c, x, y, prev) { const sc = VIEWAS.scope, me = sc.me, rid = sc.roleId, apps = id => S.apps.find(a => a.id === id) || (prev.apps || []).find(a => a.id === id);
   const pre = a => { const st = stagesFor(a.roleId).find(z => z.id === a.stage); return !!st && PRE.has(st.kind); }, own = a => !!a && a.roleId === rid && (sc.mgr || a.cOwnerId === me || a.addedById === me);
-  if (c === 'apps') { if (!x && y) { if (y.roleId !== rid) return 'other'; if (!sc.mgr) { y.cOwnerId = me; y.addedById = me; y.cOwnerName = sc.meName; if (!pre(y)) return 'stage'; } else if (!y.cOwnerId) { y.cOwnerId = me; y.cOwnerName = sc.meName; } return ''; }
+  if (c === 'apps') { if (!x && y) { if (y.roleId !== rid) return 'other'; if (!sc.mgr) { y.cOwnerId = me; y.addedById = me; y.cOwnerName = sc.meName; if (!pre(y)) return 'stage'; } else if (!y.cOwnerId && !y.addedById) { y.cOwnerId = me; y.cOwnerName = sc.meName; } return ''; }
     if (!own(x)) return 'notyours'; if (!sc.mgr && y && (x.stage !== y.stage && !(pre(x) && pre(y)) || x.outcome !== y.outcome && !pre(x))) return 'stage'; return ''; }
   if (c === 'people') { if (!x) return ''; const L = [...S.apps, ...(prev.apps || [])].filter(a => a.personId === x.id); return L.some(own) && (y || L.every(a => own(a))) ? '' : 'notyours'; }
   if (c === 'tasks') { const a = apps((y || x).appId); return own(a) ? '' : 'notyours'; }
@@ -8297,7 +8300,7 @@ const ACT = {
     if (d.profile) { p.profile = d.profile; p.tags = [...new Set([...(p.tags || []), ...tagsFromProfile(d.profile)])]; }
     if (S.apps.some(a => a.personId === p.id && a.roleId === d.roleId && a.outcome !== 'closed')) { toast(`${p.name} is already in this role`); return; }
     const a = newApp({ personId: p.id, roleId: d.roleId, stage: d.stage || stagesFor(d.roleId)[0].id, since: TODAY, dates: { [d.stage || stagesFor(d.roleId)[0].id]: TODAY } });
-    const ow = document.getElementById('ac_owner'); if (ow && ow.value && ow.value !== myUid()) { a.cOwnerId = ow.value; a.cOwnerName = nameOf(ow.value); }
+    const ow = document.getElementById('ac_owner'); if (ow && ow.value && ow.value !== myUid()) { a.cOwnerId = ow.value; a.cOwnerName = ow.value === realUid() ? realName() : nameOf(ow.value); } if (realUid() !== myUid()) { a.addedById = realUid(); a.addedBy = realName(); if (ow && ow.value === myUid()) { a.cOwnerId = myUid(); a.cOwnerName = S.settings.userName || 'Me'; } }
     const cvf = MODAL.cvFile; addLog(a, 'system', (d.profile ? 'Added from LinkedIn' : cvf ? 'Added from CV' : 'Added') + (a.cOwnerId ? `. Candidate of ${a.cOwnerName}` : '')); if (!p.owner && (d.owner || '').trim()) p.owner = d.owner.trim(); S.apps.push(a); syncAutoTasks(a); MODAL = null; commit(); toast(`${p.name} added`, true); if (cvf) cvFile(cvf, p.id);
   },
   addrole: el => { CTX = null; MODAL = { kind: 'addrole', c: el.dataset.c, region: el.dataset.rg }; render(); },
