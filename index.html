@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-CCn3tzJd0iB4ulOXQ9BZ3rGwRAY0gCjdTEvbjoO/nSc=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-3NMnJCbyBuFYi5UAtXP6CeE10ET1IHCJu9xptQoT5Qs=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1874,7 +1874,13 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 .u3 .fmore[open]{display:grid;gap:8px}.u3 .fmore .fg{display:grid;gap:5px}.u3 .fmore .fg-h{font-size:12px;font-weight:650;color:var(--muted);text-transform:none;letter-spacing:0}.u3 .fmore .fg .chips{display:flex;flex-wrap:wrap;gap:5px}
 .u3 .flow-det{width:min(460px,100%)}
 .u3 .cu-hint:empty{display:none}.u3 .cu-hint{font-size:13px;color:var(--muted)}
-.u3 .u3-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}.u3 .u3-pair .u3-s::before{display:none}.u3 .u3-pair .flow-det{width:100%}.u3 .u3-pair .flow-det .fd-k{display:none}
+.u3 .u3-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:stretch}
+.u3 .u3-pair .u3-b{grid-template-rows:auto 1fr}.u3 .u3-pair .u3-c,.u3 .u3-pair .u3-main{height:100%}.u3 .u3-pair .u3-main{display:flex;flex-direction:column;align-items:stretch;gap:8px}
+.u3 .u3-pair .flow>.chips,.u3 .u3-pair .nxopts{align-items:stretch;gap:5px}
+.u3 .u3-pair .flow>.chips .qchip,.u3 .u3-pair .nxopts .qchip{width:100%;display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:7px 12px}
+.u3 .u3-pair .qchip small{white-space:nowrap;flex:none}.u3 .u3-pair .nxopts .nxnone{border-style:dashed;font-weight:550;color:var(--muted)}.u3 .u3-pair .nxopts .nxnone.on{color:var(--bg,#fff);border-style:solid}
+.u3 .u3-pair .u3-o{margin-top:auto;padding-top:2px}.u3 .u3-pair:has(.u3-o[open]) .u3-o{margin-top:0}.u3 .u3-pair .u3-o .inp{width:100%}.u3 .u3-pair .u3-o[open]{display:grid;gap:8px}.u3 .u3-pair .u3-o .fg{display:grid;gap:5px}.u3 .u3-pair .u3-o .fg .chips{display:flex;flex-wrap:wrap;gap:5px}
+.u3 .u3-pair .u3-h{line-height:26px}.u3 .u3-pair .u3-s::before{display:none}.u3 .u3-pair .flow-det{width:100%}.u3 .u3-pair .flow-det .fd-k{display:none}
 @media (max-width:760px){.u3 .u3-pair{grid-template-columns:1fr}}
 .u3 .u3-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 0 2px 38px;border-top:1px solid var(--line)}
 .u3 .u3-foot .btn.primary{padding:9px 22px;font-size:14px}
@@ -1957,7 +1963,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:3e206a914b*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:083c5e94e1*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -7384,7 +7390,7 @@ const u3Other = (id, ph) => `<details class="u3-o"><summary>Other…</summary><i
 function recUpdHTML(a, p) { p = p || 'ru'; const dn = RUDUE[a.id] ?? 2, cur = FLOWU[p + a.id] || '', fl = recFlowNext(cur, a), nx = nextStageId(a), nxs = nx && stagesFor(a.roleId).find(x => x.id === nx);
   const when = `<div class="chips u3-due">${CO_DUE_S.map(([n, l]) => `<button class="qchip ${dn === n ? 'on' : ''}" data-act="rcdue" data-p="${p}" data-a="${a.id}" data-n="${n}">${l}${chipDay(n)}</button>`).join('')}<input type="date" class="inp cu-date" id="${p}_dt_${a.id}" data-act-change="rcdate" data-p="${p}" data-a="${a.id}" min="${TODAY}" value="${isISO(dn) ? dn : ''}" title="Pick a date"></div><span class="u3-dl" id="${p}_dl_${a.id}">${dueLabel(dueOf(dn))}</span>`;
   return `<div class="coupd rcupd ux u3">
-    <div class="u3-pair">${u3Step(1, 'What happened', `${flowUpdHTML(p, a.id, cur)}${u3Other(`${p}_u_${a.id}`, 'Type what happened')}`)}
+    <div class="u3-pair">${u3Step(1, 'What happened', recChipsHTML(p, a.id, cur, `${p}_u_${a.id}`))}
     ${u3Step(2, "What's next", `<div class="small cu-hint" id="${p}_hint_${a.id}">${esc(fl.hint || '')}</div><div class="chips nxopts" id="${p}_nxo_${a.id}">${flowNxHTML(p, a.id, fl, FLOWN[p + a.id] || '')}</div>${flowNdetHTML(p, a.id, FLOWN[p + a.id] || '')}${u3Other(`${p}_n_${a.id}`, 'Type your own next step')}<label class="cu-alt" id="${p}_xw_${a.id}" ${fl.x ? '' : 'hidden'}><input type="checkbox" id="${p}_x_${a.id}" ${fl.x && fl.x.on ? 'checked' : ''} data-x="${esc(JSON.stringify(fl.x || null))}"> <span>${esc((fl.x || {}).label || '')}</span></label>`)}</div>
     ${u3Step(3, 'When', when)}
     <div class="u3-foot"><button class="btn primary" data-act="recsave" data-p="${p}" data-a="${a.id}">Save</button>${p === 'ru' ? `<span class="ux-move"><span class="u3-ml">Move on</span>${nxs ? `<button class="btn sm" data-act="advance" data-a="${a.id}">To ${esc(nxs.label)}</button>` : ''}<button class="btn sm quiet ux-rej" data-act="close" data-a="${a.id}">Reject</button></span>` : ''}</div>
@@ -8942,7 +8948,8 @@ function coFind(cid) { for (const a of S.accounts || []) { const c = (a.contacts
 function bdChipsHTML(p, key, cur) { let d = null, c = null; if (p === 'cu') { d = dealById(key); c = d && coById(d.accountId, coSel(d)[0]); } else { const f = coFind(key); c = f.c; d = f.a && (S.deals || []).find(x => x.accountId === f.a.id && x.outcome === 'open' && dealCoIds(x).includes(key)) || null; }
   const ph = bdPhaseOf(d, c), L = BD_FLOW[ph] || [], ch = ([l, v]) => `<button class="qchip ${cur === v ? 'on' : ''}" data-act="flowu" data-p="${p}" data-key="${key}" data-v="${esc(v)}">${esc(l)}</button>`, more = !!cur && !L.some(x => x[1] === cur);
   return `<div class="flow">${p === 'cu' ? '' : `<div class="ph-tag">${BD_PH_LBL[ph]} phase</div>`}<div class="chips">${L.map(ch).join('')}</div><details class="fmore" ${more ? 'open' : ''}><summary class="small">More…</summary>${CO_GROUPS.map(([g, xs]) => `<div class="fg"><span class="fg-h">${g}</span><div class="chips">${xs.map(ch).join('')}</div></div>`).join('')}</details></div>${flowDetHTML(p, key, cur)}`; }
-function recChipsHTML(p, key, cur) { const a = appById(key), L = (a && REC_FLOW[recKey(a)]) || [], ch = ([l, v]) => `<button class="qchip ${cur === v ? 'on' : ''}" data-act="flowu" data-p="${p}" data-key="${key}" data-v="${esc(v)}">${esc(l)}</button>`, more = !L.some(x => x[1] === cur) && !!cur;
+function recChipsHTML(p, key, cur, otherId) { const a = appById(key), L = (a && REC_FLOW[recKey(a)]) || [], ch = ([l, v]) => `<button class="qchip ${cur === v ? 'on' : ''}" data-act="flowu" data-p="${p}" data-key="${key}" data-v="${esc(v)}">${esc(l)}</button>`, more = !L.some(x => x[1] === cur) && !!cur;
+  if (otherId) return `<div class="flow"><div class="chips">${L.map(ch).join('')}</div></div>${flowDetHTML(p, key, cur)}<details class="u3-o fmore" ${more || !L.length ? 'open' : ''}><summary>Other…</summary>${REC_GROUPS.map(([g, xs]) => `<div class="fg"><span class="fg-h">${g}</span><div class="chips">${xs.map(ch).join('')}</div></div>`).join('')}<input class="inp" id="${otherId}" placeholder="Or type what happened"></details>`;
   return `<div class="flow"><div class="chips">${L.map(ch).join('')}</div><details class="fmore" ${more || !L.length ? 'open' : ''}><summary class="small">${L.length ? 'More…' : 'Pick what happened'}</summary>${REC_GROUPS.map(([g, xs]) => `<div class="fg"><span class="fg-h">${g}</span><div class="chips">${xs.map(ch).join('')}</div></div>`).join('')}</details></div>${flowDetHTML(p, key, cur)}`; }
 function flowNxHTML(p, key, fl, cur) { return fl.o.map(([v, n]) => `<button class="qchip nxo ${cur === v ? 'on' : ''}" data-act="flown" data-p="${p}" data-key="${key}" data-v="${esc(v)}" data-n="${n}">${esc(v)}${n === 0 ? ' <small class="cd">today</small>' : chipDay(n)}</button>`).join('') + (fl.none && !fl.nonone ? '<span class="small muted nx-tip">Pick what happened above to get the matching next steps.</span>' : '') + ((p === 'ru' || p === 'rm') ? `<button class="qchip nxnone ${cur === '__none' ? 'on' : ''}" data-act="flownone" data-p="${p}" data-key="${key}">No next step</button>` : ''); }
 function flowCtx(p, key) { if (p === 'cu') { const d = dealById(key); return { d, c: d && coById(d.accountId, coSel(d)[0]) }; }
@@ -9602,7 +9609,7 @@ const BD_ACT = {
   flowu: el => { const p = el.dataset.p, key = el.dataset.key, v = el.dataset.v;
     if (p === 'ca') { bdWizRead(); const f = MODAL.f, d = MODAL.d ? dealById(MODAL.d) : null, c = d && f.co && f.co !== '_new' ? coById(d.accountId, f.co) : null, fl = flowNext(v, c, d); f.update = v; f.nx = fl.o[0][0]; f.dn = fl.o[0][1]; f.hint = fl.hint; render(); setTimeout(() => { const di = document.getElementById('ca_det_'); di && di.focus(); }, 30); return; }
     const i = document.getElementById(`${p}_u_${key}`); if (i) i.value = '';
-    el.closest('.flow').querySelectorAll('.qchip').forEach(b => b.classList.toggle('on', b === el)); FLOWU[p + key] = v; flowApply(p, key, v);
+    (el.closest('.u3-main:has(> .u3-o.fmore)') || el.closest('.flow')).querySelectorAll('.qchip').forEach(b => b.classList.toggle('on', b === el)); FLOWU[p + key] = v; flowApply(p, key, v);
     const dw = document.getElementById(`${p}_detw_${key}`), di = document.getElementById(`${p}_det_${key}`), dk = document.getElementById(`${p}_detk_${key}`); if (dw) dw.hidden = false; if (dk) dk.textContent = v; if (di) { di.placeholder = DET_PH(v); setTimeout(() => di.focus(), 30); } },
   flown: (el, auto) => { const p = el.dataset.p, key = el.dataset.key, v = el.dataset.v, dn = +el.dataset.n; auto = auto === true;
     if (p !== 'ca') { const w = document.getElementById(`${p}_ndetw_${key}`), k = document.getElementById(`${p}_ndetk_${key}`), i = document.getElementById(`${p}_ndet_${key}`); if (w) w.hidden = false; if (k) k.textContent = v; if (i && !auto) setTimeout(() => i.focus(), 30); }
