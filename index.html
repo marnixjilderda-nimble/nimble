@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-YICZwiBrwt95W/g/1CWUpDlER1Ik75SipdU0AYK4zcE=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-mUEirgHJbpLpIHBwyh8DcebZp7nQd+gYmw4lOBI+jDQ=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -9005,7 +9005,7 @@ const CO_GROUPS = [
   ['LinkedIn', [['Request sent', 'Connection request sent'], ['Accepted', 'Connection request accepted'], ['Not accepted', 'Connection request not accepted']]],
   ['Reached out', [['Message sent', 'LinkedIn message sent'], ['Voicemail', 'Called, left a voicemail']]],
   ['Their reaction', [['Replied', 'They replied'], ['Spoke', 'Spoke'], ['Wants to meet', 'Interested, wants to meet'], ['Referred me on', 'Referred me to someone else'], ['Not interested', 'Not interested'], ['No response', 'No response']]],
-  ['Meeting', [['Booked', 'Meeting booked'], ['Held', 'Meeting held']]]];
+  ['Meeting', [['Scheduled', 'Meeting booked'], ['Held', 'Meeting held']]]];
 const CO_UPD = CO_GROUPS.flatMap(g => g[1].map(x => x[1]));
 const CO_NEXT = ['Follow up', 'Call', 'Send a message', 'Book a meeting'];
 const DEL_REQ = 'Delete connection request if not accepted';
@@ -9041,9 +9041,9 @@ function flowDetHTML(p, key, cur) { const v = p === 'ca' ? ((MODAL && MODAL.f &&
 function flowUpdHTML(p, key, cur) { if (p === 'ru' || p === 'rm') return recChipsHTML(p, key, cur); if (p === 'cu' || p === 'cp') return bdChipsHTML(p, key, cur); return `<div class="flow">${(p === 'ru' ? REC_GROUPS : CO_GROUPS).map(([g, xs]) => `<div class="fg"><span class="fg-h">${g}</span><div class="chips">${xs.map(([l, v]) => `<button class="qchip ${cur === v ? 'on' : ''}" data-act="flowu" data-p="${p}" data-key="${key}" data-v="${esc(v)}">${esc(l)}</button>`).join('')}</div></div>`).join('')}</div>${flowDetHTML(p, key, cur)}`; }
 /* BD: what can happen in each phase. Moving the opportunity on (meeting, proposal, won) is a move, not an update. */
 const BD_FLOW = {
-  out: [['Request sent', 'Connection request sent'], ['Accepted', 'Connection request accepted'], ['Message sent', 'LinkedIn message sent'], ['They replied', 'They replied'], ['No reply', 'No response'], ['Not interested', 'Not interested']],
-  conv: [['Waiting for their answer', 'Waiting for their answer'], ['Wants to meet', 'Interested, wants to meet'], ['Referred me to…', 'Referred me to someone else'], ['Gone quiet', 'No response'], ['Not interested', 'Not interested']],
-  meet: [['Meeting booked', 'Meeting booked'], ['Rescheduled', 'Meeting rescheduled'], ['No-show', 'No-show on the meeting'], ['Meeting held', 'Meeting held']],
+  out: [['Request sent', 'Connection request sent'], ['Accepted', 'Connection request accepted'], ['Message sent', 'LinkedIn message sent'], ['They replied', 'They replied'], ['Meeting scheduled', 'Meeting booked'], ['No reply', 'No response'], ['Not interested', 'Not interested']],
+  conv: [['Waiting for their answer', 'Waiting for their answer'], ['Wants to meet', 'Interested, wants to meet'], ['Meeting scheduled', 'Meeting booked'], ['Referred me to…', 'Referred me to someone else'], ['Gone quiet', 'No response'], ['Not interested', 'Not interested']],
+  meet: [['Meeting scheduled', 'Meeting booked'], ['Rescheduled', 'Meeting rescheduled'], ['No-show', 'No-show on the meeting'], ['Meeting held', 'Meeting held']],
   close: [['Proposal / T&Cs sent', 'Proposal / T&Cs sent'], ['Negotiating', 'Negotiating the terms'], ['Waiting on their side', 'Waiting on their side']] };
 const BD_PH_LBL = { out: 'Outreach', conv: 'In conversation', meet: 'Meeting', close: 'Closing' };
 function bdPhaseOf(d, c) { if (!d) return c && (c.log || []).some(l => l.type === 'contact' && signalWeight(l.text) >= 2) ? 'conv' : 'out'; if (d.stage === 'meeting') return 'meet'; if (['proposal', 'negotiation'].includes(d.stage)) return 'close'; return c && contactHeat(c, d).lvl >= 2 ? 'conv' : 'out'; }
@@ -9086,6 +9086,9 @@ function isActiveCo(d, c) { if (isPaused(d, c.id)) return false; const st = (d.c
 function activeCos(d) { const ord = d.coOrder || []; return dealCosWork(d).filter(c => isActiveCo(d, c)).sort((x, y) => { const ix = ord.indexOf(x.id), iy = ord.indexOf(y.id); return (ix < 0 ? 999 : ix) - (iy < 0 ? 999 : iy) || (x.id === d.contactId ? -1 : y.id === d.contactId ? 1 : 0) || contactHeat(y, d).lvl - contactHeat(x, d).lvl; }); }
 /* contacts become active as soon as there is engagement (we reached out after accepting, or they came back to us); a negative outcome makes them not active */
 const ENGAGE = /accepted|message|inmail|e-?mail|call|voicemail|follow|meeting|spoke|replied|responded|interested|recap|proposal|referred/i;
+function bdMeetMove(d, text) { if (!d || !/^meeting (booked|scheduled|planned)/i.test(String(text || ''))) return false; const L = bdStages(), mi = L.findIndex(x => x.id === 'meeting' || /meeting/i.test(x.label)), ci = L.findIndex(x => x.id === d.stage); if (mi < 0) return false;
+  if (ci < mi) { const from = dealStage(d).label; d.stage = L[mi].id; d.since = TODAY; bdLog(d, 'system', `Moved from ${from} to ${L[mi].label}`); }
+  if (!isISO(d.meetOn) || d.meetOn < TODAY) MODAL = { kind: 'bdmeet', d: d.id }; return ci < mi; }
 function coOnUpdate(d, c, text) { if (!d || !c) return; const t = String(text || ''), w = signalWeight(t); d.coState = d.coState || {};
   if (w < 0) { d.coState[c.id] = 'inactive'; d.coOrder = (d.coOrder || []).filter(x => x !== c.id); if (d.contactId === c.id) { const nx = activeCos(d)[0]; if (nx) d.contactId = nx.id; } }
   else if (w > 0 || (ENGAGE.test(t) && !/request sent|delete connection request/i.test(t))) { const was = isActiveCo(d, c); d.coState[c.id] = 'active'; if (d.paused) delete d.paused[c.id]; if (!was) { d.coOrder = [...(d.coOrder || []).filter(x => x !== c.id), c.id]; } }
@@ -9788,7 +9791,8 @@ const BD_ACT = {
       bdLog(d, 'system', `Next step: ${nx}, ${fmtDate(due)} (${csN.map(c => firstName(c.name || '')).join(', ') || names})`); }
     delete COSEL[d.id]; delete COSELN[d.id]; delete FLOWU['cu' + d.id]; delete FLOWN['cu' + d.id]; delete FLOWD['cu' + d.id]; delete FLOWD['cu_ndet_' + d.id]; delete CODUE[d.id];
     if (altOn || refOn) { MODAL = { kind: 'bdcoadd', d: d.id, acc: '', from: ids[0], ref: refOn }; bdCoAddInit(MODAL); }
-    commit(); toast(`Saved for ${cs.length === 1 ? names : cs.length + ' contacts'}${nx ? `. ${/^try again in /i.test(nx) ? 'Try again' : nx} ${due === TODAY ? 'today' : 'on ' + dueLabel(due)}` : ''}${fbMsg}${altOn ? '. Who do you approach next?' : refOn ? '. Who did they refer you to?' : ''}`, true); },
+    const moved = !altOn && !refOn && bdMeetMove(d, up);
+    commit(); toast(`${moved ? 'Moved to Meeting. ' : ''}Saved for ${cs.length === 1 ? names : cs.length + ' contacts'}${nx ? `. ${/^try again in /i.test(nx) ? 'Try again' : nx} ${due === TODAY ? 'today' : 'on ' + dueLabel(due)}` : ''}${fbMsg}${altOn ? '. Who do you approach next?' : refOn ? '. Who did they refer you to?' : ''}`, true); },
   editlog: el => { CTX = null; MODAL = { kind: 'editlog', k: el.dataset.k, l: el.dataset.l }; render(); setTimeout(() => { const i = document.getElementById('el_text'); i && i.focus(); }); },
   editlogsave: () => { const [aid, cid] = MODAL.k.split(':'), c = coById(aid, cid), l = c && (c.log || []).find(x => x.id === MODAL.l); if (!l) return; const tx = document.getElementById('el_text').value.trim(), dt = document.getElementById('el_date').value; if (!tx) { toast('Type the update, or delete it'); return; } snapshot(); l.text = tx; if (isISO(dt)) l.date = dt; MODAL = null; commit(); toast('Update changed', true); },
   editlogdel: () => { const [aid, cid] = MODAL.k.split(':'), c = coById(aid, cid); if (!c) return; snapshot(); c.log = (c.log || []).filter(x => x.id !== MODAL.l); MODAL = null; commit(); toast('Update deleted', true); },
@@ -9833,7 +9837,7 @@ const BD_ACT = {
     if (up) { coOnUpdate(d, c, up); (c.log = c.log || []).unshift({ id: uid('l'), date: TODAY, type: 'contact', text: up, ...(det ? { note: det } : {}), dealId: d ? d.id : undefined }); if (d) { for (const t of coTasks(c.id, d.id)) { t.done = true; t.doneOn = TODAY; } bdLog(d, 'contact', `${up} (${firstName(c.name || '')})`, det); } }
     if (nx && d) { if (!up) S.bdTasks = S.bdTasks.filter(t => !(t.coId === c.id && t.dealId === d.id && !t.done)); const autos = S.bdTasks.filter(t => t.dealId === d.id && t.auto && !t.done); if (autos.length) { d.autoSkip = [...new Set([...(d.autoSkip || []), ...autos.map(t => String(t.auto).split('#')[0])])]; S.bdTasks = S.bdTasks.filter(t => !autos.includes(t)); }
       const nn = ((document.getElementById('cp_ndet_' + cid) || {}).value || '').trim(); S.bdTasks.push({ id: uid('bt'), dealId: d.id, coId: c.id, text: nxTaskText(nx, c), ...(nn ? { note: nn } : {}), due, done: false, created: TODAY }); bdLog(d, 'system', `Next step: ${nxTaskText(nx, c)}${nn ? ' — ' + nn : ''}, ${fmtDate(due)} (${firstName(c.name || '')})`); delete FLOWD['cp_ndet_' + cid]; }
-    delete CODUE['cp_' + cid]; delete FLOWU['cp' + cid]; delete FLOWN['cp' + cid]; delete FLOWD['cp' + cid]; if (d && /referred/i.test(up)) { BDD = { deal: d.id }; MODAL = { kind: 'bdcoadd', d: d.id, acc: '', from: cid, ref: true }; bdCoAddInit(MODAL); } commit(); toast(`Saved for ${firstName(c.name || '')}${nx && d ? `. ${nx} on ${dueLabel(due)}` : ''}`, true); },
+    delete CODUE['cp_' + cid]; delete FLOWU['cp' + cid]; delete FLOWN['cp' + cid]; delete FLOWD['cp' + cid]; if (d && /referred/i.test(up)) { BDD = { deal: d.id }; MODAL = { kind: 'bdcoadd', d: d.id, acc: '', from: cid, ref: true }; bdCoAddInit(MODAL); } const moved = bdMeetMove(d, up); commit(); toast(`${moved ? 'Moved to Meeting. ' : ''}Saved for ${firstName(c.name || '')}${nx && d ? `. ${nx} on ${dueLabel(due)}` : ''}`, true); },
   dealcomain: el => { const d = dealById(el.dataset.d); if (!d) return; snapshot(); dealCoAdd(d, el.dataset.c); moveCo(d, el.dataset.c, 'active', (activeCos(d)[0] || {}).id); d.contactId = el.dataset.c; commit(); toast(`${firstName((coById(d.accountId, el.dataset.c) || {}).name || '')} is now the main contact. Their update shows on the pipeline card.`, true); },
   dealcorm: el => { const d = dealById(el.dataset.d); if (!d) return; const c = dealCos(d).find(x => x.id === el.dataset.c); snapshot(); d.contactIds = dealCoIds(d).filter(x => x !== el.dataset.c); if (d.contactId === el.dataset.c) d.contactId = d.contactIds[0] || null; if (c) bdLog(d, 'system', `${c.name} taken off this opportunity`); commit(); toast(`${c ? c.name : 'Contact'} removed from this opportunity (still in Contacts)`, true); },
   dealcopy: el => { const d = dealById(el.dataset.d), k = dealTpl(d); copyText(tplText(k, bdCtx(d))); toast(`${TPL[k].label} copied`); },
