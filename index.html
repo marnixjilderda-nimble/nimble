@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-iR6XTVNTiqhY8+EvNROIeuAd+naZu/9l3jrDAEhPPvM=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bXU1qUdvtnbJTt5fm9ZLUWVjkxVhPLdFQEckyNyFrhE=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -2434,6 +2434,7 @@ function sweepTasks() { if (S && S.deals && !S.settings.dealName1 && !VIEWAS) { 
   if (!S || !S.tasks || !S.apps) return; const byId = new Map(S.apps.map(a => [a.id, a]));
   if (!S.settings.holdSweep1 && !VIEWAS) { S.settings.holdSweep1 = TODAY; const held = new Set(S.apps.filter(a => a.onHold && a.outcome === 'active').map(a => a.id)); S.tasks = S.tasks.filter(t => !(t.appId && !t.done && held.has(t.appId))); }
   S.tasks = S.tasks.filter(t => !(t.appId && !t.done && !byId.has(t.appId)));
+  if (!VIEWAS) for (const a of S.apps) if (a.outcome === 'active' && S.tasks.some(t => t.appId === a.id && !t.done)) { try { clearStaleTasks(a); } catch (e) { } }
   for (const t of S.tasks) { if (t.done || !t.appId) continue; const a = byId.get(t.appId); if (a && !t.atStage && t.created === TODAY) t.atStage = a.stage; if (a && (a.outcome === 'toreject' || a.outcome === 'closed')) { t.done = true; t.doneOn = TODAY; t.cleared = true; } } }
 const hasLiveApp = (pid, rid, except) => S.apps.some(a => a.personId === pid && a.roleId === rid && a.id !== except && ['active', 'toreject'].includes(a.outcome));
 /* on hold: the candidate's open tasks go, so they don't clutter Today and Tasks */
@@ -2453,7 +2454,7 @@ function rejectNow(a) { a.outcome = 'closed'; a.closeReason = 'Rejected'; a.clos
 const KIND_ORDER = { source: 0, screen: 1, cvwait: 2, cv: 3, review: 4, interview: 5, offer: 6, placed: 7 };
 /* each rule: which tasks (by their words) and the last kind of stage where they still make sense */
 const TASK_STAGE_RULES = [
-  { name: 'Chase CV', test: /\bcv\b|resume|curriculum/i, until: 'cvwait' },
+  { name: 'Chase CV', test: /^(?!.*(send|introduc|to the client|for more)).*(\bcvs?\b|resume|curriculum)/i, until: 'cvwait' },
   { name: 'Plan the intro call', test: /plan the call|intro call|book the call|plan call|chase the candidate/i, until: 'screen' },
   { name: 'Introduce to the client', test: /introduc|send (the )?(cv|profile) to/i, until: 'cv' },
   { name: 'Plan the interview', test: /plan the .*(interview|assessment)|interview slots|schedule .*interview|set ?up (the |an )?interview/i, until: 'interview' },
@@ -2471,8 +2472,8 @@ function taskAfterStage(t, to, list) {
   return !!start && KIND_ORDER[start] > (KIND_ORDER[to.kind] ?? 99);
 }
 function staleTasks(a) {
-  const k = KIND_ORDER[stageOf(a).kind]; if (k === undefined) return [];
-  return S.tasks.filter(t => t.appId === a.id && !t.done && !t.auto && (r => r && KIND_ORDER[r.until] < k)(TASK_STAGE_RULES.find(r => r.test.test(t.text || ''))));
+  const k = KIND_ORDER[stageOf(a).kind]; if (k === undefined) return []; const hasCv = !!((personOf(a) || {}).cv);
+  return S.tasks.filter(t => t.appId === a.id && !t.done && !(t.auto && !(hasCv && /^chase cv/i.test(t.text || ''))) && (r => r && (KIND_ORDER[r.until] < k || hasCv && r.name === 'Chase CV'))(TASK_STAGE_RULES.find(r => r.test.test(t.text || ''))));
 }
 function clearStaleTasks(a) {
   const st = staleTasks(a); if (!st.length) return [];
