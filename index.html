@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XyUC8cXStjU0cU33wZGdeSetG3wHei6wN4d1ZqvFdyc=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-5QZYY6ZxIfbPMVjy5r03NrHODnwj9sHbJnxF4AxllN0=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -728,7 +728,7 @@ h2{font-size:15.5px;font-weight:650}
 .metal{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;font-size:10px;font-weight:800;flex:none;color:#fff;
   background:linear-gradient(135deg,color-mix(in srgb,var(--g) 70%,#fff),var(--g) 55%,color-mix(in srgb,var(--g) 75%,#000));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--g) 60%,#000 10%)}
 .metal.mB{color:#2a2f37}
-.tbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:-4px 0 14px}
+.tbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:-4px 0 14px}.tbar.co-st{margin-top:-6px}
 .tf{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 70%,transparent);color:var(--ink);border-radius:99px;padding:4px 11px 4px 6px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
 .tf:not(.mA):not(.mB):not(.mC){padding-left:11px}
 .tf.on{border-color:color-mix(in srgb,var(--g,var(--ink)) 70%,transparent);background:color-mix(in srgb,var(--g,var(--ink)) 18%,var(--panel))}
@@ -1988,7 +1988,7 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:91f7bcd388*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:dde0ea67e6*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -2135,7 +2135,7 @@ function roleWorkIn(o, rid) { const m = TEAM.members.find(x => x.userId === o); 
   const keep = VIEWAS ? VIEWAS.keep : S, back = VIEWAS ? VIEWAS.back : { view: VIEW, sel: { ...SEL }, navh: NAVH.slice() }; if (VIEWAS) { S = keep; reindex(); }
   const me = keep.settings.userId, lead = keep.settings.teamRole === 'lead';
   VIEWAS = { keep, back, member: m.member, at: m.publishedAt, folder: m.folder, userId: m.userId, follow: false, scope: { roleId: rid, me, meName: keep.settings.userName || 'Me', k: o + '|' + rid } };
-  S = scopeLook(mgrOverlay(prepForeign(m.data), (m.data || {}).mgrApplied), keep); reindex(); const r = MR.get(rid), c = MC.get(r.clientId) || {};
+  VIEWAS.raw = m.data; S = scopeLook(mgrOverlay(peerOverlay(prepForeign(m.data), o, me), (m.data || {}).mgrApplied), keep); reindex(); const r = MR.get(rid), c = MC.get(r.clientId) || {};
   VIEWAS.scope.mgr = lead || roleMgrId(r) === me || clientOwnerId(c) === me; VIEWAS.scope.lead = lead; VIEWAS.scope.cmgr = lead || clientOwnerId(c) === me; VIEWAS.scope.cid = c.id; VIEWAS.scope.title = r.title; VIEWAS.scope.client = c.name || '';
   VIEWAS.prev = JSON.stringify(mgrSlice(S)); UNDO = null; DRAWER = null; BDD = null; MODAL = null; CTX = null; JUMP = null; VIEW = 'pipeline'; SEL = { region: r.region, client: r.clientId, role: rid }; render(); return true; }
 /* in a colleague's role you keep your own way of looking at things: columns or rows, menu, theme, photo */
@@ -2143,9 +2143,12 @@ const SCOPE_UI = ['pipeView', 'nav', 'railCollapsed', 'treeHidden', 'treeW', 'th
 function scopeLook(d, keep) { for (const k of SCOPE_UI) { if (keep.settings[k] === undefined) delete d.settings[k]; else d.settings[k] = keep.settings[k]; } return d; }
 function scopeExit() { if (!VIEWAS || !VIEWAS.scope) return; S = VIEWAS.keep; VIEWAS = null; UNDO = null; reindex(); DRAWER = null; BDD = null; MODAL = null; CTX = null; SEL = {}; scheduleTeam(); }
 setInterval(async () => { try { if (!VIEWAS || !VIEWAS.scope || !TEAM.handle || TEAM.state !== 'on') return; const who = VIEWAS;
-  for await (const [n, h] of TEAM.handle.entries()) { if (h.kind !== 'file' || !/^pipetree-team-.+\.json$/.test(n)) continue; const f = await h.getFile(); if (who.fileTime && f.lastModified <= who.fileTime) continue; const j = JSON.parse(await f.text()); if (j.userId !== who.userId) continue; who.fileTime = f.lastModified;
-    if (VIEWAS !== who || (j.publishedAt || '') <= (who.at || '') || MODAL || /INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '')) return;
-    const sel = { ...SEL }, dr = DRAWER; who.at = j.publishedAt; S = scopeLook(mgrOverlay(prepForeign(j.data), (j.data || {}).mgrApplied), who.keep); reindex(); who.prev = JSON.stringify(mgrSlice(S)); SEL = sel; if (dr && !S.apps.some(a => a.id === dr.a)) DRAWER = null; render(); return; } } catch (e) { } }, 5000);
+  const busy = () => VIEWAS !== who || MODAL || /INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || ''); let fresh = null, eds = false; who.edT = who.edT || {};
+  for await (const [n, h] of TEAM.handle.entries()) { if (h.kind !== 'file') continue;
+    if (/^pipetree-edits-.+\.json$/.test(n) && !n.endsWith('-' + String(who.scope.me).slice(-4) + '.json')) { const f = await h.getFile(); if (who.edT[n] && f.lastModified <= who.edT[n]) continue; if (busy()) return; who.edT[n] = f.lastModified; try { const j = JSON.parse(await f.text()); if (j.kind === 'pipetree-peer') { TEAM.peerIn = [...(TEAM.peerIn || []).filter(x => x.fromId !== j.fromId), j]; eds = true; } } catch (e) { } continue; }
+    if (!/^pipetree-team-.+\.json$/.test(n)) continue; const f = await h.getFile(); if (who.fileTime && f.lastModified <= who.fileTime) continue; const j = JSON.parse(await f.text()); if (j.userId !== who.userId) continue; if (busy()) return; who.fileTime = f.lastModified; if ((j.publishedAt || '') > (who.at || '')) fresh = j; }
+  if ((!fresh && !eds) || busy()) return; if (fresh) { who.at = fresh.publishedAt; who.raw = fresh.data; } if (!who.raw) return;
+  const sel = { ...SEL }, dr = DRAWER; S = scopeLook(mgrOverlay(peerOverlay(prepForeign(who.raw), who.userId, who.scope.me), (who.raw || {}).mgrApplied), who.keep); reindex(); who.prev = JSON.stringify(mgrSlice(S)); SEL = sel; if (dr && !S.apps.some(a => a.id === dr.a)) DRAWER = null; render(); } catch (e) { } }, 5000);
 
 /* ---------- feedback: everyone can share ideas, problems and what they like; the lead sees it all, sets a status and answers ---------- */
 let FBFROM = 'today', FBD = { type: 'idea', weight: 'help', img: null }, FBF = { type: '', st: '', who: '' };
@@ -4131,7 +4134,7 @@ function pipelineHTML() {
     head = `<div class="ptop">${toggle}${showPath ? crumbsHTML() : ''}</div>
       <div class="phead ph2 glass"><div class="ph-l"><h1 class="ptitle"><button class="rc-open" data-act="rolecard" data-r="${role.id}" title="Open the role card">${role.hot ? '<span title="Urgent role" class="hotm" style="margin-right:6px">' + HOTI + '</span>' : ''}${esc(cl.name)} ${esc(role.title)}</button></h1>
         <div class="ph-line">${[(role.openTo || []).length ? `Sourcers: <b>${role.openTo.map(id => esc(firstName(nameOf(id)))).join(', ')}</b>` : '', hl.healthy ? `${hl.pre} in sourcing` : `<b class="ph-warn">Source ${hl.gap} more</b>`, hl.late ? `${hl.late} in interviews or offer` : '', role.subregion ? esc(role.region) + ' · ' + esc(role.subregion) : ''].filter(Boolean).join('<span class="ph-dot">·</span>')}${roleMini}</div></div>
-        <div class="acts ph-acts"><button class="btn quiet ${role.hot ? 'rs-hot' : role.teamOpen ? 'rs-open' : ''}" data-act="rsopen" data-r="${role.id}" title="Who can work on this role, and the goal">${role.hot ? HOTI + ' Urgent' : role.teamOpen ? 'Open to team' : 'Private'}${(role.openTo || []).length ? ' · ' + role.openTo.length : ''}</button><button class="btn quiet ${hasJD(role) ? '' : 'jd-miss'}" data-act="rolecard" data-r="${role.id}" title="Details, job description, interviewers, who runs it and team access">Role card${hasJD(role) ? '' : ' <span class="jd-dot" title="No job description yet">+ JD</span>'}</button><button class="btn quiet" data-act="rolemore" data-r="${role.id}" title="Ask AI, numbers, matches, careers page, edit role, stages">More ▾</button><button class="btn" data-act="introopen" data-c="${role.clientId}">Introduce</button><button class="btn primary" data-act="addcand" data-r="${role.id}">Add candidate</button></div></div>
+        <div class="acts ph-acts"><button class="btn quiet ${role.hot ? 'rs-hot' : role.teamOpen ? 'rs-open' : ''}" data-act="rsopen" data-r="${role.id}" title="Who can work on this role, and the goal">${role.hot ? HOTI + ' Urgent' : rOpenEff(role) ? 'Open to team' : 'Private'}${(role.openTo || []).length ? ' · ' + role.openTo.length : ''}</button><button class="btn quiet ${hasJD(role) ? '' : 'jd-miss'}" data-act="rolecard" data-r="${role.id}" title="Details, job description, interviewers, who runs it and team access">Role card${hasJD(role) ? '' : ' <span class="jd-dot" title="No job description yet">+ JD</span>'}</button><button class="btn quiet" data-act="rolemore" data-r="${role.id}" title="Ask AI, numbers, matches, careers page, edit role, stages">More ▾</button><button class="btn" data-act="introopen" data-c="${role.clientId}">Introduce</button><button class="btn primary" data-act="addcand" data-r="${role.id}">Add candidate</button></div></div>
       ${!rOn(role) ? `<div class="glass empty" style="margin-bottom:10px;padding:10px 14px">${clientOn(MC.get(role.clientId)) ? `This role is ${role.status}.` : `${esc(MC.get(role.clientId).name)} is inactive.`} Candidates keep their stage, and nothing from it shows on Today.</div>` : ''}`;
   } else {
     const title = SEL.client ? MC.get(SEL.client).name : SEL.sub ? SEL.sub : SEL.region || 'Everything live';
@@ -5080,13 +5083,20 @@ async function initTeam() {
     rebuildMembers();
   } catch (e) { }
 }
+/* colleagues' edits on someone's roles that this person's Nimble hasn't taken in yet (they may be offline): everyone shows them already */
+function peerOverlay(ds, ownerId, skip) { const L = [], done = ds.mgrApplied || {}; for (const f of TEAM.peerIn || []) { if (!f || !f.fromId || f.fromId === ownerId || f.fromId === skip) continue; for (const e of f.edits || []) if (e.memberId === ownerId && e.scope && done[e.id] !== e.v) L.push({ e, from: f.fromId }); }
+  if (!L.length) return ds; const lead = (teamRoster().find(x => x.lead) || {}).id, ord = { clients: -3, roles: -2, accounts: -1, apps: 0, people: 1, tasks: 2 };
+  L.sort((a, b) => (ord[a.e.c] ?? 3) - (ord[b.e.c] ?? 3) || (a.e.at || '').localeCompare(b.e.at || ''));
+  withData(ds, () => { for (const { e, from } of L) { if (e.c === 'settings') continue; const r = MR.get(e.scope); if (!r) continue; const val = e.undone ? e.before : e.after, cur = (S[e.c] || []).find(x => x.id === e.rid) || null;
+    if (!peerMgrOk(e.c, cur, val, from, lead) && !(((r.openTo || []).includes(from) || rOpenEff(r)) && peerOk(e.c, cur, val, from, r))) continue; mgrPut(S, e.c, e.rid, val); if (e.c === 'roles' || e.c === 'clients') reindex(); } });
+  return ds; }
 function rebuildMembers() {
   const me = S ? S.settings.userId : '';
   const map = new Map();
   for (const m of [...TEAM.manual, ...(TEAM.folder || [])]) { if (!m || !m.data || m.userId === me) continue; const prev = map.get(m.userId); if (!prev || (m.publishedAt || '') > (prev.publishedAt || '')) map.set(m.userId, m); }
   const fo = new Map(); for (const m of [...TEAM.manual, ...(TEAM.folder || [])]) if (m && m.folder && !fo.has(m.userId)) fo.set(m.userId, m.folder);
   const gone = new Set(((S && S.settings.removedMembers) || []).map(g => g.id));
-  TEAM.members = [...map.values()].filter(m => !gone.has(m.userId)).map(m => ({ ...m, folder: m.folder || fo.get(m.userId), ds: prepForeign(m.data) })).sort((a, b) => a.member.localeCompare(b.member));
+  TEAM.members = [...map.values()].filter(m => !gone.has(m.userId)).map(m => ({ ...m, folder: m.folder || fo.get(m.userId), ds: peerOverlay(prepForeign(m.data), m.userId) })).sort((a, b) => a.member.localeCompare(b.member));
 }
 /* where this file was opened from: a downloaded copy can't share anything */
 function fileWhere() { let p = ''; try { p = decodeURIComponent(location.pathname || ''); } catch (e) { p = location.pathname || ''; }
@@ -5130,9 +5140,11 @@ async function leaveHub() { await kvSet('teamHub', null); TEAM.hub = null; TEAM.
 async function hubRead() { const out = [], me = myUid();
   for await (const [n, h] of TEAM.hub.entries()) { if (h.kind !== 'file' || !/^pipetree-team-.+\.json$/.test(n)) continue; try { const j = JSON.parse(await (await h.getFile()).text()); if (j.kind === 'pipetree-team' && j.userId && j.userId !== me && j.data) out.push(j); } catch (e) { } }
   const by = new Map(); for (const j of out) { const p = by.get(j.userId); if (!p || (j.publishedAt || '') > (p.publishedAt || '')) by.set(j.userId, j); }
-  return [...by.values()].map(j => ({ member: j.member, userId: j.userId, publishedAt: j.publishedAt, ds: prepForeign(j.data) })); }
+  return [...by.values()].map(j => ({ member: j.member, userId: j.userId, publishedAt: j.publishedAt, ds: peerOverlay(prepForeign(j.data), j.userId) })); }
 /* the same work the lead's Nimble does for everyone, done here for me alone from the copies in the hub */
-function peerShare(base) { const me = myUid(), peers = TEAM.hubPeers || []; base = base || {}; if (!peers.length) return base;
+/* roles I joined: on them at once, without waiting for the role manager's Nimble */
+function myJoins() { const on = new Set(); for (const it of (S.shareOut || []).slice().sort((a, b) => (a.at || '').localeCompare(b.at || ''))) { if (it.type !== 'op' || (it.op !== 'join' && it.op !== 'leave')) continue; const k = it.owner + '|' + it.roleId; if (it.op === 'join') on.add(k); else on.delete(k); } return on; }
+function peerShare(base) { const me = myUid(), peers = TEAM.hubPeers || []; base = base || {}; if (!peers.length) return base; const pj = myJoins();
   const sets = [{ userId: me, member: S.settings.userName || 'Me', ds: S }, ...peers], seen = new Set(sets.map(m => m.userId));
   const cards = [], items = [], done = new Set(), notes = [];
   for (const m of sets) { const run = () => { for (const r of S.roles.filter(rOn)) cards.push(shareRoleCard(r, m.userId)); for (const it of (S.shareOut || [])) items.push({ ...it, from: m.userId }); (S.inboxDone || []).forEach(x => done.add(x)); (S.notices || []).forEach(x => notes.push(x)); };
@@ -5140,7 +5152,7 @@ function peerShare(base) { const me = myUid(), peers = TEAM.hubPeers || []; base
   const byId = l => { const u = new Map(); for (const x of l) if (x && x.id && !u.has(x.id)) u.set(x.id, x); return [...u.values()]; };
   const roster = [...(base.roster || [])]; for (const m of sets) if (!roster.some(x => x.id === m.userId)) roster.push({ id: m.userId, name: m.member });
   return { kind: 'pipetree-shared', ...base, roster,
-    roles: [...cards.filter(c => c.owner !== me && (c.openTo.includes(me) || c.mgrId === me || c.salesId === me)), ...(base.roles || []).filter(c => !seen.has(c.owner))],
+    roles: [...cards.filter(c => c.owner !== me && (c.openTo.includes(me) || c.mgrId === me || c.salesId === me || pj.has(c.owner + '|' + c.roleId))), ...(base.roles || []).filter(c => !seen.has(c.owner))],
     hot: [...cards.filter(c => c.hot), ...(base.hot || []).filter(c => !seen.has(c.owner))],
     all: [...cards.map(liteCard), ...(base.all || []).filter(c => !seen.has(c.owner))],
     inbox: byId([...items.filter(it => it.owner === me && !done.has(it.id)), ...(base.inbox || []).filter(it => !done.has(it.id))]),
@@ -5169,7 +5181,7 @@ async function syncTeam(readAll) {
       if (n === 'pipetree-projects.json') { try { remoteProjects = JSON.parse(await (await h.getFile()).text()).projects || []; } catch (e) { } }
       if (/^pipetree-edits-.+\.json$/.test(n)) { try { const j = JSON.parse(await (await h.getFile()).text()); if (j.kind === 'pipetree-peer') peerIn.push(j); } catch (e) { } }
     }
-    TEAM.folder = folder;
+    TEAM.folder = folder; TEAM.peerIn = peerIn;
     if (remoteProjects) mergeProjects(remoteProjects);
     { let pn = 0; for (const f of peerIn) pn += peerApply(f); if (pn) { save(); setTimeout(() => render(), 0); } }
     if (role !== 'lead' && !TEAM.hub && folder.some(f => f.userId && f.userId !== myUid())) { TEAM.hub = dir; TEAM.hubState = 'on'; TEAM.hubAuto = true; }
@@ -5249,7 +5261,7 @@ function ownerSelect(id, cur, extra) { const ros = rosterAll(), me = realUid(); 
 function shareRoleCard(r, owner, ds) { const c = MC.get(r.clientId) || {}, l = stagesFor(r.id);
   return { owner, ownerName: owner === myUid() ? (S.settings.userName || 'Me') : rosterName(owner), roleId: r.id, title: r.title, client: c.name || '', cpri: c.priority || 'B', region: r.region || '', priority: r.priority || 'B', openTo: r.openTo || [],
     stages: l.filter(x => x.kind !== 'placed').map(x => ({ id: x.id, label: x.label, kind: x.kind })),
-    mgrId: roleMgrId(r), mgrName: nameOf(roleMgrId(r)), salesId: clientOwnerId(c), salesName: nameOf(clientOwnerId(c)), fee: feeOfRole(r), openings: r.openings || 1, hot: r.hot || null, teamOpen: r.hot ? (r.teamOpen || { on: r.hot.on }) : (r.teamOpen || null), helpers: (r.openTo || []).map(id => ({ id, name: nameOf(id), since: (r.openSince || {})[id] || '' })),
+    mgrId: roleMgrId(r), mgrName: nameOf(roleMgrId(r)), salesId: clientOwnerId(c), salesName: nameOf(clientOwnerId(c)), fee: feeOfRole(r), openings: r.openings || 1, hot: r.hot || null, teamOpen: r.hot ? (r.teamOpen || { on: r.hot.on }) : (r.teamOpen || (rOpenEff(r) ? { on: r.created || '' } : null)), priv: !rOpenEff(r), helpers: (r.openTo || []).map(id => ({ id, name: nameOf(id), since: (r.openSince || {})[id] || '' })),
     goal: r.goal && r.goal.n ? r.goal : null, info: { location: [r.subregion, r.location].filter(Boolean).join(', '), salary: r.salary || '', jd: String(r.jdText || '').slice(0, 1800), notes: String(r.notes || '').slice(0, 800), created: r.created || '', status: r.status },
     apps: S.apps.filter(a => a.roleId === r.id && ['active', 'toreject', 'placed'].includes(a.outcome)).map(a => ({ id: a.id, n: personOf(a).name, t: personOf(a).title || '', e: personOf(a).employer || '', li: personOf(a).linkedin || '', stId: a.stage, st: stageOf(a).label, k: stageOf(a).kind, o: a.outcome, by: a.addedBy || '', byId: a.addedById || '', ownerId: candOwnerId(a), ownerName: candOwnerName(a), since: a.since || '', ni: a.nextInterview || '', nt: a.nextTime || '',
       sid: a.shareId || '', tasks: openTasks(a).map(t => ({ text: t.text, due: t.due || '' })), log: (a.log || []).slice(0, 4).map(g => ({ d: g.date, t: g.text })), c: a.created || a.since || '', la: ((a.log || [])[0] || {}).date || a.since || '', ds: Object.keys(a.dates || {}), dd: a.dates || {}, asg: !!(a.cOwnerId && a.cOwnerId !== (a.addedById || homeId())),
@@ -5293,7 +5305,7 @@ function applyOp(it) { if (it.op === 'done') { S.inNotes = S.inNotes || []; S.in
   const r = MR.get(it.roleId), a = r && S.apps.find(x => (x.id === it.appId || (x.shareId && x.shareId === it.appId)) && x.roleId === r.id); if (!r) return; const by = it.byId, leadId = (((TEAM.shared || {}).roster || []).find(x => x.lead) || {}).id, mgr = roleMgrId(r) === by || clientOwnerId(MC.get(r.clientId)) === by || (!!leadId && by === leadId);
   ACTOR = by; try {
     if (it.op === 'join' || it.op === 'leave') { r.openTo = r.openTo || []; const on = r.openTo.includes(by);
-      if (it.op === 'join' && !on && !(r.teamOpen || r.hot) && !mgr) { pushNotice(by, { id: '', roleId: r.id, personId: '' }, `${r.title} is no longer open to the team, so you weren't added. Ask ${firstName(nameOf(roleMgrId(r)))} to add you`, null, 'denied'); }
+      if (it.op === 'join' && !on && !rOpenEff(r) && !mgr) { pushNotice(by, { id: '', roleId: r.id, personId: '' }, `${r.title} is no longer open to the team, so you weren't added. Ask ${firstName(nameOf(roleMgrId(r)))} to add you`, null, 'denied'); }
       else if (it.op === 'join' && !on) { r.openTo.push(by); (r.openSince = r.openSince || {})[by] = TODAY; roleNotify(r, by, `${it.by} joined ${r.title} at ${(MC.get(r.clientId) || {}).name || ''} as sourcer`, 'joined'); }
       if (it.op === 'leave' && on) { r.openTo = r.openTo.filter(x => x !== by); roleNotify(r, by, `${it.by} stopped sourcing for ${r.title} at ${(MC.get(r.clientId) || {}).name || ''}`, 'left'); } }
     else if (it.op === 'hot' && mgr) { if (it.why) r.hot = { why: it.why, on: r.hot ? r.hot.on : TODAY, byId: by, by: it.by }; else delete r.hot; }
@@ -5392,8 +5404,8 @@ let TRF = { f: 'urgent', who: 'all', q: '' }, MBCONF = null;
 /* urgent first, then the client's grade, then the role's grade (A, B, C), then client and role name */
 const teamSort = (x, y) => (!!y.hot - !!x.hot) || (x.cpri || 'B').localeCompare(y.cpri || 'B') || (x.priority || 'B').localeCompare(y.priority || 'B') || (x.client || '').localeCompare(y.client || '') || (x.title || '').localeCompare(y.title || '');
 function teamrolesHTML() { const me = myUid(), all = teamRolesAll(), pend = new Set((S.shareOut || []).filter(it => it.type === 'op' && (it.op === 'join' || it.op === 'leave') && !it.arrived).map(it => it.op + '|' + it.owner + '|' + it.roleId));
-  const q = TRF.q.trim().toLowerCase(), isMine = c => c.owner === me, helps = c => c.helpers.some(h => h.id === me) || (c.openTo || []).includes(me);
-  const open = all.filter(c => c.hot || c.teamOpen), urgent = open.filter(c => c.hot);
+  const q = TRF.q.trim().toLowerCase(), isMine = c => c.owner === me, pj = myJoins(), helps = c => c.helpers.some(h => h.id === me) || (c.openTo || []).includes(me) || pj.has(c.owner + '|' + c.roleId);
+  const open = all.filter(c => c.hot || c.teamOpen || (teamAllOn() && c.priv === false)), urgent = open.filter(c => c.hot);
   const L = (TRF.f === 'urgent' ? urgent : open).filter(c => (TRF.who === 'all' || !isMine(c)) && (!q || `${c.client} ${c.title} ${c.region} ${c.ownerName} ${c.mgrName}`.toLowerCase().includes(q)))
     .sort(teamSort);
   const chip = (k, v, l) => `<button class="${TRF[k] === v ? 'on' : ''}" data-act="trf" data-k="${k}" data-v="${v}">${l}</button>`;
@@ -5406,7 +5418,7 @@ function teamrolesHTML() { const me = myUid(), all = teamRolesAll(), pend = new 
     <div class="mk-k"><span><b>${c.cnt.pre}</b> in sourcing</span><span><b>${c.cnt.client}</b> with client</span><span><b>${c.cnt.iv}</b> interviews</span><span><b>${c.cnt.offer}</b> offer</span></div>
     <div class="small muted">On it: ${c.helpers.length ? esc(c.helpers.map(h => h.id === me ? 'you' : /^a (colleague|team member)$/.test(h.name || '') ? 'a colleague' : firstName(h.name)).join(', ')) : 'nobody yet'}</div>
     <div class="acts" style="justify-content:flex-start;margin-top:6px">${act(c)}</div></section>`;
-  const priv = S.roles.filter(r => rOn(r) && !r.teamOpen && !r.hot && canHot(r)).sort((x, y) => (x.priority || 'B').localeCompare(y.priority || 'B'));
+  const priv = S.roles.filter(r => rOn(r) && !rOpenEff(r) && canHot(r)).sort((x, y) => (x.priority || 'B').localeCompare(y.priority || 'B'));
   const none = TEAM.state !== 'on' && !isLead() ? 'Connect your team folder (Team → Settings) to see the roles of your team.' : TRF.f === 'urgent' ? `No urgent roles right now.${open.length ? ' See All open roles.' : ''}` : 'No roles are open to the team yet. Open one of yours below, or ask a role manager to.';
   return `<div class="head"><div><h1>Marketplace</h1><div class="sub">Roles that role managers opened to the team. Join one and it shows up in your pipeline and under Working together; the role manager is told.</div></div></div>
     <div class="tr-bar"><div class="segc">${chip('f', 'urgent', `${HOTI} Urgent roles <b>${urgent.length}</b>`)}${chip('f', 'all', `All open roles <b>${open.length}</b>`)}</div><div class="segc">${chip('who', 'all', 'Everyone')}${chip('who', 'others', 'Colleagues only')}</div><input class="inp" id="trq" placeholder="Search client, role, country or person" value="${esc(TRF.q)}"></div>
@@ -5558,7 +5570,10 @@ function shareAddHTML(m) { const c = (teamShared().roles || []).find(x => x.owne
     <label class="field wide">Note for ${esc(firstName(c.ownerName))}<input id="sa_note" placeholder="e.g. Spoke today, open to move, notice 1 month"></label></div>
     <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="sharesave" data-o="${esc(c.owner)}" data-r="${esc(c.roleId)}">Add candidate</button></div>`; }
 /* team access for one role: private, open to the team, or urgent; plus people you add yourself */
-const roleAccess = r => r.hot ? 'urgent' : r.teamOpen ? 'open' : 'private';
+/* The team works on every role by default, also when the role manager's Nimble is closed. A role is only private when someone made it private on purpose. */
+const teamAllOn = () => !S || !S.settings || S.settings.openTeam !== false;
+const rOpenEff = r => !!r && !!(r.hot || r.teamOpen || (teamAllOn() && !r.priv));
+const roleAccess = r => r.hot ? 'urgent' : rOpenEff(r) ? 'open' : 'private';
 const accessLabel = r => ({ urgent: 'Urgent, open to the team', open: 'Open to the team', private: (r.openTo || []).length ? `Private, ${r.openTo.length} sourcing` : 'Private' })[roleAccess(r)];
 /* ---------- the role card: everything about one role in one place ---------- */
 function roleInterviewers(r) { const seen = new Map(); for (const a of S.apps.filter(x => x.roleId === r.id)) for (const w of (a.nextWith || [])) { const k = (w.name || '').trim().toLowerCase(); if (k && !seen.has(k)) seen.set(k, w); } return [...seen.values()]; }
@@ -5750,7 +5765,7 @@ function peerMgrOk(c, cur, val, from, lead) { if (from && from === lead) return 
 function peerApply(f) { if (VIEWAS || !f || f.kind !== 'pipetree-peer') return 0; const me = myUid(), from = f.fromId, L = (f.edits || []).filter(e => e.memberId === me && e.scope); if (!L.length || from === me) return 0;
   S.mgrApplied = S.mgrApplied || {}; const lead = (teamRoster().find(x => x.lead) || {}).id, ord = { clients: -3, roles: -2, accounts: -1, apps: 0, people: 1, tasks: 2 }; let n = 0;
   for (const e of L.sort((a, b) => (ord[a.c] ?? 3) - (ord[b.c] ?? 3) || (a.at || '').localeCompare(b.at || ''))) { if (S.mgrApplied[e.id] === e.v) continue; S.mgrApplied[e.id] = e.v; const r = MR.get(e.scope); if (!r) continue;
-    const helper = (r.openTo || []).includes(from) || r.teamOpen || r.hot;
+    const helper = (r.openTo || []).includes(from) || rOpenEff(r);
     const val = e.undone ? e.before : e.after, cur = e.c === 'settings' ? null : (S[e.c] || []).find(x => x.id === e.rid) || null;
     if (!peerMgrOk(e.c, cur, val, from, lead) && !(helper && peerOk(e.c, cur, val, from, r))) continue;
     mgrPut(S, e.c, e.rid, val); n++; if (['roles', 'clients'].includes(e.c)) reindex(); }
@@ -5810,7 +5825,7 @@ async function leadPublish(dir) {
     } catch (e) { TEAM.push = TEAM.push || {}; TEAM.push[fo] = { ok: false, at: new Date().toISOString(), err: String((e && (e.name + ': ' + e.message)) || e) }; console.error('publish to', fo, e); } }
 }
 /* settings the team lead sets for everyone: message templates, quick tasks, automatic task rules, stages */
-const TEAM_KEYS = ['tpl', 'taskPresets', 'bdTaskPresets', 'autoTasks', 'autoRepeat', 'defaultStages', 'bdStages', 'services', 'orgName'];
+const TEAM_KEYS = ['openTeam', 'tpl', 'taskPresets', 'bdTaskPresets', 'autoTasks', 'autoRepeat', 'defaultStages', 'bdStages', 'services', 'orgName'];
 function applyTeamSettings(f) { if (!f || !f.settings || (S.settings.teamSetFrom || '') >= (f.at || '') && S.settings.teamSetFrom) return; for (const k of TEAM_KEYS) if (f.settings[k] !== undefined) S.settings[k] = f.settings[k]; S.settings.teamSetFrom = f.at || new Date().toISOString(); }
 /* a team member's Nimble reloads itself when the team lead has a newer version */
 function checkVersion(f) { if (WEB) { TEAM.newVer = null; return; } if (!f || !f.v || !APP_V || f.v === APP_V) { TEAM.newVer = null; return; } TEAM.newVer = f; safetyCopy('before-update');
@@ -6215,8 +6230,9 @@ function teamSettingsHTML0() {
   const role = S.settings.teamRole || '';
   const terms = role === 'lead' ? `<section class="glass tm-tcard"><div><b>Beta terms for team members</b><div class="small muted">Everyone who joins your team agrees to a short confidentiality agreement about Nimble itself before they start (version ${TERMS_V}). Their work data stays the company's. You see who accepted on Team members.</div></div><div class="acts"><button class="btn sm" data-act="termsview">Read the terms</button><button class="btn sm quiet" data-act="termsdl">Download</button>${TEAM.members.filter(m => (((m.data || {}).settings || {}).termsOk || {}).v === TERMS_V).map(m => `<button class="btn sm quiet" data-act="termsdl" data-u="${esc(m.userId)}" title="Download ${esc(m.member)}'s accepted copy">${esc(firstName(m.member))} ✓</button>`).join('')}</div></section>` : role === 'member' && S.settings.termsOk ? `<section class="glass tm-tcard"><div><b>Nimble beta terms</b><div class="small muted">You accepted these on ${fmtDate(S.settings.termsOk.at)}.</div></div><div class="acts"><button class="btn sm" data-act="termsdl">Download a copy</button></div></section>` : '';
   const sp = splitPct(), split = role === 'lead' ? `<section class="glass tm-tcard"><div><b>How revenue is split per placement</b><div class="small muted">Used for everyone's revenue and targets. Client owner gets the sales part, the role manager the account management part, the candidate owner the candidate part. One person can earn several parts.</div></div><div class="acts">${[['sales', 'Sales (client owner)'], ['am', 'Account management (role manager)'], ['cand', 'Candidate owner']].map(([k, l]) => `<label class="small" style="display:flex;gap:6px;align-items:center">${l} <input class="inp sm num" type="number" min="0" max="100" style="width:64px" value="${sp[k]}" data-act-change="splitset" data-k="${k}">%</label>`).join('')}${sp.sales + sp.am + sp.cand !== 100 ? `<span class="small" style="color:var(--hot)">Adds up to ${sp.sales + sp.am + sp.cand}%</span>` : ''}</div></section>` : '';
+  const openSw = role === 'lead' ? `<section class="glass tm-tcard"><div><b>Everyone works on every role</b><div class="small muted">On: every team member can open and work on every role straight away, also when the role manager is offline, on holiday or out for the day. Their work shows for the whole team at once. A role manager can still make a single role private in its role card.</div></div><div class="acts"><label class="check"><input type="checkbox" data-act-change="openteam" ${teamAllOn() ? 'checked' : ''}> ${teamAllOn() ? 'On' : 'Off'}</label></div></section>` : '';
   return `<div class="head"><div><h1>Team setup</h1><div class="sub">Your team folder, who is in it and how the team works together.</div></div>
-    <div class="acts">${!WEB && role === 'lead' && ((S.settings.invites || []).length || TEAM.members.length) && TEAM.state === 'on' ? `<button class="btn" data-act="tifile" title="Writes your current Nimble version into every team member's folder. Their data stays.">Update everyone's Nimble file</button>` : ''}${role === 'lead' ? '<button class="btn primary" data-act="teaminvite">Add team member</button>' : ''}</div></div>` + ''+ teamSetupHTML() + split + terms + (role !== 'lead' ? `<section class="glass tm-tcard"><div><b>Start empty</b><div class="small muted">Clears everything in this Nimble (candidates, clients, BD, tasks). Your name and team folder stay. Use it once if test or old data ended up in here.</div></div><button class="btn sm quiet" style="color:var(--bad,#D9534F)" data-act="startempty">Start empty</button></section>` : '');
+    <div class="acts">${!WEB && role === 'lead' && ((S.settings.invites || []).length || TEAM.members.length) && TEAM.state === 'on' ? `<button class="btn" data-act="tifile" title="Writes your current Nimble version into every team member's folder. Their data stays.">Update everyone's Nimble file</button>` : ''}${role === 'lead' ? '<button class="btn primary" data-act="teaminvite">Add team member</button>' : ''}</div></div>` + ''+ teamSetupHTML() + openSw + split + terms + (role !== 'lead' ? `<section class="glass tm-tcard"><div><b>Start empty</b><div class="small muted">Clears everything in this Nimble (candidates, clients, BD, tasks). Your name and team folder stay. Use it once if test or old data ended up in here.</div></div><button class="btn sm quiet" style="color:var(--bad,#D9534F)" data-act="startempty">Start empty</button></section>` : '');
 }
 function hubHTML(role) { if (!FS_OK || !role) return '';
   if (role === 'lead') { if (TEAM.state !== 'on') return ''; const dirs = (TEAM.dirs || []).filter(d => !/^(backups|safety)$/i.test(d)), seenIn = d => (TEAM.folder || []).filter(f => f.folder && (f.folder === d || f.folder.startsWith(d + '/')));
@@ -7854,7 +7870,7 @@ const ACT = {
     downloadFile(`Nimble candidates ${TODAY}.csv`, '\ufeff' + [head.map(q).join(','), ...lines].join('\r\n'), 'text/csv'); toast(`${rows.length} candidates exported`); },
   bdf: el => { const k = el.dataset.k, v = el.dataset.v; BDF[k] = BDF[k].includes(v) ? BDF[k].filter(x => x !== v) : [...BDF[k], v]; render(); },
   bdfopen: () => { BDF.open = !BDF.open; render(); },
-  bdfclear: () => { BDF = { ...BDF, sector: [], stage: [], heat: [], next: [], market: [] }; render(); },
+  bdfclear: () => { BDF = { ...BDF, sector: [], stage: [], heat: [], next: [], market: [], status: [] }; render(); },
   oppqco: el => { if (document.activeElement) document.activeElement.blur(); bdOpenPanel({ contact: el.dataset.k }); render(); },
   oppqopen: el => { const d = dealById(el.dataset.id); if (!d) return; if (document.activeElement) document.activeElement.blur(); bdOpenPanel({ deal: d.id }); render(); },
   oppqclear: () => { OPPQ = ''; render(); },
@@ -7912,7 +7928,7 @@ const ACT = {
   rcset: el => { const r = MR.get(el.dataset.r); if (!r) return; const k = el.dataset.k, v = el.dataset.v; if (r[k] === v) return; snapshot(); r[k] = v; if (k === 'status') r.pausedSince = v === 'paused' ? TODAY : null; commit(); },
   rolecard: el => { CTX = null; const r = MR.get(el.dataset.r); if (!r) return; MODAL = { kind: 'rolecard', r: r.id }; render(); },
   rcaccess: el => { const r = MR.get(el.dataset.r); if (!r || !canHot(r)) return; const v = el.dataset.v; if (v === 'urgent') { if (r.hot) return; MODAL = { kind: 'roleshare', r: r.id, sel: (r.openTo || []).slice(), mode: 'urgent', back: 'rolecard' }; render(); setTimeout(() => { const i = document.getElementById('rs_why'); i && i.focus(); }, 30); return; }
-    snapshot(); if (v === 'private') { delete r.teamOpen; delete r.hot; } else { r.teamOpen = r.teamOpen || { on: TODAY, byId: myUid() }; delete r.hot; } commit(); scheduleTeam(); toast(v === 'private' ? `${r.title} is private` : `${r.title} is open to the team`, true); },
+    snapshot(); if (v === 'private') { delete r.teamOpen; delete r.hot; r.priv = true; } else { r.teamOpen = r.teamOpen || { on: TODAY, byId: myUid() }; delete r.priv; delete r.hot; } commit(); scheduleTeam(); toast(v === 'private' ? `${r.title} is private` : `${r.title} is open to the team`, true); },
   rcmgr: el => { const r = MR.get(el.dataset.r); if (!r || !canHot(r)) return; const v = el.value, c = MC.get(r.clientId), was = roleMgrId(r); if (v === was) return; snapshot();
     if (v === clientOwnerId(c)) delete r.mgrId; else r.mgrId = v; addLogRole(r); roleNotify(r, myUid(), `${firstName(S.settings.userName || 'Your manager')} made ${v === myUid() ? 'you' : firstName(nameOf(v))} role manager of ${(c || {}).name || ''} ${r.title}`, 'role');
     commit(); scheduleTeam(); toast(`${nameOf(v) === (S.settings.userName || 'Me') ? 'You run' : firstName(nameOf(v)) + ' runs'} ${r.title} now`, true); },
@@ -7921,7 +7937,7 @@ const ACT = {
     if (v && v !== was) { snapshot(); if (v === homeId()) delete c.salesId; else c.salesId = v; const r0 = S.roles.find(r => r.clientId === c.id); if (r0) roleNotify(r0, myUid(), `${firstName(S.settings.userName || 'Your manager')} made ${firstName(nameOf(v))} client manager of ${c.name}`, 'role'); commit(); scheduleTeam(); toast(`${firstName(nameOf(v))} manages ${c.name} now`, true); }
     MODAL = back ? { kind: 'rolecard', r: back } : null; render(); },
   rsopen: el => { CTX = null; const r = MR.get(el.dataset.r); if (!r) return; MODAL = { kind: 'roleshare', r: r.id, sel: (r.openTo || []).slice(), mode: el.dataset.mode || roleAccess(r), back: MODAL && MODAL.kind === 'rolecard' ? MODAL.r : null }; render(); if (TEAM.state === 'on' && !TEAM.members.length) syncTeam(true); },
-  rsquick: el => { CTX = null; const r = MR.get(el.dataset.r); if (!r || !canHot(r)) return; snapshot(); if (el.dataset.v === 'private') { delete r.teamOpen; delete r.hot; } else { r.teamOpen = r.teamOpen || { on: TODAY, byId: myUid() }; delete r.hot; } commit(); scheduleTeam(); toast(el.dataset.v === 'private' ? `${r.title} is private` : `${r.title} is open to the team, in the marketplace`, true); },
+  rsquick: el => { CTX = null; const r = MR.get(el.dataset.r); if (!r || !canHot(r)) return; snapshot(); if (el.dataset.v === 'private') { delete r.teamOpen; delete r.hot; r.priv = true; } else { r.teamOpen = r.teamOpen || { on: TODAY, byId: myUid() }; delete r.priv; delete r.hot; } commit(); scheduleTeam(); toast(el.dataset.v === 'private' ? `${r.title} is private` : `${r.title} is open to the team, in the marketplace`, true); },
   rsgoalclear: () => { if (!MODAL) return; MODAL.gn = ''; MODAL.gby = ''; render(); },
   rsmode: el => { if (!MODAL) return; const w = document.getElementById('rs_why'); if (w) MODAL.why = w.value; const gn = document.getElementById('rs_gn'), gb = document.getElementById('rs_gby'); if (gn) MODAL.gn = gn.value; if (gb) MODAL.gby = gb.value; MODAL.mode = el.dataset.v; render(); if (MODAL.mode === 'urgent') setTimeout(() => { const i = document.getElementById('rs_why'); i && i.focus(); }, 30); },
   rssave: el => { const r = MR.get(el.dataset.r); if (!r || !MODAL) return; const mode = MODAL.mode, why = ((document.getElementById('rs_why') || {}).value || '').trim();
@@ -7930,7 +7946,7 @@ const ACT = {
     if (gn > 0 && !isISO(gby)) { toast('Pick the date for the goal'); return; }
     if (gn > 0) { if (!r.goal || r.goal.n !== gn || r.goal.by !== gby) r.goal = { n: gn, by: gby, from: (r.goal && r.goal.from) || TODAY }; } else delete r.goal;
     r.openTo = (MODAL.sel || []).slice(); r.openTo.forEach(id => { r.openSince = r.openSince || {}; if (!r.openSince[id]) r.openSince[id] = TODAY; }); if (!r.openTo.length) delete r.openTo;
-    if (canHot(r)) { if (mode === 'private') { delete r.teamOpen; delete r.hot; } else { r.teamOpen = r.teamOpen || { on: TODAY, byId: myUid() }; if (mode === 'urgent') r.hot = { why, on: (r.hot && r.hot.on) || TODAY, byId: myUid(), by: S.settings.userName || '' }; else delete r.hot; } }
+    if (canHot(r)) { if (mode === 'private') { delete r.teamOpen; delete r.hot; r.priv = true; } else { r.teamOpen = r.teamOpen || { on: TODAY, byId: myUid() }; delete r.priv; if (mode === 'urgent') r.hot = { why, on: (r.hot && r.hot.on) || TODAY, byId: myUid(), by: S.settings.userName || '' }; else delete r.hot; } }
     MODAL = MODAL.back ? { kind: 'rolecard', r: MODAL.back } : null; commit(); scheduleTeam(); toast(mode === 'urgent' ? `${r.title} is urgent: on top of the marketplace` : mode === 'open' ? `${r.title} is open to the team, in the marketplace` : `${r.title} is private${r.openTo ? ', with ' + r.openTo.map(id => firstName(nameOf(id))).join(', ') : ''}`, true); },
   otpick: el => { if (!MODAL || (MODAL.kind !== 'opento' && MODAL.kind !== 'roleshare')) return; const v = el.dataset.v; MODAL.sel = el.checked ? [...new Set([...(MODAL.sel || []), v])] : (MODAL.sel || []).filter(x => x !== v); },
   otsave: el => { const r = MR.get(el.dataset.r); if (!r || !MODAL) return; snapshot(); r.openTo = (MODAL.sel || []).slice(); r.openTo.forEach(id => { r.openSince = r.openSince || {}; if (!r.openSince[id]) r.openSince[id] = TODAY; }); if (!r.openTo.length) delete r.openTo; addLogRole(r); MODAL = null; commit(); scheduleTeam(); toast(r.openTo ? `${r.title} is open to ${r.openTo.map(rosterName).map(firstName).join(', ')}` : `${r.title} is only yours again`, true); },
@@ -7962,7 +7978,7 @@ const ACT = {
     snapshot(); r.hot = { why, on: (r.hot && r.hot.on) || TODAY, byId: myUid(), by: S.settings.userName || '' }; MODAL = null; commit(); scheduleTeam(); toast(`${r.title} is in the marketplace. The whole team sees it under Team, Marketplace`, true); },
   hotoff: () => { const r = MR.get(MODAL && MODAL.r); if (!r) return; snapshot(); delete r.hot; MODAL = null; commit(); scheduleTeam(); toast(`${r.title} is out of the marketplace`); },
   hotjoin: el => { const c = hotList().find(x => x.owner === el.dataset.o && x.roleId === el.dataset.r); if (!c) return; snapshot(); S.shareOut = S.shareOut || [];
-    S.shareOut.push({ id: uid('sh'), type: 'op', op: 'join', owner: c.owner, roleId: c.roleId, appId: '', by: S.settings.userName || '', byId: myUid(), at: new Date().toISOString(), title: c.title, client: c.client }); commit(); scheduleTeam(); toast(`You source for ${c.title} now. ${firstName(c.mgrName)} gets an update; the role appears in your pipeline after the next team sync`, true); },
+    S.shareOut.push({ id: uid('sh'), type: 'op', op: 'join', owner: c.owner, roleId: c.roleId, appId: '', by: S.settings.userName || '', byId: myUid(), at: new Date().toISOString(), title: c.title, client: c.client }); commit(); scheduleTeam(); scheduleTeam(true); toast(`You work on ${c.title} now. It's in your pipeline; ${firstName(c.mgrName)} is told`, true); },
   hotleave: el => { const c = hotList().find(x => x.owner === el.dataset.o && x.roleId === el.dataset.r); if (!c) return; snapshot(); S.shareOut = S.shareOut || [];
     S.shareOut.push({ id: uid('sh'), type: 'op', op: 'leave', owner: c.owner, roleId: c.roleId, appId: '', by: S.settings.userName || '', byId: myUid(), at: new Date().toISOString(), title: c.title, client: c.client }); commit(); scheduleTeam(); toast(`Stopped sourcing for ${c.title}`); },
   xopen: el => { MODAL = { kind: 'xdetail', k: el.dataset.k, a: el.dataset.a }; render(); },
@@ -8156,10 +8172,10 @@ const ACT = {
   wtreset: () => { delete S.settings.wtOrder; save(); render(); toast('Automatic order again: urgent first, then client and role grade', true); },
   trf: el => { TRF[el.dataset.k] = el.dataset.v; render(); },
   trjoin: el => { const c = teamRolesAll().find(x => x.owner === el.dataset.o && x.roleId === el.dataset.r); if (!c) return; snapshot(); S.shareOut = S.shareOut || [];
-    S.shareOut.push({ id: uid('sh'), type: 'op', op: 'join', owner: c.owner, roleId: c.roleId, appId: '', by: S.settings.userName || '', byId: myUid(), at: new Date().toISOString(), title: c.title, client: c.client }); commit(); scheduleTeam(); toast(`You source for ${c.title} now. ${firstName(c.mgrName || c.ownerName)} is told; the role appears in your pipeline after the next team sync`, true); },
+    S.shareOut.push({ id: uid('sh'), type: 'op', op: 'join', owner: c.owner, roleId: c.roleId, appId: '', by: S.settings.userName || '', byId: myUid(), at: new Date().toISOString(), title: c.title, client: c.client }); commit(); scheduleTeam(); scheduleTeam(true); toast(`You work on ${c.title} now. It's in your pipeline; ${firstName(c.mgrName || c.ownerName)} is told`, true); },
   trleave: el => { const c = teamRolesAll().find(x => x.owner === el.dataset.o && x.roleId === el.dataset.r); if (!c) return; snapshot(); S.shareOut = S.shareOut || [];
     S.shareOut.push({ id: uid('sh'), type: 'op', op: 'leave', owner: c.owner, roleId: c.roleId, appId: '', by: S.settings.userName || '', byId: myUid(), at: new Date().toISOString(), title: c.title, client: c.client }); commit(); scheduleTeam(); toast(`Stopped sourcing for ${c.title}`); },
-  hotoffr: el => { const r = MR.get(el.dataset.r); if (!r) return; snapshot(); delete r.hot; r.teamOpen = r.teamOpen || { on: TODAY, byId: myUid() }; commit(); scheduleTeam(); toast(`${r.title} is no longer urgent; still open to the team`, true); },
+  hotoffr: el => { const r = MR.get(el.dataset.r); if (!r) return; snapshot(); delete r.hot; r.teamOpen = r.teamOpen || { on: TODAY, byId: myUid() }; delete r.priv; commit(); scheduleTeam(); toast(`${r.title} is no longer urgent; still open to the team`, true); },
   mbperson: el => { const x = teamPeopleAll().find(y => y.m && y.m.userId === el.dataset.u); if (x) ACT.teamsel({ dataset: { u: x.key } }); },
   mbcopy: async el => { const i = (S.settings.invites || []).find(x => x.id === el.dataset.i); if (!i || !i.link) return; try { await navigator.clipboard.writeText(i.link); toast(`Link for ${firstName(i.name)} copied. Paste it in Teams or an email`, true); } catch (e) { MODAL = { kind: 'teaminvited', inv: i }; render(); } },
   mbmail: el => { const i = (S.settings.invites || []).find(x => x.id === el.dataset.i); if (i) inviteMail(i); },
@@ -8366,6 +8382,7 @@ const ACT = {
   stup: el => { const i = +el.dataset.i, d = MODAL.draft; [d[i - 1], d[i]] = [d[i], d[i - 1]]; render(); },
   stdown: el => { const i = +el.dataset.i, d = MODAL.draft; [d[i + 1], d[i]] = [d[i], d[i + 1]]; render(); },
   stdel: el => { if (MODAL.draft.length <= 2) { toast('A role needs at least two stages'); return; } MODAL.draft.splice(+el.dataset.i, 1); render(); },
+  openteam: el => { snapshot(); S.settings.openTeam = !!el.checked; S.settings.teamSetAt = new Date().toISOString(); commit(); scheduleTeam(true); toast(el.checked ? 'Everyone in the team can work on every role, also when the role manager is offline' : 'Roles are private again unless a role manager opens them', true); },
   stquick: el => { CTX = null; const r = MR.get(el.dataset.r); if (!r) return; const st = r.stages, after = el.dataset.after || (st[(st.findIndex(s => s.kind === 'offer') + st.length) % st.length - 1] || st[st.length - 1] || {}).id || '_start';
     const ai = st.findIndex(s => s.id === after), nx = st[ai + 1], pv = st[ai]; const kind0 = pv && nx && pv.kind === nx.kind ? pv.kind : (pv && (pv.kind === 'interview' || pv.kind === 'review') ? 'interview' : nx ? nx.kind : pv ? pv.kind : 'source');
     MODAL = { kind: 'stquick', r: r.id, after, kind0 }; render(); setTimeout(() => { const i = document.getElementById('sq_name'); i && i.focus(); }); },
@@ -8460,7 +8477,7 @@ const SECTORS = [
 function guessSector(...texts) { const order = [texts.slice(0, 1).join(' '), texts.join(' ')]; for (const t of order) { if (!t.trim()) continue; for (const [n, re] of SECTORS) if (re.test(t)) return n; } return ''; }
 const sectorOf = a => a.sector || guessSector(a.industry || '', a.about || '', a.specialties || '', a.services || '', a.name || '');
 const sectorList = () => [...new Set([...SECTORS.map(x => x[0]), ...S.accounts.map(a => a.sector).filter(Boolean)])];
-let ACCF = { status: '', q: '', market: '' }; let COF = { q: '', market: '', who: '' };
+let ACCF = { status: '', q: '', market: '' }; let COF = { q: '', market: '', who: '', st: [] };
 const bdStages = () => (S.settings.bdStages && S.settings.bdStages.length ? S.settings.bdStages : BD_STAGES_DEFAULT);
 const services = () => { if (S.settings.services && S.settings.services.join('|') === SERVICES_OLD.join('|')) S.settings.services = SERVICES_DEFAULT.slice(); return S.settings.services && S.settings.services.length ? S.settings.services : SERVICES_DEFAULT; };
 const oneService = () => services().length < 2 && !S.deals.some(d => d.service && d.service !== services()[0]);
@@ -8883,13 +8900,14 @@ function bdTodayHTML() {
 
 /* ---------- Deals board ---------- */
 let OPPQ = '';
-let BDF = { open: false, sector: [], stage: [], heat: [], next: [], market: [] };
-const bdfCount = () => ['sector', 'stage', 'heat', 'next', 'market'].reduce((t, k) => t + BDF[k].length, 0);
+let BDF = { open: false, sector: [], stage: [], heat: [], next: [], market: [], status: [] };
+const bdfCount = () => ['sector', 'stage', 'heat', 'next', 'market', 'status'].reduce((t, k) => t + BDF[k].length, 0);
 function bdfMatch(d) { const a = accById(d.accountId) || {};
   if (BDF.sector.length && !BDF.sector.includes(sectorOf(a) || 'No sector')) return false;
   if (BDF.stage.length && !BDF.stage.includes(d.stage)) return false;
   if (BDF.market.length && !BDF.market.includes(dealMarket(d) || 'No country')) return false;
   if (BDF.heat.length && !BDF.heat.includes(dealMomentum(d).level)) return false;
+  if (BDF.status.length) { const ss = dealStats(d); if (!BDF.status.some(x => ss.has(x))) return false; }
   if (BDF.next.length) { const t = dealNext(d), ok = { over: t && t.due && t.due < TODAY, none: !t, week: t && t.due && t.due >= TODAY && t.due <= addDays(TODAY, 7) }; if (!BDF.next.some(k => ok[k])) return false; }
   return true; }
 function bdfHTML(openDeals) { const n = bdfCount(), chip = (k, v, l, cnt) => `<button class="qchip ${BDF[k].includes(v) ? 'on' : ''}" data-act="bdf" data-k="${k}" data-v="${esc(v)}">${esc(l)}${cnt != null ? ` <small class="cd">${cnt}</small>` : ''}</button>`;
@@ -8902,6 +8920,7 @@ function bdfHTML(openDeals) { const n = bdfCount(), chip = (k, v, l, cnt) => `<b
     ${noSec ? `<div class="small muted" style="margin:-4px 0 8px">${noSec} compan${noSec === 1 ? 'y has' : 'ies have'} no sector yet. <button class="lnk" data-act="secfixopen" data-m="">Sort them</button></div>` : ''}
     ${mks.length > 1 ? grp('Country', mks.map(x => chip('market', x, x, cnt(d => (dealMarket(d) || 'No country') === x))).join('')) : ''}
     ${grp('Stage', bdStages().filter(st => openDeals.some(d => d.stage === st.id)).map(st => chip('stage', st.id, st.label, cnt(d => d.stage === st.id))).join(''))}
+    ${(sts => sts.length ? grp('Status', sts.map(x => chip('status', x, x, cnt(d => dealStats(d).has(x)))).join('')) : '')([...new Set(openDeals.flatMap(d => [...dealStats(d)]))].sort(statOrder))}
     ${grp('Warmth', [['hot', 'Hot'], ['warm', 'In conversation'], ['acc', 'Accepted'], ['cool', 'Cold'], ['quiet', 'Quiet 3+ weeks']].map(([v, l]) => chip('heat', v, l, cnt(d => dealMomentum(d).level === v))).join(''))}
     ${grp('Next step', [['over', 'Overdue'], ['week', 'Due this week'], ['none', 'No next step']].map(([v, l]) => chip('next', v, l)).join(''))}
     <div class="acts" style="margin-top:6px">${n ? '<button class="btn sm quiet" data-act="bdfclear">Clear all</button>' : ''}<button class="btn sm primary" data-act="bdfopen">Done</button></div></div>`; }
@@ -9159,6 +9178,12 @@ function whomHTML(d, w) { const a = accById(d.accountId) || {}, on = new Set(who
 const ICO_PERSON = '<svg viewBox="0 0 16 16" width="11" height="11" aria-hidden="true"><circle cx="8" cy="5" r="3" fill="currentColor"/><path d="M2.5 14c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5" fill="currentColor"/></svg>';
 const coById = (accId, id) => ((accById(accId) || {}).contacts || []).find(c => c.id === id);
 const coTasks = (cid, dealId) => (S.bdTasks || []).filter(t => !t.done && t.coId === cid && (!dealId || t.dealId === dealId)).sort((x, y) => (x.due || '9').localeCompare(y.due || '9'));
+/* a contact's status: the last "what happened" that is one of the standard updates (Connection request sent, Accepted, Replied…) */
+const coStats = () => [...new Set([...CO_UPD, ...Object.values(BD_FLOW).flat().map(x => x[1])])];
+function coStatus(c, dealId) { const set = new Map(coStats().map(x => [x.toLowerCase(), x])); const l = (c.log || []).filter(l => l.type !== 'system' && (!dealId || !l.dealId || l.dealId === dealId) && set.has(String(l.text || '').trim().toLowerCase())).sort((x, y) => (y.date || '').localeCompare(x.date || ''))[0];
+  return l ? { s: set.get(String(l.text).trim().toLowerCase()), date: l.date || '' } : null; }
+const dealStats = d => new Set(dealCosWork(d).map(c => (coStatus(c, d.id) || {}).s).filter(Boolean));
+const statOrder = (x, y) => { const L = coStats(); return L.indexOf(x) - L.indexOf(y); };
 const coLast = (c, dealId) => (c.log || []).filter(l => l.type !== 'system' && (!dealId || !l.dealId || l.dealId === dealId)).sort((x, y) => (y.date || '').localeCompare(x.date || ''))[0];
 /* active vs not-active contacts per opportunity: not active until they accept, or set by dragging */
 function isActiveCo(d, c) { if (isPaused(d, c.id)) return false; const st = (d.coState || {})[c.id]; if (st === 'active') return true; if (st === 'inactive') return false; return contactHeat(c, d).lvl >= 1; }
@@ -9282,17 +9307,21 @@ function coLastTouch(a, c) { const ds = coOpps(a, c); return [...(c.log || []).m
 function contactsHTML() {
   ensureAccounts();
   const q = COF.q.trim().toLowerCase();
-  const list = allContacts().filter(({ a, c }) => (!COF.market || a.market === COF.market) && (COF.who === 'inactive' ? c.inactive : !c.inactive && (!COF.who || (COF.who === 'bd' ? isBD(a) : a.status === 'client'))) && (!q || [c.name, c.title, c.email, a.name, (c.profile || {}).company].join(' ').toLowerCase().includes(q)))
-    .sort((x, y) => (coOpps(y.a, y.c).filter(d => d.outcome === 'open').length - coOpps(x.a, x.c).filter(d => d.outcome === 'open').length) || (x.c.name || '').localeCompare(y.c.name || ''));
+  const base = allContacts().filter(({ a, c }) => (!COF.market || a.market === COF.market) && (COF.who === 'inactive' ? c.inactive : !c.inactive && (!COF.who || (COF.who === 'bd' ? isBD(a) : a.status === 'client'))) && (!q || [c.name, c.title, c.email, a.name, (c.profile || {}).company].join(' ').toLowerCase().includes(q)));
+  const stOf = new Map(base.map(({ c }) => [c, coStatus(c)])), stN = {}; for (const x of stOf.values()) if (x) stN[x.s] = (stN[x.s] || 0) + 1; COF.st = (COF.st || []).filter(x => stN[x]);
+  const stBar = Object.keys(stN).length ? `<div class="tbar co-st"><span class="small muted" style="margin-right:2px">Status</span>${Object.keys(stN).sort(statOrder).map(x => `<button class="qchip ${COF.st.includes(x) ? 'on' : ''}" data-act="cost" data-v="${esc(x)}">${esc(x)} <small class="cd">${stN[x]}</small></button>`).join('')}${COF.st.length ? '<button class="btn sm quiet" data-act="cost" data-v="">Clear</button>' : ''}</div>` : '';
+  const list = base.filter(({ c }) => !COF.st.length || COF.st.includes((stOf.get(c) || {}).s))
+    .sort((x, y) => COF.st.length ? ((stOf.get(x.c) || {}).date || '').localeCompare((stOf.get(y.c) || {}).date || '') || (x.c.name || '').localeCompare(y.c.name || '') : (coOpps(y.a, y.c).filter(d => d.outcome === 'open').length - coOpps(x.a, x.c).filter(d => d.outcome === 'open').length) || (x.c.name || '').localeCompare(y.c.name || ''));
   const seg = (v, l) => `<button class="${COF.who === v ? 'on' : ''}" data-act="cof" data-v="${v}">${l}</button>`;
   return `<div class="thead"><div class="thead-l"><h1>Contacts</h1><div class="sub">Everyone you talk to at prospects and clients. Click a name for their card.</div></div><span style="display:flex;gap:8px"><button class="btn big" data-act="bdbulk" data-w="co">Add in bulk</button><button class="btn primary big" data-act="bdcaopen">Add contact</button></span></div>
     <div class="tbar"><div class="segc">${seg('', 'All')}${seg('bd', 'Prospects')}${seg('client', 'Clients')}${seg('inactive', 'Inactive' + (allContacts().filter(x => x.c.inactive).length ? ' ' + allContacts().filter(x => x.c.inactive).length : ''))}</div>
       <select class="inp" style="width:auto" data-act-change="bdwizcofm"><option value="">All countries</option>${bdMarkets().map(m => `<option ${COF.market === m ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select>
       <span class="cosw"><input id="coq" class="inp" placeholder="Search name, title, company or email" value="${esc(COF.q)}" autocomplete="off" spellcheck="false">${q && list.length ? `<div class="cosugg" role="listbox">${list.slice(0, 6).map(({ a, c }, i) => `<button class="${i === 0 ? 'on' : ''}" data-act="bdco" data-k="${coKey(a, c)}" role="option"><b>${esc(c.name || '?')}</b><span>${esc([c.title || (c.profile || {}).role, a.name].filter(Boolean).join(' · '))}</span></button>`).join('')}${list.length > 6 ? `<div class="small muted" style="padding:4px 10px">${list.length - 6} more below</div>` : ''}</div>` : ''}</span></div>
-    ${list.length ? `<table class="tbl glass acctbl"><thead><tr><th>Name</th><th>Company</th><th>Email</th><th>Phone</th><th>Open opportunities</th><th>Last update</th><th>Next step</th></tr></thead><tbody>
+    ${stBar}${COF.st.length ? `<div class="small muted" style="margin:-6px 0 10px">${list.length} ${list.length === 1 ? 'person' : 'people'} with this status, longest waiting on top. Click a name to update them.</div>` : ''}
+    ${list.length ? `<table class="tbl glass acctbl"><thead><tr><th>Name</th><th>Company</th><th>Email</th><th>Phone</th><th>Open opportunities</th><th>${COF.st.length ? 'Status' : 'Last update'}</th><th>Next step</th></tr></thead><tbody>
       ${list.map(({ a, c }) => { const od = coOpps(a, c).filter(d => d.outcome === 'open'), lt = coLastTouch(a, c); return `<tr class="clickrow" data-act="bdco" data-k="${coKey(a, c)}" data-ctx="bdco" data-id="${coKey(a, c)}"><td><b>${esc(c.name || '?')}</b><div class="ctx">${esc(c.title || (c.profile || {}).role || '')}</div></td>
         <td>${esc(a.name)}<div class="ctx">${esc(a.market || '')}${a.status === 'client' ? ' · client' : ''}</div></td><td>${c.email ? esc(c.email) : '<span class="muted">–</span>'}</td><td>${c.phone ? esc(c.phone) : '<span class="muted">–</span>'}</td>
-        <td>${od.length ? od.map(d => esc(dealStage(d).label)).join(', ') : '<span class="muted">none</span>'}</td><td>${(l => l ? `${esc(ltx(l))}<div class="ctx">${fmtDate(l.date)}</div>` : lt ? fmtDate(lt) : '<span class="muted">–</span>')(coLast(c))}</td><td>${(t => t ? `${esc(ttx(t))}<div style="margin-top:3px">${duePill(t.due)}</div>` : '<span class="muted">–</span>')(coTasks(c.id)[0])}</td></tr>`; }).join('')}</tbody></table>` : '<div class="glass empty">No contacts yet. Add them on an opportunity or company, or from a LinkedIn PDF.</div>'}`;
+        <td>${od.length ? od.map(d => esc(dealStage(d).label)).join(', ') : '<span class="muted">none</span>'}</td><td>${COF.st.length ? (x => x ? `${esc(x.s)}<div class="ctx">${fmtDate(x.date)}${x.date ? ` · ${(d => d <= 0 ? 'today' : d + ' day' + (d === 1 ? '' : 's') + ' ago')(daysBetween(x.date, TODAY))}` : ''}</div>` : '–')(stOf.get(c)) : (l => l ? `${esc(ltx(l))}<div class="ctx">${fmtDate(l.date)}</div>` : lt ? fmtDate(lt) : '<span class="muted">–</span>')(coLast(c))}</td><td>${(t => t ? `${esc(ttx(t))}<div style="margin-top:3px">${duePill(t.due)}</div>` : '<span class="muted">–</span>')(coTasks(c.id)[0])}</td></tr>`; }).join('')}</tbody></table>` : '<div class="glass empty">No contacts yet. Add them on an opportunity or company, or from a LinkedIn PDF.</div>'}`;
 }
 /* where a contact worked before: kept on the contact, so the relationship survives a move */
 function coPast(c) { const p = [...(c.past || [])]; for (const l of c.log || []) { const m = /^Moved from (.+) to (.+)$/.exec(l.text || ''); if (m && l.type === 'system' && !p.some(x => x.acc === m[1] && x.until === l.date)) p.push({ acc: m[1], until: l.date }); } return p.sort((x, y) => (y.until || '').localeCompare(x.until || '')); }
@@ -9701,6 +9730,7 @@ const BD_ACT = {
   conote: el => { const [aid, cid] = el.dataset.k.split(':'), a = accById(aid), c = a && a.contacts.find(x => x.id === cid), i = document.getElementById('cn_' + cid), tx = i && i.value.trim(); if (!c || !tx) return; snapshot(); c.log = c.log || []; c.log.unshift({ id: uid('l'), date: TODAY, type: 'note', text: tx }); commit(); toast('Note saved', true); },
   cof: el => { COF.who = el.dataset.v; render(); },
   bdwizcofm: el => { COF.market = el.value; render(); },
+  cost: el => { const v = el.dataset.v; COF.st = !v ? [] : (COF.st || []).includes(v) ? COF.st.filter(x => x !== v) : [...(COF.st || []), v]; render(); },
   copyco: el => { copyText(el.dataset.v); toast('Copied: ' + el.dataset.v); },
   accmove: el => { const a = accById(el.dataset.id); if (!a) return; snapshot(); moveAccount(a, el.dataset.m); if (BDSEL.acc === a.id) BDSEL.market = el.dataset.m; commit(); toast(`${a.name} moved to ${el.dataset.m}`, true); },
   accmovenew: el => { MODAL = { kind: 'bdcountry', moveAcc: el.dataset.id }; render(); setTimeout(() => { const i = document.getElementById('nb_country'); i && i.focus(); }); },
@@ -9945,7 +9975,7 @@ document.addEventListener('change', e => {
   if (el.dataset && /^(bdwiz|bdca)/.test(el.dataset.actChange || '') && ACT[el.dataset.actChange]) { ACT[el.dataset.actChange](el); return; }
   if (el.dataset && el.dataset.actChange === 'cudate') { ACT.cudate(el); return; }
   if (el.dataset && el.dataset.actChange === 'aisel' && AIX) { const id = el.dataset.a; AIX.sel = el.checked ? [...new Set([...AIX.sel, id])] : AIX.sel.filter(x => x !== id); render(); return; }
-  if (el.dataset && ['rcmgr', 'cmgrset', 'setcowner', 'rpdate', 'agnote', 'askwname', 'setbdgoal', 'settarget', 'settgtstart', 'revadj', 'quietdays', 'splitset', 'pcset', 'coacc', 'bulkset', 'bulkfile', 'bgf', 'rpsel', 'msgset', 'rfpudate', 'rsset', 'rtadate', 'rfptpset', 'rfpdate', 'carset', 'lockidle', 'rfpset', 'rftset', 'obedit', 'rvlog', 'rvtask', 'bulkmove', 'rnfrom', 'rcdate', 'pldate', 'setsector', 'introsel', 'introto', 'crmset', 'edittaskdate', 'whomset', 'ftdate', 'fbst', 'fbf'].includes(el.dataset.actChange)) { ACT[el.dataset.actChange](el); return; }
+  if (el.dataset && ['openteam', 'rcmgr', 'cmgrset', 'setcowner', 'rpdate', 'agnote', 'askwname', 'setbdgoal', 'settarget', 'settgtstart', 'revadj', 'quietdays', 'splitset', 'pcset', 'coacc', 'bulkset', 'bulkfile', 'bgf', 'rpsel', 'msgset', 'rfpudate', 'rsset', 'rtadate', 'rfptpset', 'rfpdate', 'carset', 'lockidle', 'rfpset', 'rftset', 'obedit', 'rvlog', 'rvtask', 'bulkmove', 'rnfrom', 'rcdate', 'pldate', 'setsector', 'introsel', 'introto', 'crmset', 'edittaskdate', 'whomset', 'ftdate', 'fbst', 'fbf'].includes(el.dataset.actChange)) { ACT[el.dataset.actChange](el); return; }
   if (el.id && el.id.startsWith('cp_dt_') && isISO(el.value)) { el.parentNode.querySelectorAll('.qchip').forEach(b => b.classList.remove('on')); return; }
   if (el.dataset && el.dataset.actChange === 'cosel') { const d = dealById(el.dataset.d); if (!d) return; const keep = ['u', 'n'].map(k => (document.getElementById(`cu_${k}_${d.id}`) || {}).value || ''); const cur = coSel(d); COSEL[d.id] = el.checked ? [...new Set([...cur, el.dataset.c])] : cur.filter(x => x !== el.dataset.c); render(); ['u', 'n'].forEach((k, n) => { const i = document.getElementById(`cu_${k}_${d.id}`); if (i) i.value = keep[n]; }); return; }
   if (el.dataset && el.dataset.actChange === 'dealcopick' && el.value) { const d = dealById(el.dataset.d), c = d && (accById(d.accountId).contacts || []).find(x => x.id === el.value); if (d && c) { snapshot(); dealCoAdd(d, c.id); bdLog(d, 'system', `Contact added: ${c.name}`); commit(); toast(`${c.name} added to this opportunity`, true); } return; }
