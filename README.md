@@ -6,4 +6,4 @@ browser and OneDrive folder.
 
 Open the app: https://marnixjilderda-nimble.github.io/nimble/
 
-Copyright (c) 2026 Marnix Jilderda. All rights reserved. See LICENSE.
+Copyright (c) 2026 Marnix Jilderda. All rights reserved. See LICENSE and AUTHORSHIP.md.
