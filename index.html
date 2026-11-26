@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-YLMdtfQWFcn7CcPM2YhZpWYqARmRSylE7h9osTNuas8=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-m0l2jJOww2WWJw1CWF21wzuFEmIUZ8jGDgEobuQEg3k=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://api.apollo.io https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -2022,6 +2022,9 @@ select.inp:hover,.field select:hover{border-color:color-mix(in srgb,var(--ink) 2
 .csec{font-size:11px;font-weight:650;color:var(--muted);margin:8px 2px 4px;display:flex;gap:6px;align-items:center}.csec:first-of-type{margin-top:2px}.csec b{font-variant-numeric:tabular-nums}.csec-sched{color:var(--cl)}
 .ib-body{min-height:340px;resize:vertical;line-height:1.5;font-size:13.5px}
 .ib-claude{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0 4px;grid-column:1/-1;padding:10px 12px;border:1px dashed color-mix(in srgb,var(--ink) 22%,var(--line));border-radius:12px}.ib-claude .small{flex:1 1 280px}
+.co-bulk{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px 14px;border-radius:12px;margin:-4px 0 12px}.acctbl tr.co-on td{background:color-mix(in srgb,var(--ink) 7%,transparent)}
+.apo-seq{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0}.apo-l{display:grid;gap:4px;max-height:320px;overflow:auto;border-top:1px solid var(--line);padding-top:8px}
+.apo-r{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) 110px 110px;gap:10px;align-items:center;font-size:13px}.apo-r select{width:100%}.st-ok{color:var(--win)}.st-err,.st-noemail{color:var(--urgent)}
 </style>
 <div id="wall"></div>
 <div id="app"></div>
@@ -2044,7 +2047,7 @@ select.inp:hover,.field select:hover{border-color:color-mix(in srgb,var(--ink) 2
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:0a4ad7474f*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:5987aa13ea*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -7126,6 +7129,7 @@ function modalHTML() {
       <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="hoksave">Mark healthy</button></div>`;
   } else if (m.kind === 'donenext') { const a = appById(m.a); if (!a) { MODAL = null; return ''; } wide = 'wide';
     inner = `<h3>${m.stage ? esc(personOf(a).name) + ': ' + esc(m.t) : 'Done: ' + esc(m.t)}</h3><p class="small muted" style="margin-top:-6px">${m.stage ? esc(roleName(a)) + '. What happened, and what\'s next?' : esc(personOf(a).name) + ' · ' + esc(roleName(a)) + ' · ' + esc(stageOf(a).label) + '. Anything to add, and what\'s next?'}</p>${recUpdHTML(a, 'rm')}<div class="acts" style="margin-top:10px"><button class="btn quiet" data-act="donenone" data-a="${a.id}">Skip</button></div>`;
+  } else if (m.kind === 'apollo') { wide = 'wide'; inner = apolloHTML(m);
   } else if (m.kind === 'offerseat') { const a = appById(m.a), si = a && seatInfo(a); if (!si) { MODAL = null; return ''; } const fn = esc(firstName(personOf(a).name)), others = si.offers.filter(x => x.id !== a.id), more = m.more ?? (si.more ? null : false);
     inner = `<h3>${fn} goes to offer</h3><p class="small muted" style="margin-top:-6px">${esc(roleName(a))} · ${si.left === 1 ? 'one open position' : si.left + ' open positions'}${si.placed ? `, ${si.placed} already filled` : ''}.</p>
       ${si.more ? `<div class="iv-step"><div class="ib-sh"><span class="u3-n">1</span>${others.map(x => esc(firstName(personOf(x).name))).join(' and ')} ${others.length > 1 ? 'are' : 'is'} already on offer. Did the client open another position?</div>
@@ -8754,7 +8758,7 @@ const SECTORS = [
 function guessSector(...texts) { const order = [texts.slice(0, 1).join(' '), texts.join(' ')]; for (const t of order) { if (!t.trim()) continue; for (const [n, re] of SECTORS) if (re.test(t)) return n; } return ''; }
 const sectorOf = a => a.sector || guessSector(a.industry || '', a.about || '', a.specialties || '', a.services || '', a.name || '');
 const sectorList = () => [...new Set([...SECTORS.map(x => x[0]), ...S.accounts.map(a => a.sector).filter(Boolean)])];
-let ACCF = { status: '', q: '', market: '' }; let COF = { q: '', market: '', who: '', st: [] };
+let ACCF = { status: '', q: '', market: '' }; let COF = { q: '', market: '', who: '', st: [], sel: false, ids: [] };
 const bdStages = () => (S.settings.bdStages && S.settings.bdStages.length ? S.settings.bdStages : BD_STAGES_DEFAULT);
 const services = () => { if (S.settings.services && S.settings.services.join('|') === SERVICES_OLD.join('|')) S.settings.services = SERVICES_DEFAULT.slice(); return S.settings.services && S.settings.services.length ? S.settings.services : SERVICES_DEFAULT; };
 const oneService = () => services().length < 2 && !S.deals.some(d => d.service && d.service !== services()[0]);
@@ -9383,7 +9387,7 @@ function outreachSince(c, d) { const ls = (c.log || []).filter(l => l.type === '
 /* What happened → what is next. Grouped choices; the next step follows from what happened (2-3 options, first one preselected with its date). */
 const CO_GROUPS = [
   ['LinkedIn', [['Request sent', 'Connection request sent'], ['Accepted', 'Connection request accepted'], ['Not accepted', 'Connection request not accepted']]],
-  ['Reached out', [['Message sent', 'LinkedIn message sent'], ['Voicemail', 'Called, left a voicemail']]],
+  ['Reached out', [['Message sent', 'LinkedIn message sent'], ['Email sequence', 'Added to an email sequence'], ['Voicemail', 'Called, left a voicemail']]],
   ['Their reaction', [['Replied', 'They replied'], ['Spoke', 'Spoke'], ['Wants to meet', 'Interested, wants to meet'], ['Referred me on', 'Referred me to someone else'], ['Not interested', 'Not interested'], ['No response', 'No response']]],
   ['Meeting', [['Scheduled', 'Meeting booked'], ['Held', 'Meeting held']]]];
 const CO_UPD = CO_GROUPS.flatMap(g => g[1].map(x => x[1]));
@@ -9588,27 +9592,76 @@ function bulkHTML(m) { const what = m.w, cols = BULK_COLS[what], rows = bulkPars
     <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="bulksave" ${nNew ? '' : 'disabled'}>Add ${nNew ? nNew + ' ' : ''}${what === 'acc' ? (nNew === 1 ? 'company' : 'companies') : (nNew === 1 ? 'contact' : 'contacts')}</button></div>`; }
 const coOpps = (a, c) => S.deals.filter(d => d.accountId === a.id && dealCoIds(d).includes(c.id));
 function coLastTouch(a, c) { const ds = coOpps(a, c); return [...(c.log || []).map(l => l.date), ...ds.flatMap(d => (d.log || []).filter(l => l.type !== 'system').map(l => l.date))].filter(isISO).sort().pop() || ''; }
+const NOTYET = 'Not approached yet';
+const apoKey = () => { try { return localStorage.getItem('nimble.apolloKey') || ''; } catch (e) { return ''; } };
 function contactsHTML() {
   ensureAccounts();
   const q = COF.q.trim().toLowerCase();
   const base = allContacts().filter(({ a, c }) => (!COF.market || a.market === COF.market) && (COF.who === 'inactive' ? c.inactive : !c.inactive && (!COF.who || (COF.who === 'bd' ? isBD(a) : a.status === 'client'))) && (!q || [c.name, c.title, c.email, a.name, (c.profile || {}).company].join(' ').toLowerCase().includes(q)));
-  const stOf = new Map(base.map(({ c }) => [c, coStatus(c)])), stN = {}; for (const x of stOf.values()) if (x) stN[x.s] = (stN[x.s] || 0) + 1; COF.st = (COF.st || []).filter(x => stN[x]);
-  const stBar = Object.keys(stN).length ? `<div class="tbar co-st"><span class="small muted" style="margin-right:2px">Status</span>${Object.keys(stN).sort(statOrder).map(x => `<button class="qchip ${COF.st.includes(x) ? 'on' : ''}" data-act="cost" data-v="${esc(x)}">${esc(x)} <small class="cd">${stN[x]}</small></button>`).join('')}${COF.st.length ? '<button class="btn sm quiet" data-act="cost" data-v="">Clear</button>' : ''}</div>` : '';
-  const list = base.filter(({ c }) => !COF.st.length || COF.st.includes((stOf.get(c) || {}).s))
+  const stOf = new Map(base.map(({ c }) => [c, coStatus(c)])), stN = {}; for (const x of stOf.values()) stN[x ? x.s : NOTYET] = (stN[x ? x.s : NOTYET] || 0) + 1; COF.st = (COF.st || []).filter(x => stN[x]);
+  const stBar = Object.keys(stN).length ? `<div class="tbar co-st"><span class="small muted" style="margin-right:2px">Status</span>${Object.keys(stN).sort((x, y) => x === NOTYET ? -1 : y === NOTYET ? 1 : statOrder(x, y)).map(x => `<button class="qchip ${COF.st.includes(x) ? 'on' : ''}" data-act="cost" data-v="${esc(x)}">${esc(x)} <small class="cd">${stN[x]}</small></button>`).join('')}${COF.st.length ? '<button class="btn sm quiet" data-act="cost" data-v="">Clear</button>' : ''}</div>` : '';
+  const list = base.filter(({ c }) => !COF.st.length || COF.st.includes((stOf.get(c) || { s: NOTYET }).s))
     .sort((x, y) => COF.st.length ? ((stOf.get(x.c) || {}).date || '').localeCompare((stOf.get(y.c) || {}).date || '') || (x.c.name || '').localeCompare(y.c.name || '') : (coOpps(y.a, y.c).filter(d => d.outcome === 'open').length - coOpps(x.a, x.c).filter(d => d.outcome === 'open').length) || (x.c.name || '').localeCompare(y.c.name || ''));
   const seg = (v, l) => `<button class="${COF.who === v ? 'on' : ''}" data-act="cof" data-v="${v}">${l}</button>`;
-  return `<div class="thead"><div class="thead-l"><h1>Contacts</h1><div class="sub">Everyone you talk to at prospects and clients. Click a name for their card.</div></div><span style="display:flex;gap:8px"><button class="btn big" data-act="bdbulk" data-w="co">Add in bulk</button><button class="btn primary big" data-act="bdcaopen">Add contact</button></span></div>
+  return `<div class="thead"><div class="thead-l"><h1>Contacts</h1><div class="sub">Everyone you talk to at prospects and clients. Click a name for their card.</div></div><span style="display:flex;gap:8px"><button class="btn big ${COF.sel ? 'on' : ''}" data-act="comulti" title="Select contacts to send them an email sequence through Apollo">${COF.sel ? '✓ Selecting' : 'Select'}</button><button class="btn big" data-act="bdbulk" data-w="co">Add in bulk</button><button class="btn primary big" data-act="bdcaopen">Add contact</button></span></div>
     <div class="tbar"><div class="segc">${seg('', 'All')}${seg('bd', 'Prospects')}${seg('client', 'Clients')}${seg('inactive', 'Inactive' + (allContacts().filter(x => x.c.inactive).length ? ' ' + allContacts().filter(x => x.c.inactive).length : ''))}</div>
       <select class="inp" style="width:auto" data-act-change="bdwizcofm"><option value="">All countries</option>${bdMarkets().map(m => `<option ${COF.market === m ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select>
       <span class="cosw"><input id="coq" class="inp" placeholder="Search name, title, company or email" value="${esc(COF.q)}" autocomplete="off" spellcheck="false">${q && list.length ? `<div class="cosugg" role="listbox">${list.slice(0, 6).map(({ a, c }, i) => `<button class="${i === 0 ? 'on' : ''}" data-act="bdco" data-k="${coKey(a, c)}" role="option"><b>${esc(c.name || '?')}</b><span>${esc([c.title || (c.profile || {}).role, a.name].filter(Boolean).join(' · '))}</span></button>`).join('')}${list.length > 6 ? `<div class="small muted" style="padding:4px 10px">${list.length - 6} more below</div>` : ''}</div>` : ''}</span></div>
     ${stBar}${COF.st.length ? `<div class="small muted" style="margin:-6px 0 10px">${list.length} ${list.length === 1 ? 'person' : 'people'} with this status, longest waiting on top. Click a name to update them.</div>` : ''}
-    ${list.length ? `<table class="tbl glass acctbl"><thead><tr><th>Name</th><th>Company</th><th>Email</th><th>Phone</th><th>Open opportunities</th><th>${COF.st.length ? 'Status' : 'Last update'}</th><th>Next step</th></tr></thead><tbody>
-      ${list.map(({ a, c }) => { const od = coOpps(a, c).filter(d => d.outcome === 'open'), lt = coLastTouch(a, c); return `<tr class="clickrow" data-act="bdco" data-k="${coKey(a, c)}" data-ctx="bdco" data-id="${coKey(a, c)}"><td><b>${esc(c.name || '?')}</b><div class="ctx">${esc(c.title || (c.profile || {}).role || '')}</div></td>
+    ${COF.sel ? (() => { const ids = new Set(COF.ids), shown = list.filter(({ a, c }) => ids.has(coKey(a, c))).length; return `<div class="co-bulk glass"><label class="check"><input type="checkbox" data-act-change="comultiall" ${list.length && list.every(({ a, c }) => ids.has(coKey(a, c))) ? 'checked' : ''}> All ${list.length} shown</label><b>${COF.ids.length} selected</b>${shown < COF.ids.length ? `<span class="small muted">(${COF.ids.length - shown} not in this view)</span>` : ''}<span style="flex:1"></span><button class="btn" data-act="comulti0" ${COF.ids.length ? '' : 'disabled'}>Clear</button><button class="btn primary" data-act="apoopen" ${COF.ids.length ? '' : 'disabled'}>Send email sequence (Apollo)</button></div>`; })() : ''}
+    ${list.length ? `<table class="tbl glass acctbl"><thead><tr>${COF.sel ? '<th style="width:28px"></th>' : ''}<th>Name</th><th>Company</th><th>Email</th><th>Phone</th><th>Open opportunities</th><th>${COF.st.length ? 'Status' : 'Last update'}</th><th>Next step</th></tr></thead><tbody>
+      ${list.map(({ a, c }) => { const od = coOpps(a, c).filter(d => d.outcome === 'open'), lt = coLastTouch(a, c); return `<tr class="clickrow ${COF.sel && COF.ids.includes(coKey(a, c)) ? 'co-on' : ''}" data-act="${COF.sel ? 'cotick' : 'bdco'}" data-k="${coKey(a, c)}" data-ctx="bdco" data-id="${coKey(a, c)}">${COF.sel ? `<td><input type="checkbox" tabindex="-1" ${COF.ids.includes(coKey(a, c)) ? 'checked' : ''} style="pointer-events:none"></td>` : ''}<td><b>${esc(c.name || '?')}</b><div class="ctx">${esc(c.title || (c.profile || {}).role || '')}</div></td>
         <td>${esc(a.name)}<div class="ctx">${esc(a.market || '')}${a.status === 'client' ? ' · client' : ''}</div></td><td>${c.email ? esc(c.email) : '<span class="muted">–</span>'}</td><td>${c.phone ? esc(c.phone) : '<span class="muted">–</span>'}</td>
         <td>${od.length ? od.map(d => esc(dealStage(d).label)).join(', ') : '<span class="muted">none</span>'}</td><td>${COF.st.length ? (x => x ? `${esc(x.s)}<div class="ctx">${fmtDate(x.date)}${x.date ? ` · ${(d => d <= 0 ? 'today' : d + ' day' + (d === 1 ? '' : 's') + ' ago')(daysBetween(x.date, TODAY))}` : ''}</div>` : '–')(stOf.get(c)) : (l => l ? `${esc(ltx(l))}<div class="ctx">${fmtDate(l.date)}</div>` : lt ? fmtDate(lt) : '<span class="muted">–</span>')(coLast(c))}</td><td>${(t => t ? `${esc(ttx(t))}<div style="margin-top:3px">${duePill(t.due)}</div>` : '<span class="muted">–</span>')(coTasks(c.id)[0])}</td></tr>`; }).join('')}</tbody></table>` : '<div class="glass empty">No contacts yet. Add them on an opportunity or company, or from a LinkedIn PDF.</div>'}`;
 }
 /* where a contact worked before: kept on the contact, so the relationship survives a move */
 function coPast(c) { const p = [...(c.past || [])]; for (const l of c.log || []) { const m = /^Moved from (.+) to (.+)$/.exec(l.text || ''); if (m && l.type === 'system' && !p.some(x => x.acc === m[1] && x.until === l.date)) p.push({ acc: m[1], until: l.date }); } return p.sort((x, y) => (y.until || '').localeCompare(x.until || '')); }
+/* ---------- Apollo: find emails and put contacts in an email sequence ---------- */
+const APO = 'https://api.apollo.io/api/v1';
+async function apoCall(path, method, body) { const r = await fetch(APO + path, { method: method || 'GET', headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache', 'X-Api-Key': apoKey() }, body: body ? JSON.stringify(body) : undefined });
+  let j = null; try { j = await r.json(); } catch (e) { } if (!r.ok) { const e = new Error((j && (j.error || j.message)) || ('Apollo said ' + r.status)); e.status = r.status; throw e; } return j || {}; }
+const coLangOf = (a, c) => c.lang || ({ Netherlands: 'nl', Belgium: 'nl', Spain: 'es', Mexico: 'es', Colombia: 'es', Argentina: 'es', Chile: 'es', Peru: 'es' }[a.market] || 'en');
+const LANG_NM = { nl: 'Dutch', en: 'English', es: 'Spanish' };
+const splitName = n => { const w = String(n || '').trim().split(/\s+/); return { first: w[0] || '', last: w.slice(1).join(' ') }; };
+function apoPicked() { const ids = new Set(COF.ids); return allContacts().filter(({ a, c }) => ids.has(coKey(a, c))); }
+async function apoLoad() { const m = MODAL; m.err = ''; m.loading = true; render(); try {
+    const [ea, sq] = await Promise.all([apoCall('/email_accounts'), apoCall('/emailer_campaigns/search', 'POST', { per_page: 100 })]);
+    m.boxes = (ea.email_accounts || []).filter(x => x.active !== false).map(x => ({ id: x.id, email: x.email })); m.seqs = (sq.emailer_campaigns || []).map(x => ({ id: x.id, name: x.name, active: x.active }));
+    if (!m.box && m.boxes[0]) m.box = m.boxes[0].id; m.ok = true;
+  } catch (e) { m.err = e.status === 401 || e.status === 403 ? 'Apollo did not accept the key. Make sure it is a master key.' : /fetch/i.test(String(e.message)) ? 'blocked' : String(e.message); }
+  m.loading = false; if (MODAL === m) render(); }
+async function apoRun() { const m = MODAL, L = apoPicked(); if (!m.box) { toast('Pick the mailbox it sends from'); return; } const langs = [...new Set(L.map(({ a, c }) => m.lang[coKey(a, c)] || coLangOf(a, c)))];
+  for (const lg of langs) if (!m.seq[lg]) { toast(`Pick a sequence for the ${LANG_NM[lg] || lg} contacts`); return; }
+  m.running = true; m.res = {}; render(); const bySeq = {};
+  for (const { a, c } of L) { const k = coKey(a, c), lg = m.lang[k] || coLangOf(a, c); m.res[k] = { st: 'busy' }; if (MODAL === m) render();
+    try { const nm = splitName(c.name); let email = c.email || '';
+      if (!email) { const r = await apoCall('/people/match', 'POST', { first_name: nm.first, last_name: nm.last, organization_name: a.name, linkedin_url: c.linkedin || undefined, reveal_personal_emails: false }); email = ((r.person || {}).email || '').trim(); if (/email_not_unlocked|domain\.com$/i.test(email)) email = ''; if (email) { c.email = email; } }
+      if (!email) { m.res[k] = { st: 'noemail' }; continue; }
+      const cr = await apoCall('/contacts', 'POST', { first_name: nm.first, last_name: nm.last, email, organization_name: a.name, title: c.title || '', linkedin_url: c.linkedin || undefined, run_dedupe: true });
+      const id = (cr.contact || {}).id; if (!id) throw new Error('no contact id'); (bySeq[m.seq[lg]] = bySeq[m.seq[lg]] || []).push({ k, id, a, c, lg }); m.res[k] = { st: 'ready', email };
+    } catch (e) { m.res[k] = { st: 'err', msg: String(e.message || e) }; } }
+  for (const [sid, xs] of Object.entries(bySeq)) { const seqName = ((m.seqs || []).find(x => x.id === sid) || {}).name || 'sequence';
+    try { await apoCall(`/emailer_campaigns/${sid}/add_contact_ids`, 'POST', { emailer_campaign_id: sid, contact_ids: xs.map(x => x.id), send_email_from_email_account_id: m.box, sequence_active_in_other_campaigns: false, sequence_no_email: false });
+      for (const x of xs) { m.res[x.k] = { st: 'ok', email: m.res[x.k].email }; x.c.log = x.c.log || []; x.c.log.unshift({ id: uid('l'), date: TODAY, type: 'contact', text: 'Added to an email sequence' }, { id: uid('l'), date: TODAY, type: 'system', text: `Apollo: ${seqName} (${LANG_NM[x.lg] || x.lg}), from ${((m.boxes || []).find(b => b.id === m.box) || {}).email || 'mailbox'}` }); }
+    } catch (e) { for (const x of xs) m.res[x.k] = { st: 'err', msg: String(e.message || e) }; } }
+  m.running = false; m.done = true; save(); commit(); const ok = Object.values(m.res).filter(x => x.st === 'ok').length; toast(`${ok} contact${ok === 1 ? '' : 's'} in the Apollo sequence`, true); }
+function apoCsv() { const L = apoPicked(), m = MODAL || {}, q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const rows = [['First Name', 'Last Name', 'Email', 'Company', 'Title', 'Person Linkedin Url', 'Country', 'Language', 'Sector'], ...L.map(({ a, c }) => { const nm = splitName(c.name); return [nm.first, nm.last, c.email || '', a.name, c.title || '', c.linkedin || '', a.market || '', LANG_NM[(m.lang || {})[coKey(a, c)] || coLangOf(a, c)], sectorOf(a) || '']; })];
+  downloadFile(`Nimble to Apollo ${TODAY}.csv`, '﻿' + rows.map(r => r.map(q).join(',')).join('\r\n'), 'text/csv'); toast('CSV downloaded. In Apollo: Contacts › Import › CSV, then add them to the sequence (one per language)', true); }
+function apolloHTML(m) { const L = apoPicked(), key = apoKey(), langs = [...new Set(L.map(({ a, c }) => m.lang[coKey(a, c)] || coLangOf(a, c)))];
+  if (!key || m.editKey) return `<h3>Connect Apollo</h3><p class="small muted" style="margin-top:-6px">One time. Paste the master API key from Apollo (developer.apollo.io › API keys). It stays in this browser only and is never shared with the team.</p>
+    <label class="field">Apollo API key<input type="password" id="apo_key" autocomplete="off" placeholder="Paste the key"></label>
+    <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="apokey">Save and connect</button></div>`;
+  if (m.err === 'blocked') return `<h3>Apollo blocks Nimble's direct connection</h3><p>Apollo doesn't allow calls straight from a browser page, so Nimble can't send them in one click. The quick way round: a file Apollo imports.</p>
+    <ol class="small" style="line-height:1.7"><li>Download the file below (${L.length} contacts, with language, country and sector).</li><li>In Apollo: <b>Contacts › Import › CSV</b>. Apollo finds the missing emails.</li><li>Select the imported contacts per language and <b>Add to sequence</b>.</li></ol>
+    <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Close</button><button class="btn primary" data-act="apocsv">Download for Apollo</button></div>`;
+  if (m.loading || !m.ok) return `<h3>Send email sequence</h3><p class="small muted">${m.err ? esc(m.err) : 'Connecting to Apollo…'}</p>${m.err ? `<div class="acts"><button class="btn" data-act="apoeditkey">Change the key</button><button class="btn" data-act="apocsv">Download for Apollo instead</button><button class="btn primary" data-act="apoload">Try again</button></div>` : ''}`;
+  const R = m.res || {}, stL = { busy: 'working…', noemail: 'no email found', ready: 'found', ok: '✓ in sequence', err: 'failed' };
+  return `<h3>Send email sequence (Apollo)</h3><p class="small muted" style="margin-top:-6px">${L.length} contact${L.length === 1 ? '' : 's'}. Nimble finds missing emails through Apollo (uses credits), adds them as Apollo contacts and puts them in the sequence of their language. Apollo fills in {{first_name}}, {{company}} and the rest, and sends the follow-ups.</p>
+    <div class="fgrid"><label class="field">Send from<select class="inp" id="apo_box" data-act-change="apobox">${(m.boxes || []).map(b => `<option value="${b.id}" ${m.box === b.id ? 'selected' : ''}>${esc(b.email)}</option>`).join('') || '<option value="">No mailbox connected in Apollo</option>'}</select></label></div>
+    <div class="apo-seq">${langs.map(lg => `<label class="field">${LANG_NM[lg] || lg} contacts (${L.filter(({ a, c }) => (m.lang[coKey(a, c)] || coLangOf(a, c)) === lg).length}) go into<select class="inp" data-act-change="aposeq" data-l="${lg}"><option value="">Pick a sequence…</option>${(m.seqs || []).map(x => `<option value="${x.id}" ${m.seq[lg] === x.id ? 'selected' : ''}>${esc(x.name)}${x.active === false ? ' (paused)' : ''}</option>`).join('')}</select></label>`).join('')}</div>
+    <div class="apo-l">${L.map(({ a, c }) => { const k = coKey(a, c), r = R[k]; return `<div class="apo-r"><span><b>${esc(c.name || '?')}</b> <span class="small muted">${esc(a.name)}${a.market ? ' · ' + esc(a.market) : ''}</span></span><span class="small ${c.email ? '' : 'muted'}">${esc(c.email || (r && r.email) || 'email via Apollo')}</span><select class="inp sm" data-act-change="apolang" data-k="${k}" ${m.running || m.done ? 'disabled' : ''}>${Object.entries(LANG_NM).map(([v, l]) => `<option value="${v}" ${(m.lang[k] || coLangOf(a, c)) === v ? 'selected' : ''}>${l}</option>`).join('')}</select><span class="small apo-st ${r ? 'st-' + r.st : ''}" title="${esc((r && r.msg) || '')}">${r ? stL[r.st] : ''}</span></div>`; }).join('')}</div>
+    <div class="acts" style="margin-top:14px"><button class="btn quiet" data-act="apoeditkey" style="margin-right:auto">Apollo key</button><button class="btn" data-act="apocsv">Download for Apollo</button><button class="btn" data-act="modalclose">${m.done ? 'Close' : 'Cancel'}</button>${m.done ? '' : `<button class="btn primary" data-act="aporun" ${m.running ? 'disabled' : ''}>${m.running ? 'Sending…' : 'Put them in the sequence'}</button>`}</div>`; }
 function contactPanelHTML(k) {
   const [aid, cid] = String(k).split(':'), a = accById(aid), c = a && (a.contacts || []).find(x => x.id === cid); if (!c) { BDD = null; return ''; }
   const opps = coOpps(a, c), log = [...(c.log || []).map(l => ({ ...l, src: '' })), ...opps.flatMap(d => (d.log || []).filter(l => l.type === 'note').map(l => ({ ...l, src: d.title || '' })))].sort((x, y) => y.date.localeCompare(x.date)).slice(0, 25);
@@ -10015,6 +10068,19 @@ const BD_ACT = {
   conote: el => { const [aid, cid] = el.dataset.k.split(':'), a = accById(aid), c = a && a.contacts.find(x => x.id === cid), i = document.getElementById('cn_' + cid), tx = i && i.value.trim(); if (!c || !tx) return; snapshot(); c.log = c.log || []; c.log.unshift({ id: uid('l'), date: TODAY, type: 'note', text: tx }); commit(); toast('Note saved', true); },
   cof: el => { COF.who = el.dataset.v; render(); },
   bdwizcofm: el => { COF.market = el.value; render(); },
+  comulti: () => { COF.sel = !COF.sel; if (!COF.sel) COF.ids = []; render(); },
+  comulti0: () => { COF.ids = []; render(); },
+  cotick: el => { const k = el.dataset.k, L = COF.ids; COF.ids = L.includes(k) ? L.filter(x => x !== k) : [...L, k]; render(); },
+  comultiall: el => { const keys = [...document.querySelectorAll('tr[data-act="cotick"]')].map(r => r.dataset.k); COF.ids = el.checked ? [...new Set([...COF.ids, ...keys])] : COF.ids.filter(x => !keys.includes(x)); render(); },
+  apoopen: () => { MODAL = { kind: 'apollo', lang: {}, seq: {}, res: {} }; render(); if (apoKey()) apoLoad(); },
+  apokey: () => { const v = ((document.getElementById('apo_key') || {}).value || '').trim(); if (!v) return; try { localStorage.setItem('nimble.apolloKey', v); } catch (e) { toast('Could not save the key in this browser'); return; } MODAL.editKey = false; apoLoad(); },
+  apoeditkey: () => { MODAL.editKey = true; MODAL.ok = false; MODAL.err = ''; render(); },
+  apoload: () => apoLoad(),
+  apobox: el => { MODAL.box = el.value; },
+  aposeq: el => { MODAL.seq[el.dataset.l] = el.value; },
+  apolang: el => { MODAL.lang[el.dataset.k] = el.value; render(); },
+  aporun: () => apoRun(),
+  apocsv: () => apoCsv(),
   cost: el => { const v = el.dataset.v; COF.st = !v ? [] : (COF.st || []).includes(v) ? COF.st.filter(x => x !== v) : [...(COF.st || []), v]; render(); },
   copyco: el => { copyText(el.dataset.v); toast('Copied: ' + el.dataset.v); },
   accmove: el => { const a = accById(el.dataset.id); if (!a) return; snapshot(); moveAccount(a, el.dataset.m); if (BDSEL.acc === a.id) BDSEL.market = el.dataset.m; commit(); toast(`${a.name} moved to ${el.dataset.m}`, true); },
@@ -10260,7 +10326,7 @@ document.addEventListener('change', e => {
   if (el.dataset && /^(bdwiz|bdca)/.test(el.dataset.actChange || '') && ACT[el.dataset.actChange]) { ACT[el.dataset.actChange](el); return; }
   if (el.dataset && el.dataset.actChange === 'cudate') { ACT.cudate(el); return; }
   if (el.dataset && el.dataset.actChange === 'aisel' && AIX) { const id = el.dataset.a; AIX.sel = el.checked ? [...new Set([...AIX.sel, id])] : AIX.sel.filter(x => x !== id); render(); return; }
-  if (el.dataset && ['openteam', 'rcmgr', 'cmgrset', 'setcowner', 'rpdate', 'agnote', 'askwname', 'setbdgoal', 'settarget', 'settgtstart', 'revadj', 'quietdays', 'splitset', 'pcset', 'coacc', 'bulkset', 'bulkfile', 'bgf', 'rpsel', 'msgset', 'rfpudate', 'rsset', 'rtadate', 'rfptpset', 'rfpdate', 'carset', 'lockidle', 'rfpset', 'rftset', 'obedit', 'rvlog', 'rvtask', 'bulkmove', 'rnfrom', 'rcdate', 'pldate', 'setsector', 'claudekey', 'askics', 'askws', 'introsel', 'introto', 'intrors', 'intronotes', 'crmset', 'edittaskdate', 'whomset', 'ftdate', 'fbst', 'fbf'].includes(el.dataset.actChange)) { ACT[el.dataset.actChange](el); return; }
+  if (el.dataset && ['openteam', 'rcmgr', 'cmgrset', 'setcowner', 'rpdate', 'agnote', 'askwname', 'setbdgoal', 'settarget', 'settgtstart', 'revadj', 'quietdays', 'splitset', 'pcset', 'coacc', 'bulkset', 'bulkfile', 'bgf', 'rpsel', 'msgset', 'rfpudate', 'rsset', 'rtadate', 'rfptpset', 'rfpdate', 'carset', 'lockidle', 'rfpset', 'rftset', 'obedit', 'rvlog', 'rvtask', 'bulkmove', 'rnfrom', 'rcdate', 'pldate', 'setsector', 'comultiall', 'apobox', 'aposeq', 'apolang', 'claudekey', 'askics', 'askws', 'introsel', 'introto', 'intrors', 'intronotes', 'crmset', 'edittaskdate', 'whomset', 'ftdate', 'fbst', 'fbf'].includes(el.dataset.actChange)) { ACT[el.dataset.actChange](el); return; }
   if (el.id && el.id.startsWith('cp_dt_') && isISO(el.value)) { el.parentNode.querySelectorAll('.qchip').forEach(b => b.classList.remove('on')); return; }
   if (el.dataset && el.dataset.actChange === 'cosel') { const d = dealById(el.dataset.d); if (!d) return; const keep = ['u', 'n'].map(k => (document.getElementById(`cu_${k}_${d.id}`) || {}).value || ''); const cur = coSel(d); COSEL[d.id] = el.checked ? [...new Set([...cur, el.dataset.c])] : cur.filter(x => x !== el.dataset.c); render(); ['u', 'n'].forEach((k, n) => { const i = document.getElementById(`cu_${k}_${d.id}`); if (i) i.value = keep[n]; }); return; }
   if (el.dataset && el.dataset.actChange === 'dealcopick' && el.value) { const d = dealById(el.dataset.d), c = d && (accById(d.accountId).contacts || []).find(x => x.id === el.value); if (d && c) { snapshot(); dealCoAdd(d, c.id); bdLog(d, 'system', `Contact added: ${c.name}`); commit(); toast(`${c.name} added to this opportunity`, true); } return; }
