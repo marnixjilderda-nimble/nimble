@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-oRX1K3eVGmVMee0pCfGzmXjgbw2UZcAM88ChAasMugQ=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-wGDVfSyHaIggsKdTx2WDK46exmaMu8bs2fn2Dfobftc=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -2020,6 +2020,8 @@ select.inp:hover,.field select:hover{border-color:color-mix(in srgb,var(--ink) 2
 .mk-hw{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mk-hf{display:flex;align-items:center;justify-content:space-between;gap:6px 8px;margin-top:4px;flex-wrap:wrap}.mk-hf .mk-cnts span{margin-right:8px}.mk-hf .acts{gap:6px;flex-wrap:nowrap}.mk-hf .btn,.mk-act .btn{white-space:nowrap}
 .seat-l{display:grid;gap:6px;max-height:240px;overflow:auto;padding:2px}
 .csec{font-size:11px;font-weight:650;color:var(--muted);margin:8px 2px 4px;display:flex;gap:6px;align-items:center}.csec:first-of-type{margin-top:2px}.csec b{font-variant-numeric:tabular-nums}.csec-sched{color:var(--cl)}
+.ib-body{min-height:340px;resize:vertical;line-height:1.5;font-size:13.5px}
+.ib-claude{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0 4px;grid-column:1/-1;padding:10px 12px;border:1px dashed color-mix(in srgb,var(--ink) 22%,var(--line));border-radius:12px}.ib-claude .small{flex:1 1 280px}
 </style>
 <div id="wall"></div>
 <div id="app"></div>
@@ -2042,7 +2044,7 @@ select.inp:hover,.field select:hover{border-color:color-mix(in srgb,var(--ink) 2
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:d7a7e59fed*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:0a4ad7474f*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -3139,11 +3141,13 @@ async function cvOpen(pid) { const p = MP.get(pid); try { const f = await kvGet(
 /* key points: max 6 one-line bullets from profile, CV, transcript and notes */
 function cleanTranscript(t) { return String(t || '').split(/\r?\n/).map(l => l.replace(/^\s*\[?\d{1,2}:\d{2}(:\d{2})?(\.\d+)?\]?\s*/, '').replace(/^\s*[A-Z][\w'’-]+(?:\s+[A-Z][\w'’-]+){0,3}\s*[:：]\s*/, '').trim()).filter(l => l && !/^\d{1,2}:\d{2}/.test(l) && !(l.split(/\s+/).length <= 4 && !/[.!?,]/.test(l) && /^[A-Z]/.test(l))).join('\n'); }
 const KP_CAT = [['motivation', /\b(looking for|wants?\b|would like|motivat|interested in|next step|ambition|reason|leav(e|ing)|because|prefer|enjoy)/i], ['availability', /\b(notice|available|availability|can start|start (date|in|on|from)|immediately)/i], ['money', /\b(salary|package|bonus|€|eur\b|\d+\s?k\b|rate|per hour|hourly)/i], ['where', /\b(hybrid|remote|office|relocat\w*|commut\w*|based in|days? (a|per) week)/i]];
-function kpThird(x) { return x.replace(/^(so|and|but|well|yeah|yes|ok|okay|um+|uh+),?\s+/i, '').replace(/^(my|our)\s+/i, '').replace(/^i'?m\s+|^i am\s+/i, '').replace(/^i\s+(really\s+)?(want|prefer|have|can|like|enjoy|need|would like|'d like|think)\b/i, (m0, r, v) => ({ want: 'Wants', prefer: 'Prefers', have: 'Has', can: 'Can', like: 'Likes', enjoy: 'Enjoys', need: 'Needs', think: 'Thinks' }[v.toLowerCase()] || 'Would like')).replace(/\s+/g, ' ').replace(/[.!]+$/, '').trim(); }
+function kpThird(x) { return kpThird0(String(x).replace(/^(right now|currently|at the moment|these days|nowadays),?\s+i\s+(mostly |mainly |also )?([a-z]+)/i, (m0, w, adv, v) => 'Currently ' + (adv || '') + v + (/(s|sh|ch|x)$/.test(v) ? 'es' : 's')))
+  .replace(/\b(and|but)\s+i\s+would\s+(look|aim|go)\s+for\b/gi, '$1 looking for').replace(/\bi'?d like\b|\bi would like\b/gi, 'would like').replace(/\bi'?m\b|\bi am\b/gi, 'is').replace(/\bmy\b/gi, 'their').replace(/^their\s+/i, '').replace(/^./, c => c.toUpperCase()); }
+function kpThird0(x) { return x.replace(/^(so|and|but|well|yeah|yes|ok|okay|um+|uh+),?\s+/i, '').replace(/^(my|our)\s+/i, '').replace(/^i'?m\s+|^i am\s+/i, '').replace(/^i\s+(really\s+)?(want|prefer|have|can|like|enjoy|need|would like|'d like|think)\b/i, (m0, r, v) => ({ want: 'Wants', prefer: 'Prefers', have: 'Has', can: 'Can', like: 'Likes', enjoy: 'Enjoys', need: 'Needs', think: 'Thinks' }[v.toLowerCase()] || 'Would like')).replace(/\s+/g, ' ').replace(/[.!]+$/, '').trim(); }
 function yearsExp(txt) { const ys = [], re = /\b((?:19|20)\d{2})\s*[-–—]\s*((?:19|20)\d{2}|present|heden|now|current|today|nu)\b/gi; let m; while ((m = re.exec(txt))) ys.push(+m[1]); if (!ys.length) return 0; const y = new Date().getFullYear() - Math.min(...ys); return y > 0 && y < 45 ? y : 0; }
 /* introduction emails in four languages: the fixed phrases of the email and of the key points */
 const INTRO_L = {
-  en: { nm: 'English', hi: 'Hi {n}, hope you\'re doing well!', one: "I'd like to introduce {name} for the {role} {rw}. A few key points below{att}.", many: 'As promised, here are {k} candidates for the {role} {rw}. Key points per candidate below{att}.', rw1: 'role', rwN: 'roles', att1: ', CV attached', attN: ', CVs attached', attK: ', {k} CVs attached', close: 'Happy to set up interviews with whoever stands out, or to give more context on a quick call.', sign: 'Looking forward,', s1: 'Candidate for', sN: 'Candidates for', and: 'and', all: 'all', there: 'there',
+  en: { nm: 'English', hi: 'Hi {n}, hope you\'re doing well!', one: "I wanted to introduce {name} for the {role} {rw}{att}.", many: 'As promised, here are {k} candidates for the {role} {rw}. Key points per candidate below{att}.', rw1: 'role', rwN: 'roles', att1: ', CV attached', attN: ', CVs attached', attK: ', {k} CVs attached', close: 'Happy to set up interviews with whoever stands out, or to give more context on a quick call.', sign: 'Looking forward,', s1: 'Candidate for', sN: 'Candidates for', and: 'and', all: 'all', there: 'there',
     at: ' at ', yrs: '+ years', exp: 'Experience', inn: ' in ', before: ', before at ', fits: 'Fits the role on', hands: 'Hands-on with', cert: 'certified', Cert: 'Certified', notice: 'Notice', expects: 'Expects', based: 'Based in' },
   nl: { nm: 'Nederlands', hi: 'Hi {n}, hoop dat alles goed met je gaat!', one: 'Graag stel ik {name} aan je voor voor de {rw} {role}. Hieronder een paar kernpunten{att}.', many: 'Zoals beloofd hierbij {k} kandidaten voor de {rw} {role}. Per kandidaat de kernpunten hieronder{att}.', rw1: 'rol', rwN: 'rollen', att1: ', cv in de bijlage', attN: ", cv's in de bijlage", attK: ", {k} cv's in de bijlage", close: 'Ik plan graag gesprekken in met wie eruit springt, of geef je meer context in een kort belletje.', sign: 'Ik hoor graag van je,', s1: 'Kandidaat voor', sN: 'Kandidaten voor', and: 'en', all: 'allemaal', there: '',
     at: ' bij ', yrs: '+ jaar', exp: 'Ervaring', inn: ' in ', before: ', eerder bij ', fits: 'Past bij de rol op', hands: 'Hands-on met', cert: 'gecertificeerd', Cert: 'Gecertificeerd', notice: 'Opzegtermijn', expects: 'Verwacht', based: 'Woont in' },
@@ -3153,28 +3157,81 @@ const INTRO_L = {
     at: ' chez ', yrs: '+ ans', exp: 'Expérience', inn: ' en ', before: ', auparavant chez ', fits: 'Correspond au poste sur', hands: 'Expérience pratique avec', cert: 'certifié', Cert: 'Certifié', notice: 'Préavis', expects: 'Attentes', based: 'Basé à' } };
 const introLang = () => (MODAL && MODAL.kind === 'intro' && MODAL.lang) || (S.settings && S.settings.introLang) || 'en';
 const LX = () => INTRO_L[introLang()] || INTRO_L.en, fillT = (t, o) => t.replace(/\{(\w+)\}/g, (m0, k) => o[k] ?? '');
+/* the JD's requirements, as short lines */
+const JD_STOP = new Set('with have that this will from your their they them about into able also some more such than then what when which while within would should could must strong good great very well work working experience ervaring years jaar jaren knowledge kennis skills skill vaardigheden ability understanding plus least minimum preferably bonus team role ideal candidate looking for wij zoeken jij hebt heb bent ben goede sterke kennis voor met van een het naar over door onze jouw'.split(' '));
+function jdReqs(jd) { const L = String(jd || '').split(/\n+/).map(l => l.trim()).filter(Boolean); let inReq = false; const out = [];
+  for (const l of L) { const head = l.length < 70 && /^(requirements?|qualifications?|what you bring|what we('| a)re looking for|your profile|profile|who you are|you have|must[- ]haves?|wat (wij )?vragen|wie (ben )?jij|jouw profiel|functie-?eisen|wat breng je mee|skills|experience)\b/i.test(l.replace(/[:#*]/g, '').trim());
+    if (head) { inReq = true; continue; } if (inReq && l.length < 70 && /:$/.test(l) && !/^[-•*·▪●]/.test(l)) inReq = /require|profile|bring|qualif|vragen|eisen|skills|experience/i.test(l);
+    const bullet = /^([-•*·▪●–]|\d+[.)])\s*/.test(l), req = /\b(\d+\+?\s*(years?|jaar)|experience|ervaring|knowledge|kennis|certif|degree|bachelor|master|hbo|wo\b|proficien|familiar|hands-on|fluent|vloeiend|track record|background in)\b/i.test(l);
+    if ((inReq && (bullet || l.length < 160)) || (bullet && req)) out.push(l.replace(/^([-•*·▪●–]|\d+[.)])\s*/, '').replace(/\s+/g, ' ')); }
+  return [...new Set(out)].filter(x => x.length > 8 && x.length < 220).slice(0, 12); }
+const kwOf = t => [...new Set(String(t).toLowerCase().replace(/[^a-z0-9+#./ -]/g, ' ').split(/[\s/]+/).filter(w => (w.length > 3 || /\d|[+#]/.test(w) || /^[a-z]{2,3}$/.test(w) && /\b(sql|aws|gcp|crm|erp|sap|bi|ux|qa|hr|m365|ai|ml)\b/.test(w)) && !JD_STOP.has(w)))];
+/* for each requirement, the best line in the transcript, notes or CV that shows it */
+function reqEvidence(p, a) { const jd = ((a && roleOf(a)) || {}).jdText || ''; const reqs = jdReqs(jd); if (!reqs.length) return [];
+  const talk = [p.transcript && cleanTranscript(p.transcript), p.notes, a ? (a.log || []).filter(l => l.type === 'note').map(l => l.text).join('. ') : ''].filter(Boolean).join('\n');
+  const sentsOf = t => String(t).split(/(?<=[.!?])\s+|\n+/).map(x => x.trim().replace(/^(\[?\d{1,2}:\d{2}(:\d{2})?\]?\s*)?([A-Z][\w .'’-]{0,30}):\s+/, '').replace(/^[-•*·▪●]\s*/, '')).filter(x => x.length > 15 && x.length < 300 && !/\?\s*$/.test(x) && !/^(recruiter|interviewer|me|marnix)\b/i.test(x));
+  const pool = [...sentsOf(talk).map(t => ({ t, w: 1.3 })), ...sentsOf((p.cv || {}).text || '').map(t => ({ t, w: 1 }))], used = new Set(), out = [];
+  for (const r of reqs) { const kw = kwOf(r); if (!kw.length) continue; let best = null, bs = 0;
+    for (const x of pool) { if (used.has(x.t)) continue; const lt = x.t.toLowerCase(), hit = kw.filter(k => lt.includes(k)).length; if (!hit) continue; const sc = hit / Math.sqrt(kw.length) * x.w + (/\d/.test(x.t) ? .3 : 0) + (/\b(led|built|managed|implemented|migrat|delivered|designed|grew|launched|set up|opgezet|geleid|gebouwd)\w*/i.test(x.t) ? .4 : 0); if (sc > bs) { bs = sc; best = x; } }
+    if (best && bs >= .6) { used.add(best.t); out.push({ req: r, ev: best.t }); } }
+  return out.slice(0, 4); }
 function kpMake(p, a) { const X = LX();
   const out = [], cut = s => { s = String(s).replace(/\s+/g, ' ').trim().replace(/^[-•*·]\s*/, ''); s = s.charAt(0).toUpperCase() + s.slice(1); return s.length > 115 ? s.slice(0, 112).replace(/[\s,;]+\S*$/, '') + '…' : s; };
   const pr = p.profile || {}, exp = pr.experience || [], cvt = (p.cv || {}).text || '';
   const title = p.title || (exp[0] || {}).title, emp = p.employer || (exp[0] || {}).company;
   if (title) out.push(cut(`${title}${emp ? X.at + emp : ''}`));
+  const evs = reqEvidence(p, a); for (const e of evs.slice(0, 4)) out.push(cut(kpThird(e.ev)));
   const yrs = yearsExp(cvt + ' ' + exp.map(e => e.dates || '').join(' ')), prev = [...new Set(exp.slice(1).map(e => e.company).filter(x => x && x !== emp))].slice(0, 3), spec = (p.specs || [])[0];
   if (yrs || prev.length) out.push(cut(`${yrs ? yrs + X.yrs : X.exp}${spec ? X.inn + spec : ''}${prev.length ? X.before + prev.join(', ') : ''}`));
   const jd = (((a && roleOf(a)) || {}).jdText || '').toLowerCase(), inJd = x => jd && new RegExp('\\b' + String(x).toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b').test(jd);
   const allSk = [...new Set([...(p.skillsFound || []), ...(p.certs || [])])], fit = allSk.filter(inJd).slice(0, 5);
-  if (fit.length >= 2) out.push(cut(`${X.fits} ${fit.slice(0, -1).join(', ')} ${X.and} ${fit[fit.length - 1]}`));
+  if (fit.length >= 2 && evs.length < 3) out.push(cut(`${X.fits} ${fit.slice(0, -1).join(', ')} ${X.and} ${fit[fit.length - 1]}`));
   const sk = (p.skillsFound || []).filter(x => !fit.includes(x)).slice(0, fit.length >= 2 ? 4 : 6), ce = (p.certs || []).filter(x => !fit.includes(x)).slice(0, 3);
   if (sk.length) out.push(cut(`${X.hands} ${sk.join(', ')}${ce.length ? '; ' + X.cert + ' ' + ce.join(', ') : ''}`)); else if (ce.length) out.push(cut(X.Cert + ' ' + ce.join(', ')));
   const src = [p.transcript && cleanTranscript(p.transcript), p.notes, a ? (a.log || []).filter(l => l.type === 'note').map(l => l.text).join('. ') : ''].filter(Boolean);
   const sents = src.flatMap(x => x.split(/(?<=[.!?])\s+|\n+/)).map(x => x.trim().replace(/^(\[?\d{1,2}:\d{2}(:\d{2})?\]?\s*)?([A-Z][\w .'’-]{0,30}):\s+/, '')).filter(x => x.length > 12 && x.length < 260 && !/^(recruiter|interviewer|me|marnix)\b/i.test(x)), used = new Set();
-  for (const [k, re] of KP_CAT) { if (out.length >= 5) break; if (a && ((k === 'availability' && a.notice) || (k === 'money' && a.salary))) continue;
+  for (const [k, re] of KP_CAT) { if (out.length >= 9) break; if (a && ((k === 'availability' && a.notice) || (k === 'money' && a.salary))) continue;
     const x = sents.find(y => re.test(y) && !used.has(y) && !/\?\s*$/.test(y)); if (x) { used.add(x); out.push(cut(kpThird(x))); } }
   const langs = (pr.languages || []).map(l => String(l).split(/[(,]/)[0].trim()).filter(Boolean);
   if (!langs.length) { const m = cvt.match(/\b(dutch|english|german|french|spanish|italian|portuguese|polish|arabic|turkish|hindi)\b/gi); if (m) langs.push(...new Set(m.map(x => x[0].toUpperCase() + x.slice(1).toLowerCase()))); }
   const prac = [a && a.notice ? X.notice + ' ' + a.notice : '', a && a.salary ? X.expects + ' ' + a.salary : '', p.location ? X.based + ' ' + p.location : '', langs.slice(0, 3).join(', ')].filter(Boolean);
   if (prac.length) out.push(cut(prac.join(' · ')));
-  return [...new Set(out)].slice(0, 6);
+  return [...new Set(out)].slice(0, 9);
 }
+const claudeKey = () => aiKey();
+function introPrompt(m) { const c = MC.get(m.c), sel = introPool(m.c, m.r).filter(a => m.sel.includes(a.id)), tos = introRecips(m), me = firstName(S.settings.userName || '') || 'Marnix', lang = (INTRO_L[introLang()] || {}).nm || 'English';
+  const cl = (t, n) => String(t || '').replace(/\s+\n/g, '\n').trim().slice(0, n);
+  const roles = [...new Map(sel.map(a => [roleOf(a).id, roleOf(a)])).values()];
+  return `You write a candidate introduction email from a recruiter (${me}, H&CO) to a client. Write it in ${lang}.
+
+How ${me} writes introductions:
+- Opening: "Hi ${tos.length ? tos.map(t => firstName(t.name)).join(' and ') : '[name]'}," then one short line: "I wanted to introduce [candidate name]" for the ${roles.map(r => r.title).join(' / ')} role${sel.some(a => personOf(a).cv) ? ', CV attached' : ''}.
+- Then per candidate short, factual bullet points. No long paragraphs. No labels like "Stack:" or "Now:" in front of bullets. Give the relevant facts and let the client tick the boxes himself; don't tick them for him.
+- The bullets cover: current role and employer; what they're good at, matched to the requirements in the job description, each with a concrete example from the CV or the call (projects, scale, numbers, tools); where they want to go next and why this role fits that; compensation (current and expected: base, bonus, anything else mentioned); notice period / availability; location / hybrid if relevant.
+- Frame things as the recruiter's read where it adds value (e.g. "From our conversation, ..."), never just pass on information.
+- Executive tone: to the point, warm, never arrogant, no fluff, no over-explaining.
+- Close with one short line and sign off with "Looking forward," then "${me}".
+- Only use facts from the material below. If something (e.g. salary) isn't in it, leave it out; don't invent.
+- Output plain text only: first line "Subject: ...", then a blank line, then the email.
+
+CLIENT: ${c.name}
+${roles.map(r => `ROLE: ${r.title}${r.location ? ' (' + r.location + ')' : ''}${r.salary ? ', salary range ' + r.salary : ''}\nJOB DESCRIPTION:\n${cl(r.jdText, 9000) || '(none)'}`).join('\n\n')}
+
+${sel.map(a => { const p = personOf(a); return `=== CANDIDATE: ${p.name}${sel.length > 1 && roles.length > 1 ? ' (for ' + roleOf(a).title + ')' : ''} ===
+Current: ${[p.title, p.employer].filter(Boolean).join(' at ') || '-'}${p.location ? '\nLocation: ' + p.location : ''}${a.salary ? '\nSalary: ' + a.salary : ''}${a.notice ? '\nNotice: ' + a.notice : ''}
+CV:
+${cl((p.cv || {}).text, 9000) || '(no CV text)'}
+CALL TRANSCRIPT:
+${cl(p.transcript && cleanTranscript(p.transcript), 14000) || '(none)'}
+RECRUITER NOTES:
+${cl([p.notes, (a.log || []).filter(l => l.type === 'note').map(l => l.text).join('\n')].filter(Boolean).join('\n'), 4000) || '(none)'}`; }).join('\n\n')}`; }
+async function introClaude() { introRead(); const m = MODAL; if (!m) return; const prompt = introPrompt(m), key = claudeKey();
+  if (!key) { copyText(prompt); MODAL.claudeCopied = true; render(); window.open('https://claude.ai/new', '_blank', 'noopener'); toast('Everything is copied: paste it in Claude (Ctrl+V), then paste Claude\'s email back here', true); return; }
+  m.claudeBusy = true; render(); try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify({ model: S.settings.aiModel || 'claude-sonnet-5-5', max_tokens: 1800, messages: [{ role: 'user', content: prompt }] }) });
+    const j = await r.json(); if (!r.ok) throw new Error((j.error || {}).message || r.status); const t = (j.content || []).map(x => x.text || '').join('').trim(), sm = t.match(/^\s*subject:\s*(.+)\n+/i);
+    if (MODAL !== m) return; m.subj = sm ? sm[1].trim() : (m.subj ?? introText(m).subj); m.body = sm ? t.slice(sm[0].length).trim() : t; m.edited = true; m.byClaude = true; toast('Claude wrote the email. Read it through and adjust what you like', true);
+  } catch (e) { toast('Claude could not write it: ' + (e.message || e) + '. Check the key in Settings › Nimble AI'); } finally { m.claudeBusy = false; if (MODAL === m) render(); } }
 const hasNotes = (p, a) => !!((p.transcript || '').trim() || (p.notes || '').trim() || (a && (a.log || []).some(l => l.type === 'note')));
 /* client contact persons */
 function clientContacts(c) { if (!c) return []; if (!Array.isArray(c.contacts)) c.contacts = c.contact ? [{ id: uid('cc'), name: c.contact, title: '', email: '', phone: '' }] : []; return c.contacts; }
@@ -3187,7 +3244,7 @@ function introText(m) {
   const X = LX(), roles = [...new Set(sel.map(a => roleOf(a).title))], multi = roles.length > 1, cvN = sel.filter(a => personOf(a).cv).length, rl = roles.length > 1 ? roles.slice(0, -1).join(', ') + ' ' + X.and + ' ' + roles[roles.length - 1] : roles[0] || '';
   const att = cvN ? (cvN === sel.length ? (sel.length > 1 ? X.attN : X.att1) : cvN > 1 ? fillT(X.attK, { k: cvN }) : X.att1) : '';
   const lead = sel.length === 1 ? fillT(X.one, { name: personOf(sel[0]).name, role: rl, rw: X.rw1, att }) : fillT(X.many, { k: sel.length, role: rl, rw: multi ? X.rwN : X.rw1, att });
-  const blocks = sel.map(a => `${personOf(a).name}${multi ? ' – ' + roleOf(a).title : ''}\n` + introKp(m, a).split('\n').map(l => l.trim().replace(/^[-•*·]\s*/, '')).filter(Boolean).slice(0, 6).map(l => '• ' + l).join('\n'));
+  const blocks = sel.map(a => `${personOf(a).name}${multi ? ' – ' + roleOf(a).title : ''}\n` + introKp(m, a).split('\n').map(l => l.trim().replace(/^[-•*·]\s*/, '')).filter(Boolean).slice(0, 9).map(l => '• ' + l).join('\n'));
   const subj = `${sel.length > 1 ? X.sN : X.s1} ${c.name} ${rl}`.trim(), hn = tos.length === 1 ? firstName(tos[0].name) : tos.length === 2 ? `${firstName(tos[0].name)} ${X.and} ${firstName(tos[1].name)}` : tos.length ? X.all : X.there;
   return { subj, body: `${fillT(X.hi, { n: hn }).replace(/\s+,/, ',').replace(/^(\S+) ,/, '$1,')}\n\n${lead}\n\n${blocks.join('\n\n')}\n\n${X.close}\n\n${X.sign}\n${me}` };
 }
@@ -3198,17 +3255,18 @@ function textToHtml(t) { const ls = String(t).split('\n'), out = []; let ul = fa
 const b64u = t => btoa(unescape(encodeURIComponent(t))), wrap76 = t => t.replace(/.{1,76}/g, '$&\r\n');
 function ab64(buf) { const u = new Uint8Array(buf); let x = ''; for (let i = 0; i < u.length; i += 0x8000) x += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(x); }
 const mimeWord = t => /^[\x20-\x7e]*$/.test(t) ? t : `=?UTF-8?B?${b64u(t)}?=`;
+const asciiName = t => String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\x20-\x7e]/g, '').replace(/["\\/:*?<>|]/g, '').replace(/\s+/g, ' ').trim() || 'CV';
 function buildEml({ to, subject, text, html, files }) {
-  const b = '=_pt_' + Date.now().toString(36), al = '=_alt_' + Date.now().toString(36), L = ['X-Unsent: 1', `To: ${to}`, `Subject: ${mimeWord(subject)}`, 'MIME-Version: 1.0', `Content-Type: multipart/mixed; boundary="${b}"`, '', `--${b}`, `Content-Type: multipart/alternative; boundary="${al}"`, '',
+  const b = '=_pt_' + Date.now().toString(36), al = '=_alt_' + Date.now().toString(36), L = ['X-Unsent: 1', `Date: ${new Date().toUTCString().replace('GMT', '+0000')}`, `To: ${to}`, `Subject: ${mimeWord(subject)}`, 'MIME-Version: 1.0', `Content-Type: multipart/mixed; boundary="${b}"`, '', `--${b}`, `Content-Type: multipart/alternative; boundary="${al}"`, '',
     `--${al}`, 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: base64', '', wrap76(b64u(text)), `--${al}`, 'Content-Type: text/html; charset=UTF-8', 'Content-Transfer-Encoding: base64', '', wrap76(b64u(html)), `--${al}--`];
-  for (const f of files) L.push(`--${b}`, `Content-Type: ${f.type || 'application/octet-stream'}; name="${mimeWord(f.name)}"`, 'Content-Transfer-Encoding: base64', `Content-Disposition: attachment; filename="${mimeWord(f.name)}"`, '', wrap76(ab64(f.data)));
+  for (const f of files) { const nm = asciiName(f.name); L.push(`--${b}`, `Content-Type: ${f.type || 'application/octet-stream'}; name="${nm}"`, 'Content-Transfer-Encoding: base64', `Content-Disposition: attachment; filename="${nm}"`, '', wrap76(ab64(f.data)).replace(/\r\n$/, '')); }
   L.push(`--${b}--`, ''); return L.join('\r\n');
 }
 function introHTML(m) {
   const c = MC.get(m.c), pool = introPool(m.c, m.r), cts = clientContacts(c); introRows(m);
   const sel = pool.filter(a => m.sel.includes(a.id));
   { const rl0 = [...new Set(sel.map(a => a.roleId))]; if (!m.jdMiss) m.jdMiss = rl0.filter(id => !hasJD(MR.get(id)));
-    for (const id of m.jdMiss.filter(id => hasJD(MR.get(id)))) { for (const a of sel.filter(x => x.roleId === id)) { const p = personOf(a); p.kp = kpMake(p, a).join('\n'); m.kp[a.id] = p.kp; } m.jdMiss = m.jdMiss.filter(x => x !== id); m.body = null; setTimeout(() => toast('JD added. Key points made again with it', true), 0); } }
+    for (const id of m.jdMiss.filter(id => hasJD(MR.get(id)))) { for (const a of sel.filter(x => x.roleId === id)) { const p = personOf(a); p.kp = kpMake(p, a).join('\n'); m.kp[a.id] = p.kp; } m.jdMiss = m.jdMiss.filter(x => x !== id); (m.edited || (m.body = null)); setTimeout(() => toast('JD added. Key points made again with it', true), 0); } }
   const tx = introText(m); m.gen = tx.body;
   const rows = pool.map(a => { const p = personOf(a), on = m.sel.includes(a.id), fn = esc(firstName(p.name));
     return `<div class="ir ${on ? 'on' : ''}"><label class="ir-h"><input type="checkbox" data-act-change="introsel" data-a="${a.id}" ${on ? 'checked' : ''}><b>${esc(p.name)}</b><span class="muted small">${esc(roleOf(a).title)}</span><span class="ir-tags">${p.cv ? '<span class="tag ok" style="margin:0">CV</span>' : '<span class="tag" style="margin:0">no CV</span>'}${p.trName ? '<span class="tag ok" style="margin:0">transcript</span>' : ''}${(p.notes || '').trim() ? '<span class="tag ok" style="margin:0">notes</span>' : ''}</span></label>
@@ -3227,11 +3285,12 @@ function introHTML(m) {
             ${x.id === '_new' ? `<input class="inp" id="ib_rn_${i}" value="${esc(x.n || '')}" placeholder="Name"><input class="inp" id="ib_rt_${i}" value="${esc(x.t || '')}" placeholder="Title, e.g. Hiring manager"><input class="inp" id="ib_re_${i}" type="email" value="${esc(x.e || '')}" placeholder="Email">` : ct && ct.email ? `<span class="small muted ito2-e">${esc(ct.email)}</span>` : `<input class="inp" id="ib_re_${i}" type="email" value="${esc(x.e || '')}" placeholder="Email of ${esc(firstName((ct || {}).name || ''))}">`}
             ${introRows(m).length > 1 ? `<button class="ib" data-act="introrsdel" data-i="${i}" title="Remove">×</button>` : ''}</div>`; }).join('')}
         <button class="ux-link" data-act="introrsadd">+ Also send to someone else</button><div class="small muted">New people are saved as contacts at ${esc(c.name)}.</div></div></div>
+      <div class="ib-claude">${m.claudeBusy ? '<span class="small">Claude is writing… (10 to 20 seconds)</span>' : `<button class="btn" data-act="introclaude" ${sel.length && !noJd.length ? '' : 'disabled'}>✦ ${claudeKey() ? 'Write it with Claude' : 'Copy everything for Claude'}</button><span class="small muted">${claudeKey() ? 'Claude matches the JD requirements to the CV, transcript and notes, with examples and comp.' : 'Copies the JD, CVs, transcripts and notes with your intro style, and opens Claude. Paste Claude\'s email in the message box. Add your Claude API key in Settings › Nimble AI to do it in one click.'}</span>`}</div>
       <label class="field wide">Subject<input id="ib_subj" value="${esc(m.subj ?? tx.subj)}"></label>
-      <label class="field wide">Message<textarea id="ib_body" rows="14">${esc(m.body ?? tx.body)}</textarea></label></div>
-    ${noJd.length ? '</div>' : ''}${m.body != null ? '<div class="small muted">You edited the message. <button class="btn sm quiet" data-act="introrebuild">Rebuild it from the key points</button></div>' : ''}
+      <label class="field wide">Message<textarea id="ib_body" class="ib-body" rows="20" spellcheck="true">${esc(m.body ?? tx.body)}</textarea></label></div>
+    ${noJd.length ? '</div>' : ''}${m.edited ? '<div class="small muted">Your edits are kept. <button class="btn sm quiet" data-act="introrebuild">Start over from Nimble\'s draft</button></div>' : ''}
     ${m.made ? `<div class="ir-done">Email created. Sent it? <button class="btn sm primary" data-act="introsent">Move ${sel.length} to ${esc(introNextLabel(sel))}</button></div>` : ''}
-    <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Close</button><button class="btn" data-act="introcopy" ${noJd.length ? 'disabled' : ''}>Copy message</button><button class="btn primary" data-act="introeml" ${sel.length && !noJd.length ? '' : 'disabled'}>Create Outlook email${sel.filter(a => personOf(a).cv).length ? ` with ${sel.filter(a => personOf(a).cv).length} CV${sel.filter(a => personOf(a).cv).length > 1 ? 's' : ''}` : ''}</button></div>`;
+        <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Close</button><button class="btn" data-act="introcvs" ${sel.some(a => personOf(a).cv) ? '' : 'disabled'} title="Download the CV files to attach them yourself">Download CVs</button><button class="btn" data-act="introcopy" ${noJd.length ? 'disabled' : ''}>Copy message</button><button class="btn primary" data-act="introeml" ${sel.length && !noJd.length ? '' : 'disabled'}>Create Outlook email${sel.filter(a => personOf(a).cv).length ? ` with ${sel.filter(a => personOf(a).cv).length} CV${sel.filter(a => personOf(a).cv).length > 1 ? 's' : ''}` : ''}</button></div>`;
 }
 const introNext = a => { const l = stagesFor(a.roleId), cur = stageOf(a); return l.find(s => s.i > cur.i && s.kind === 'review') || null; };
 const introNextLabel = sel => { const n = sel.map(introNext).filter(Boolean); return n.length ? n[0].label : 'the client review stage'; };
@@ -8005,27 +8064,31 @@ const ACT = {
     MODAL = { kind: 'intro', c: cid, r: rid, sel: pool.map(x => x.id), kp: {}, to: cts[0] ? cts[0].id : null }; render(); },
   introsel: el => { introRead(); const id = el.dataset.a; MODAL.sel = el.checked ? [...new Set([...MODAL.sel, id])] : MODAL.sel.filter(x => x !== id); render(); },
   introto: el => { introRead(); introRecips(MODAL); const m = MODAL, id = el.dataset.id; m.tos = el.checked ? [...new Set([...m.tos, id])] : m.tos.filter(x => x !== id); m.body = m.body; render(); },
-  intrors: el => { introRead(); const m = MODAL, x = introRows(m)[+el.dataset.i]; if (!x) return; x.id = el.value; m.body = null; render(); if (el.value === '_new') setTimeout(() => { const i = document.getElementById('ib_rn_' + el.dataset.i); i && i.focus(); }, 30); },
-  introrsadd: () => { introRead(); const m = MODAL, cts = clientContacts(MC.get(m.c)), used = new Set(introRows(m).map(x => x.id)), nx = cts.find(z => !used.has(z.id)); introRows(m).push(nx ? { id: nx.id } : { id: '_new' }); m.body = null; render(); },
-  introrsdel: el => { introRead(); introRows(MODAL).splice(+el.dataset.i, 1); MODAL.body = null; render(); },
+  intrors: el => { introRead(); const m = MODAL, x = introRows(m)[+el.dataset.i]; if (!x) return; x.id = el.value; (m.edited || (m.body = null)); render(); if (el.value === '_new') setTimeout(() => { const i = document.getElementById('ib_rn_' + el.dataset.i); i && i.focus(); }, 30); },
+  introrsadd: () => { introRead(); const m = MODAL, cts = clientContacts(MC.get(m.c)), used = new Set(introRows(m).map(x => x.id)), nx = cts.find(z => !used.has(z.id)); introRows(m).push(nx ? { id: nx.id } : { id: '_new' }); (m.edited || (m.body = null)); render(); },
+  introrsdel: el => { introRead(); introRows(MODAL).splice(+el.dataset.i, 1); (MODAL.edited || (MODAL.body = null)); render(); },
   introtr: el => { introRead(); TR_TARGET = el.dataset.a; document.getElementById('trpick').click(); },
-  introtrdel: el => { introRead(); const a = appById(el.dataset.a); if (!a) return; const p = personOf(a); delete p.transcript; delete p.trName; p.kp = ''; delete MODAL.kp[a.id]; MODAL.body = null; save(); render(); },
-  intronotes: el => { introRead(); const a = appById(el.dataset.a); if (!a) return; const p = personOf(a); p.notes = el.value; p.kp = ''; delete MODAL.kp[a.id]; MODAL.body = null; save(); render(); },
+  introtrdel: el => { introRead(); const a = appById(el.dataset.a); if (!a) return; const p = personOf(a); delete p.transcript; delete p.trName; p.kp = ''; delete MODAL.kp[a.id]; (MODAL.edited || (MODAL.body = null)); save(); render(); },
+  intronotes: el => { introRead(); const a = appById(el.dataset.a); if (!a) return; const p = personOf(a); p.notes = el.value; p.kp = ''; delete MODAL.kp[a.id]; (MODAL.edited || (MODAL.body = null)); save(); render(); },
   introaddnew: () => { introRead(); introRecips(MODAL); MODAL.news.push({ n: '', e: '' }); render(); setTimeout(() => { const i = document.getElementById('ib_nn_' + (MODAL.news.length - 1)); i && i.focus(); }, 30); },
   introdelnew: el => { introRead(); introRecips(MODAL); MODAL.news.splice(+el.dataset.i, 1); render(); },
   introkp: el => { introRead(); const a = appById(el.dataset.a); if (!a) return; const p = personOf(a); if (el.dataset.n) { const t = ((document.getElementById('in_' + p.id) || {}).value || '').trim(); if (!t) { toast('Type a few notes first'); return; } p.transcript = [(p.transcript || '').trim(), t].filter(Boolean).join('\n'); }
     p.kp = kpMake(p, a).join('\n'); MODAL.kp[a.id] = p.kp; save(); render(); },
   introjdskip: el => { introRead(); MODAL.jdSkip = [...new Set([...(MODAL.jdSkip || []), el.dataset.r])]; render(); },
   introjdask: el => { introRead(); MODAL.jdSkip = (MODAL.jdSkip || []).filter(x => x !== el.dataset.r); render(); },
-  introjdok: () => { introRead(); const m = MODAL; for (const id of m.sel) { const a = appById(id); if (a) { const p = personOf(a); p.kp = kpMake(p, a).join('\n'); m.kp[a.id] = p.kp; } } m.body = null; save(); render(); toast('JD added. Key points made again with it', true); },
-  introlang: el => { introRead(); const m = MODAL, v = el.dataset.v; if (!INTRO_L[v] || m.lang === v) return; m.lang = v; S.settings.introLang = v; for (const id of m.sel) { const a = appById(id); if (a) { const p = personOf(a); p.kp = kpMake(p, a).join('\n'); m.kp[a.id] = p.kp; } } m.body = null; m.subj = null; save(); render(); toast(`Email and key points in ${INTRO_L[v].nm}`); },
-  introrebuild: () => { introRead(); MODAL.body = null; MODAL.subj = null; render(); },
+  introjdok: () => { introRead(); const m = MODAL; for (const id of m.sel) { const a = appById(id); if (a) { const p = personOf(a); p.kp = kpMake(p, a).join('\n'); m.kp[a.id] = p.kp; } } (m.edited || (m.body = null)); save(); render(); toast('JD added. Key points made again with it', true); },
+  introlang: el => { introRead(); const m = MODAL, v = el.dataset.v; if (!INTRO_L[v] || m.lang === v) return; m.lang = v; S.settings.introLang = v; for (const id of m.sel) { const a = appById(id); if (a) { const p = personOf(a); p.kp = kpMake(p, a).join('\n'); m.kp[a.id] = p.kp; } } (m.edited || (m.body = null)); m.subj = null; save(); render(); toast(`Email and key points in ${INTRO_L[v].nm}`); },
+  introclaude: () => { introClaude(); },
+  claudekey: el => { const v = (el.value || '').trim(); if (!v || /^•+$/.test(v)) return; try { localStorage.setItem('nimble.claudeKey', v); } catch (e) { toast('Could not save the key in this browser'); return; } render(); toast('Claude key saved in this browser', true); },
+  claudekeydel: () => { try { localStorage.removeItem('nimble.claudeKey'); } catch (e) { } render(); toast('Claude key removed', true); },
+  introcvs: async () => { introRead(); const sel = introPool(MODAL.c, MODAL.r).filter(a => MODAL.sel.includes(a.id)); let n = 0; for (const a of sel) { const p = personOf(a), f = await kvGet('cv:' + p.id).catch(() => null); if (!f || !f.data || !f.data.byteLength) continue; const ext = (f.name.match(/\.\w+$/) || ['.pdf'])[0]; const u = URL.createObjectURL(new Blob([f.data], { type: f.type || 'application/pdf' })), l = document.createElement('a'); l.href = u; l.download = asciiName(`${p.name} - CV${ext}`); document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); n++; await new Promise(r => setTimeout(r, 400)); } toast(n ? `${n} CV${n > 1 ? 's' : ''} downloaded` : 'No CV files in this browser: upload them again'); },
+  introrebuild: () => { introRead(); MODAL.edited = false; MODAL.body = null; MODAL.subj = null; render(); },
   introcopy: () => { introRead(); introRecips(MODAL, true); const tx = introText(MODAL); copyText(MODAL.body ?? tx.body); toast('Message copied'); },
   introeml: async () => { introRead(); const m = MODAL, c = MC.get(m.c), cts = clientContacts(c), v = id => ((document.getElementById(id) || {}).value || '').trim();
     const tos = introRecips(m, true);
     const sel = introPool(m.c, m.r).filter(a => m.sel.includes(a.id)); if (!sel.length) { toast('Tick at least one candidate'); return; }
     const tx = introText(m), body = m.body ?? tx.body, subj = m.subj ?? tx.subj, files = [], missing = [];
-    for (const a of sel) { const p = personOf(a); if (!p.cv) { missing.push(firstName(p.name)); continue; } const f = await kvGet('cv:' + p.id).catch(() => null); if (!f || !f.data) { missing.push(firstName(p.name)); continue; } const ext = (f.name.match(/\.\w+$/) || ['.pdf'])[0]; files.push({ name: `${p.name} - CV${ext}`, type: f.type, data: f.data }); }
+    for (const a of sel) { const p = personOf(a); if (!p.cv) { missing.push(firstName(p.name)); continue; } const f = await kvGet('cv:' + p.id).catch(() => null); if (!f || !f.data || !(f.data.byteLength > 100)) { missing.push(firstName(p.name)); continue; } const ext = (f.name.match(/\.\w+$/) || ['.pdf'])[0]; files.push({ name: `${p.name} - CV${ext}`, type: f.type || cvMime(f.name), data: f.data }); }
     const eml = buildEml({ to: tos.map(to => to.email ? `${mimeWord(to.name)} <${to.email}>` : mimeWord(to.name)).join(', '), subject: subj, text: body, html: textToHtml(body), files });
     downloadFile(`Introduction ${c.name} ${TODAY}.eml`, eml, 'message/rfc822'); m.made = true; save(); render();
     toast(`Email created${files.length ? ' with ' + files.length + ' CV' + (files.length > 1 ? 's' : '') : ''}. Open the downloaded file: it opens in Outlook as a draft.${missing.length ? ' No CV for ' + missing.join(', ') + '.' : ''}`); },
@@ -10190,7 +10253,7 @@ document.addEventListener('change', e => {
   if (el.dataset && /^(bdwiz|bdca)/.test(el.dataset.actChange || '') && ACT[el.dataset.actChange]) { ACT[el.dataset.actChange](el); return; }
   if (el.dataset && el.dataset.actChange === 'cudate') { ACT.cudate(el); return; }
   if (el.dataset && el.dataset.actChange === 'aisel' && AIX) { const id = el.dataset.a; AIX.sel = el.checked ? [...new Set([...AIX.sel, id])] : AIX.sel.filter(x => x !== id); render(); return; }
-  if (el.dataset && ['openteam', 'rcmgr', 'cmgrset', 'setcowner', 'rpdate', 'agnote', 'askwname', 'setbdgoal', 'settarget', 'settgtstart', 'revadj', 'quietdays', 'splitset', 'pcset', 'coacc', 'bulkset', 'bulkfile', 'bgf', 'rpsel', 'msgset', 'rfpudate', 'rsset', 'rtadate', 'rfptpset', 'rfpdate', 'carset', 'lockidle', 'rfpset', 'rftset', 'obedit', 'rvlog', 'rvtask', 'bulkmove', 'rnfrom', 'rcdate', 'pldate', 'setsector', 'askics', 'askws', 'introsel', 'introto', 'intrors', 'intronotes', 'crmset', 'edittaskdate', 'whomset', 'ftdate', 'fbst', 'fbf'].includes(el.dataset.actChange)) { ACT[el.dataset.actChange](el); return; }
+  if (el.dataset && ['openteam', 'rcmgr', 'cmgrset', 'setcowner', 'rpdate', 'agnote', 'askwname', 'setbdgoal', 'settarget', 'settgtstart', 'revadj', 'quietdays', 'splitset', 'pcset', 'coacc', 'bulkset', 'bulkfile', 'bgf', 'rpsel', 'msgset', 'rfpudate', 'rsset', 'rtadate', 'rfptpset', 'rfpdate', 'carset', 'lockidle', 'rfpset', 'rftset', 'obedit', 'rvlog', 'rvtask', 'bulkmove', 'rnfrom', 'rcdate', 'pldate', 'setsector', 'claudekey', 'askics', 'askws', 'introsel', 'introto', 'intrors', 'intronotes', 'crmset', 'edittaskdate', 'whomset', 'ftdate', 'fbst', 'fbf'].includes(el.dataset.actChange)) { ACT[el.dataset.actChange](el); return; }
   if (el.id && el.id.startsWith('cp_dt_') && isISO(el.value)) { el.parentNode.querySelectorAll('.qchip').forEach(b => b.classList.remove('on')); return; }
   if (el.dataset && el.dataset.actChange === 'cosel') { const d = dealById(el.dataset.d); if (!d) return; const keep = ['u', 'n'].map(k => (document.getElementById(`cu_${k}_${d.id}`) || {}).value || ''); const cur = coSel(d); COSEL[d.id] = el.checked ? [...new Set([...cur, el.dataset.c])] : cur.filter(x => x !== el.dataset.c); render(); ['u', 'n'].forEach((k, n) => { const i = document.getElementById(`cu_${k}_${d.id}`); if (i) i.value = keep[n]; }); return; }
   if (el.dataset && el.dataset.actChange === 'dealcopick' && el.value) { const d = dealById(el.dataset.d), c = d && (accById(d.accountId).contacts || []).find(x => x.id === el.value); if (d && c) { snapshot(); dealCoAdd(d, c.id); bdLog(d, 'system', `Contact added: ${c.name}`); commit(); toast(`${c.name} added to this opportunity`, true); } return; }
@@ -10507,10 +10570,11 @@ document.getElementById('rfppick1').addEventListener('change', async e => { cons
 document.getElementById('carpick').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) f.text().then(carImportText); });
 document.getElementById('jdpick').addEventListener('change', e => { const f = e.target.files[0]; if (f && JD_TARGET) jdFile(f, JD_TARGET); JD_TARGET = null; e.target.value = ''; });
 let TR_TARGET = null;
+document.addEventListener('input', e => { const t = e.target; if (!MODAL || MODAL.kind !== 'intro' || !t || !t.id) return; if (t.id === 'ib_body') { MODAL.body = t.value; MODAL.edited = true; } else if (t.id === 'ib_subj') MODAL.subj = t.value; });
 document.getElementById('trpick').addEventListener('change', async e => { const f = e.target.files[0], aid = TR_TARGET; TR_TARGET = null; e.target.value = ''; const a = aid && appById(aid); if (!f || !a) return; toast('Reading the transcript…');
   let text = ''; try { const buf = await f.arrayBuffer(); text = /\.(vtt|srt|md)$/i.test(f.name) ? new TextDecoder().decode(buf) : await cvTextOf(f, buf); } catch (x) { console.error(x); }
   if (!(text || '').trim()) { toast("Couldn't read text from that file. Try PDF, Word or a text file"); return; }
-  const p = personOf(a); p.transcript = text.slice(0, 40000); p.trName = f.name; p.kp = ''; if (MODAL && MODAL.kind === 'intro') { delete MODAL.kp[a.id]; MODAL.body = null; } save(); render(); toast(`Transcript for ${firstName(p.name)} added. The email uses it`, true); });
+  const p = personOf(a); p.transcript = text.slice(0, 40000); p.trName = f.name; p.kp = ''; if (MODAL && MODAL.kind === 'intro') { delete MODAL.kp[a.id]; (MODAL.edited || (MODAL.body = null)); } save(); render(); toast(`Transcript for ${firstName(p.name)} added. The email uses it`, true); });
 document.getElementById('cvpick').addEventListener('change', e => { const f = e.target.files[0]; if (f && CV_TARGET) { if (MODAL && MODAL.kind === 'cvask') MODAL = null; cvFile(f, CV_TARGET); } CV_TARGET = null; e.target.value = ''; });
 document.getElementById('cvnewpick').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) cvNewCandidate(f); });
 document.getElementById('pdfpick').addEventListener('change', e => { const f = e.target.files[0]; if (f) (PDF_TARGET && PDF_TARGET.bd ? bdPdfFile(f, PDF_TARGET) : handlePdfFile(f, PDF_TARGET)); PDF_TARGET = null; e.target.value = ''; });
