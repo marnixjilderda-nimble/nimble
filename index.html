@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-BsalF5OXLov9y82iz/q6Q5WVrxgvLNu/liSPN0XTGrQ=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-r/AUqcDf1V5q9tGJ6sWtNmnRfo4pPuuj2NqpcEXNNLE=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -2018,6 +2018,7 @@ select.inp:hover,.field select:hover{border-color:color-mix(in srgb,var(--ink) 2
 @media (max-width:900px){.mk-t tr{display:grid;grid-template-columns:1fr auto}.mk-t td{border-top:0}.mk-t tr{border-top:1px solid var(--line)}.mk-cnts,.mk-on{grid-column:1/-1;padding-top:0!important}}
 .mk-hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:8px}.mk-hc{padding:11px 13px;border-radius:12px;display:grid;gap:3px;box-shadow:inset 2px 0 0 color-mix(in srgb,var(--urgent) 75%,transparent)}
 .mk-hw{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mk-hf{display:flex;align-items:center;justify-content:space-between;gap:6px 8px;margin-top:4px;flex-wrap:wrap}.mk-hf .mk-cnts span{margin-right:8px}.mk-hf .acts{gap:6px;flex-wrap:nowrap}.mk-hf .btn,.mk-act .btn{white-space:nowrap}
+.seat-l{display:grid;gap:6px;max-height:240px;overflow:auto;padding:2px}
 </style>
 <div id="wall"></div>
 <div id="app"></div>
@@ -2040,7 +2041,7 @@ select.inp:hover,.field select:hover{border-color:color-mix(in srgb,var(--ink) 2
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:d491b29f1c*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:105af9aac3*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -2395,12 +2396,15 @@ function oddsModalHTML(m) { const a = appById(m.a); if (!a) return ''; const ms 
     <div class="field odds-f">Chance it lands<div class="odds-row">${ODDS_STEPS.map(v => `<button class="btn sm ob ${m.p === v ? 'on' : ''}" data-act="oddsp" data-v="${v}">${v}%</button>`).join('')}</div></div>
     <label class="field odds-f">Why${ms === 'final' ? ' <span class="muted small">(needed when you change the default)</span>' : ''}<textarea id="odds_why" class="inp" rows="3" placeholder="${ms === 'offer' ? 'e.g. Offer above what he asked, super excited, no other offers' : 'e.g. Hiring manager already said he is the one'}">${esc(m.why ?? o.why ?? '')}</textarea></label>
     <div class="acts" style="margin-top:14px">${prev ? `<button class="btn quiet" data-act="oddsback" style="margin-right:auto">Move back to ${esc(prev.label)}</button>` : ''}${m.need ? '' : '<button class="btn" data-act="modalclose">Cancel</button>'}<button class="btn primary" data-act="oddssave">Save</button></div>`; }
-function moneyGroups(pipe) { const g = new Map();
-  for (const x of pipe) { const k = x.openings > 1 ? x.roleKey + ':' + x.appId : x.roleKey; if (!g.has(k)) g.set(k, { role: x.role, client: x.client, amt: 0, c: [] }); const G = g.get(k); G.c.push(x); G.amt = Math.max(G.amt, x.amt); }
-  return [...g.values()].map(G => ({ ...G, c: G.c.sort((a, b) => b.prob - a.prob), p: 1 - G.c.reduce((s, x) => s * (1 - x.prob), 1) })).sort((a, b) => b.p - a.p || b.amt - a.amt); }
+/* every candidate is its own line with its own odds: two candidates for one seat don't add up. Totals count one fee per open seat (the best odds first). */
+function moneyGroups(pipe) { const by = new Map(); for (const x of pipe) { if (!by.has(x.roleKey)) by.set(x.roleKey, []); by.get(x.roleKey).push(x); }
+  return pipe.map(x => { const same = by.get(x.roleKey).length, seats = x.openAll ? Infinity : x.openings || 1; return { role: x.role, client: x.client, amt: x.amt, c: [x], p: x.prob, share: same > seats ? { n: same, seats } : null }; }).sort((a, b) => b.p - a.p || b.amt - a.amt); }
+function moneyTotals(pipe) { const by = new Map(); for (const x of pipe) { if (!by.has(x.roleKey)) by.set(x.roleKey, []); by.get(x.roleKey).push(x); } let pot = 0, wtd = 0;
+  for (const L of by.values()) { const seats = L[0].openAll ? L.length : Math.max(1, L[0].openings || 1), top = L.slice().sort((a, b) => b.prob - a.prob).slice(0, seats); pot += top.reduce((s, x) => s + x.amt, 0); wtd += top.reduce((s, x) => s + x.amt * x.prob, 0); }
+  return { pot, wtd }; }
 function moneyListHTML(pipe) { const G = moneyGroups(pipe || []); if (!G.length) return '<div class="small muted">No offers or final interviews right now.</div>';
-  return `<div class="mny">${G.map(g => `<div class="mny-g"><div class="mny-h"><b class="mny-p ${g.p <= .5 ? 'lo' : ''}">${Math.round(g.p * 100)}%</b><div class="mny-t"><b>${esc(g.role)}</b> <span class="muted small">${esc(g.client)}</span>${g.c.length > 1 ? ` <span class="small mny-n">${g.c.length} candidates, one seat</span>` : ''}</div><b class="num">${money(g.amt)}</b></div>
-    ${g.c.map(x => `<div class="mny-c"><div class="mny-r"><span>${esc(x.cand)}</span><span class="small muted">${x.ms === 'offer' ? 'Offer, ' + (x.status === 'verbal' ? 'verbally accepted' : 'pending decision') : 'Final, ' + (x.fdone ? 'done' : 'planned')}</span>${appById(x.appId) ? `<button class="btn sm quiet" data-act="oddsopen" data-a="${x.appId}" title="Change the odds">${x.odds ?? '?'}%</button>` : `<b class="small">${x.odds ?? '?'}%</b>`}${x.low ? '<span class="hyg">⚑ Low odds</span>' : ''}${x.quiet ? '<span class="hyg">Chase: quiet 7+ days</span>' : ''}${x.missing ? '<span class="hyg">Odds missing</span>' : ''}</div>${x.why ? `<div class="small muted mny-w">“${esc(x.why)}”</div>` : ''}</div>`).join('')}</div>`).join('')}</div>`; }
+  return `<div class="mny">${G.map(g => `<div class="mny-g"><div class="mny-h"><b class="mny-p ${g.p <= .5 ? 'lo' : ''}">${Math.round(g.p * 100)}%</b><div class="mny-t"><b>${esc(g.c[0].cand)}</b> <span class="muted small">${esc(g.role)} · ${esc(g.client)}</span>${g.share ? ` <span class="small mny-n">${g.share.n} candidates for ${g.share.seats} seat${g.share.seats > 1 ? 's' : ''}</span>` : ''}</div><b class="num">${money(g.amt)}</b></div>
+    ${g.c.map(x => `<div class="mny-c"><div class="mny-r"><span class="small muted">${x.ms === 'offer' ? 'Offer, ' + (x.status === 'verbal' ? 'verbally accepted' : 'pending decision') : 'Final, ' + (x.fdone ? 'done' : 'planned')}</span>${appById(x.appId) ? `<button class="btn sm quiet" data-act="oddsopen" data-a="${x.appId}" title="Change the odds">${x.odds ?? '?'}%</button>` : `<b class="small">${x.odds ?? '?'}%</b>`}${x.low ? '<span class="hyg">⚑ Low odds</span>' : ''}${x.quiet ? '<span class="hyg">Chase: quiet 7+ days</span>' : ''}${x.missing ? '<span class="hyg">Odds missing</span>' : ''}</div>${x.why ? `<div class="small muted mny-w">“${esc(x.why)}”</div>` : ''}</div>`).join('')}</div>`).join('')}</div>`; }
 function pipeLine(pf) { return `<div class="pf-row mny-v"><div><b>${money(pf.pot || 0)}</b><span class="small muted">potential: if every role with an offer or final closes</span></div><div><b>${money(pf.wtd || 0)}</b><span class="small muted">weighted by the odds: the minimum to expect</span></div></div>`; }
 const money = n => (S.settings.currency || '€') + Math.round(n).toLocaleString('en-GB');
 const roleLabel = r => `${r.title} at ${(MC.get(r.clientId) || {}).name || '?'}`;
@@ -2547,6 +2551,11 @@ function sweepTasks() { if (S && S.deals && !S.settings.dealName1 && !VIEWAS) { 
   for (const t of S.tasks) { if (t.done || !t.appId) continue; const a = byId.get(t.appId); if (a && !t.atStage && t.created === TODAY) t.atStage = a.stage; if (a && (a.outcome === 'toreject' || a.outcome === 'closed')) { t.done = true; t.doneOn = TODAY; t.cleared = true; } } }
 const hasLiveApp = (pid, rid, except) => S.apps.some(a => a.personId === pid && a.roleId === rid && a.id !== except && ['active', 'toreject'].includes(a.outcome));
 /* on hold: the candidate's open tasks go, so they don't clutter Today and Tasks */
+/* a candidate goes to offer: is there a seat for them, and should the others wait? */
+function seatInfo(a) { const r = roleOf(a); if (!r || openAll(r) || a.outcome !== 'active' || stageOf(a).kind !== 'offer') return null; const live = S.apps.filter(x => x.roleId === r.id && x.outcome === 'active');
+  const offers = live.filter(x => stageOf(x).kind === 'offer'), left = openLeftOf(r), placed = S.apps.filter(x => x.roleId === r.id && x.outcome === 'placed').length;
+  const rest = live.filter(x => stageOf(x).kind !== 'offer' && stageOf(x).kind !== 'placed' && !x.onHold && stagesFor(r.id).findIndex(s => s.id === x.stage) > 0);
+  const more = offers.length > left; if (!more && (offers.length < left || !rest.length)) return null; return { r, offers, left, placed, rest, more }; }
 function holdClear(a) { const n = S.tasks.filter(t => t.appId === a.id && !t.done).length; S.tasks = S.tasks.filter(t => !(t.appId === a.id && !t.done)); if (n) addLog(a, 'system', `${n} open task${n > 1 ? 's' : ''} removed (on hold)`); return n; }
 function markToReject(a) { a.outcome = 'toreject'; a.toRejectOn = TODAY; S.tasks = S.tasks.filter(t => !(t.appId === a.id && t.auto && !t.done)); addLog(a, 'system', 'Added to To be rejected'); }
 /* To be rejected: one clear block on Tasks and Today, oldest first, with the message one click away */
@@ -2604,6 +2613,7 @@ function setStage(a, sid) {
   if (to.askDate || (forward && to.kind === 'placed')) ASK = { a: a.id, kind: to.kind, label: to.label };
   else if (forward && to.kind === 'cv' && !NOPROMPT && !VIEWAS || forward && to.kind === 'cv' && VIEWAS && VIEWAS.scope) ASK = { a: a.id, kind2: 'cvask' };
   PROMPT_FIRST = !NOPROMPT && !VIEWAS; syncAutoTasks(a); PROMPT_FIRST = false;
+  if (forward && to.kind === 'offer' && !NOPROMPT && (!VIEWAS || VIEWAS.scope) && !SEATQ.includes(a.id)) SEATQ.push(a.id);
   /* into Waiting for CV: always ask when to chase, also when the automatic task is switched off */
   if (forward && to.kind === 'cvwait' && !NOPROMPT && (!VIEWAS || VIEWAS.scope)) { let t = S.tasks.find(x => x.appId === a.id && !x.done && (x.auto === to.id || /^chase (the )?cv/i.test(x.text || '')));
     if (!t) { t = { id: uid('t'), appId: a.id, text: 'Chase the CV', due: addWorkdays(TODAY, 2), done: false, auto: to.id, created: TODAY }; S.tasks.push(t); }
@@ -2632,6 +2642,11 @@ function ruleKey(st) {
 }
 function isWorkday(iso) { const d = new Date(iso + 'T12:00:00').getDay(); return d !== 0 && d !== 6; }
 function addWorkdays(iso, n) { let d = iso; n = Math.max(0, +n || 0); if (!n) { while (!isWorkday(d)) d = addDays(d, 1); return d; } while (n > 0) { d = addDays(d, 1); if (isWorkday(d)) n--; } return d; }
+/* open positions: a number, or no limit (the client keeps hiring good people) */
+const openAll = r => !!(r && r.openAll);
+const openLeftOf = r => { if (!r) return 1; const placed = S.apps.filter(a => a.roleId === r.id && a.outcome === 'placed').length; return openAll(r) ? Infinity : Math.max(0, (+r.openings || 1) - placed); };
+const openTxt = r => openAll(r) ? 'No limit' : String(r.openings || 1);
+let SEATQ = [];
 let AUTOMSG = '', FIRSTQ = [], PROMPT_FIRST = false, NOPROMPT = false, BDFIRST = null, STAGEUPD = null;
 function syncAutoTasks(a, fromDate) {
   if (!a || !roleOf(a)) return;
@@ -2656,7 +2671,7 @@ function roleHealth(r) {
   const pre = apps.filter(a => PRE.has(stageOf(a).kind)).length;
   const proc = apps.filter(a => !PRE.has(stageOf(a).kind) && stageOf(a).kind !== 'placed').length;
   const late = apps.filter(a => ['interview', 'offer'].includes(stageOf(a).kind)).length;
-  const placedN = S.apps.filter(a => a.roleId === r.id && a.outcome === 'placed').length, openLeft = Math.max(0, (+r.openings || 1) - placedN);
+  const placedN = S.apps.filter(a => a.roleId === r.id && a.outcome === 'placed').length, openLeft = openAll(r) ? 2 : Math.max(0, (+r.openings || 1) - placedN);
   const per = r.sourcingTarget ?? S.settings.sourcingTarget ?? 5, target = per * Math.max(1, openLeft);
   const lastAdded = apps.map(a => a.created || a.since).filter(isISO).sort().pop();
   const need = r.srcSet === 'need', covered = !need && (r.srcSet === 'enough' || !!(r.covered && pre < target));
@@ -3339,6 +3354,7 @@ function render() { if (RENDERING) { RERENDER = true; return; } RENDERING = true
 function renderImpl() { if (S && S.settings && !VIEWAS) HOK = S.settings.healthOk = S.settings.healthOk || {};
   if (needsTerms() && !LOCKED && (!MODAL || !['terms', 'start'].includes(MODAL.kind))) MODAL = { kind: 'terms' };
   if (WEB && !MODAL && !LOCKED && S && isFresh() && !S.settings.movedIn && !window.PT_START && !S.settings.inviteId && FS_OK) MODAL = { kind: 'movein' };
+  if (!MODAL && !LOCKED && SEATQ.length && S && S.apps) { while (SEATQ.length && !MODAL) { const a = appById(SEATQ.shift()); if (a && seatInfo(a)) MODAL = { kind: 'offerseat', a: a.id }; } }
   if (!MODAL && !LOCKED && !VIEWAS && S && S.apps && !needsTerms()) { try { const q = oddsDue(); if (q.length) MODAL = { kind: 'odds', a: q[0].id, need: true, left: q.length }; } catch (e) { } }
   const ctx = { view: VIEW, space: S && S.settings && S.settings.space, panel: JSON.stringify([typeof BDD !== 'undefined' ? BDD : null, DRAWER ? (DRAWER.a || DRAWER.p || 1) : null]) };
   const keepApp = RSCROLL && RSCROLL.ctx.view === ctx.view && RSCROLL.ctx.space === ctx.space, keepLayer = RSCROLL && RSCROLL.ctx.panel === ctx.panel;
@@ -5381,7 +5397,7 @@ function ownerSelect(id, cur, extra) { const ros = rosterAll(), me = realUid(); 
 function shareRoleCard(r, owner, ds) { const c = MC.get(r.clientId) || {}, l = stagesFor(r.id);
   return { owner, ownerName: owner === myUid() ? (S.settings.userName || 'Me') : rosterName(owner), roleId: r.id, title: r.title, client: c.name || '', cpri: c.priority || 'B', region: r.region || '', priority: r.priority || 'B', openTo: r.openTo || [],
     stages: l.filter(x => x.kind !== 'placed').map(x => ({ id: x.id, label: x.label, kind: x.kind })),
-    mgrId: roleMgrId(r), mgrName: nameOf(roleMgrId(r)), salesId: clientOwnerId(c), salesName: nameOf(clientOwnerId(c)), fee: feeOfRole(r), openings: r.openings || 1, hot: r.hot || null, teamOpen: r.hot ? (r.teamOpen || { on: r.hot.on }) : (r.teamOpen || (rOpenEff(r) ? { on: r.created || '' } : null)), priv: !rOpenEff(r), helpers: (r.openTo || []).map(id => ({ id, name: nameOf(id), since: (r.openSince || {})[id] || '' })),
+    mgrId: roleMgrId(r), mgrName: nameOf(roleMgrId(r)), salesId: clientOwnerId(c), salesName: nameOf(clientOwnerId(c)), fee: feeOfRole(r), openings: openAll(r) ? 99 : r.openings || 1, openAll: openAll(r), hot: r.hot || null, teamOpen: r.hot ? (r.teamOpen || { on: r.hot.on }) : (r.teamOpen || (rOpenEff(r) ? { on: r.created || '' } : null)), priv: !rOpenEff(r), helpers: (r.openTo || []).map(id => ({ id, name: nameOf(id), since: (r.openSince || {})[id] || '' })),
     goal: r.goal && r.goal.n ? r.goal : null, info: { location: [r.subregion, r.location].filter(Boolean).join(', '), salary: r.salary || '', jd: String(r.jdText || '').slice(0, 1800), notes: String(r.notes || '').slice(0, 800), created: r.created || '', status: r.status },
     apps: S.apps.filter(a => a.roleId === r.id && ['active', 'toreject', 'placed'].includes(a.outcome)).map(a => ({ id: a.id, n: personOf(a).name, t: personOf(a).title || '', e: personOf(a).employer || '', li: personOf(a).linkedin || '', stId: a.stage, st: stageOf(a).label, k: stageOf(a).kind, o: a.outcome, by: a.addedBy || '', byId: a.addedById || '', ownerId: candOwnerId(a), ownerName: candOwnerName(a), since: a.since || '', ni: a.nextInterview || '', nt: a.nextTime || '',
       sid: a.shareId || '', tasks: openTasks(a).map(t => ({ text: t.text, due: t.due || '' })), log: (a.log || []).slice(0, 4).map(g => ({ d: g.date, t: g.text })), c: a.created || a.since || '', la: ((a.log || [])[0] || {}).date || a.since || '', ds: Object.keys(a.dates || {}), dd: a.dates || {}, asg: !!(a.cOwnerId && a.cOwnerId !== (a.addedById || homeId())),
@@ -5469,14 +5485,14 @@ function revenueRows(sets) { const out = [];
   for (const m of sets) withData(m.ds, () => { for (const a of S.apps) { const r = roleOf(a); if (!r) continue; const c = MC.get(r.clientId) || {}, k = stageOf(a).kind, placed = a.outcome === 'placed' || k === 'placed';
     if (!placed && !(isLive(a) && ['review', 'interview', 'offer'].includes(k))) continue; const fee = feeOf(a); const l = stagesFor(r.id).filter(x => x.kind === 'interview'), fin = k === 'interview' && l.length && l[l.length - 1].id === a.stage;
     const ms = placed ? '' : moneyStage(a), od = ms ? oddsOf(a) : null;
-    out.push({ placed, date: placed ? placedOn(a) : '', fee, k, fin, prob: placed ? 1 : appProb(a), ms, odds: od, why: ms && oddsSet(a) ? a.odds.why || '' : '', status: ms === 'offer' && oddsSet(a) ? a.odds.status : '', missing: !!ms && !oddsSet(a), low: ms === 'offer' && od != null && od <= 50, fdone: ms === 'final' && finalDone(a), quiet: ms === 'final' && finalDone(a) && a.nextInterview <= addDays(TODAY, -7), appId: a.id, roleKey: (m.userId || 'me') + ':' + r.id, openings: +r.openings || 1, stage: stageOf(a).label, cand: personOf(a).name, client: c.name || '', role: r.title, sales: clientOwnerId(c), am: roleMgrId(r), owner: candOwnerId(a), ni: a.nextInterview || '' }); } });
+    out.push({ placed, date: placed ? placedOn(a) : '', fee, k, fin, prob: placed ? 1 : appProb(a), ms, odds: od, why: ms && oddsSet(a) ? a.odds.why || '' : '', status: ms === 'offer' && oddsSet(a) ? a.odds.status : '', missing: !!ms && !oddsSet(a), low: ms === 'offer' && od != null && od <= 50, fdone: ms === 'final' && finalDone(a), quiet: ms === 'final' && finalDone(a) && a.nextInterview <= addDays(TODAY, -7), appId: a.id, roleKey: (m.userId || 'me') + ':' + r.id, openings: openAll(r) ? 99 : Math.max(1, openLeftOf(r)), openAll: openAll(r), stage: stageOf(a).label, cand: personOf(a).name, client: c.name || '', role: r.title, sales: clientOwnerId(c), am: roleMgrId(r), owner: candOwnerId(a), ni: a.nextInterview || '' }); } });
   return out; }
 function perfFor(uid, sets, rows) { rows = rows || revenueRows(sets); const sp = splitPct(), yr = TODAY.slice(0, 4), part = x => (x.sales === uid ? sp.sales : 0) + (x.am === uid ? sp.am : 0) + (x.owner === uid ? sp.cand : 0);
   const byMonth = Array(12).fill(0), credits = [];
   const adj = { ...((((S.settings.revAdj || {})[uid]) || {})[yr] || {}) }; let manual = 0; for (const k in adj) { const v = +adj[k] || 0; if (v && +k >= 1 && +k <= 12) { byMonth[+k - 1] += v; manual += v; } }
   for (const x of rows) { const pc = part(x); if (!pc || !x.placed || !x.date.startsWith(yr)) continue; const amt = x.fee * pc / 100; byMonth[+x.date.slice(5, 7) - 1] += amt; credits.push({ ...x, pc, amt }); }
   const pipeAll = rows.filter(x => !x.placed && x.ms && part(x)).map(x => ({ ...x, pc: part(x), amt: x.fee * part(x) / 100 })).sort((a, b) => b.prob - a.prob || b.amt - a.amt), pipe = pipeAll.slice(0, 20);
-  const grp = moneyGroups(pipeAll), pot = grp.reduce((s, g) => s + g.amt, 0), wtd = grp.reduce((s, g) => s + g.amt * g.p, 0);
+  const { pot, wtd } = moneyTotals(pipeAll);
   const shp = (TEAM.shared || {}).perf || {}, annual = +(((S.settings.targets || {})[uid]) ?? shp.annual ?? shp.target ?? 0) || 0, tp = targetPlan(annual, ((S.settings.targetStart || {})[uid]) || shp.start || '', yr), target = Math.round(tp.year), m0 = +TODAY.slice(5, 7), dueNow = Math.round(tp.by(tp.mEnd(m0)));
   return { uid, target, annual, start: tp.start, dueNow, ytd: byMonth.reduce((s, v) => s + v, 0), byMonth, credits: credits.sort((a, b) => b.date.localeCompare(a.date)).slice(0, 20), pipe, pot, wtd, adj, manual }; }
 function myPerf() { if (isLead() || !TEAM.shared || !TEAM.shared.perf) { const p = perfFor(myUid(), isLead() && TEAM.state === 'on' ? teamDataSets() : [{ ds: S }]); if (!isLead() && S.settings.myTarget) p.target = +S.settings.myTarget; return p; } return TEAM.shared.perf; }
@@ -5727,7 +5743,7 @@ function roleCardHTML(m) { const r = MR.get(m.r); if (!r) return ''; const c = M
   <div class="rc-grid"><div class="rc-col">
     <section class="rc-sec"><div class="rc-h">Details<span class="rc-ha"><button class="btn sm quiet" data-act="editrole" data-r="${r.id}">Edit details</button><button class="btn sm quiet" data-act="stages" data-r="${r.id}">Edit stages</button></span></div>
       ${kv('Client', `<button class="lnk" data-act="selclient" data-c="${c.id}" data-rg="${esc(r.region || '')}">${esc(c.name || '')}</button>`)}${kv('Account', acc ? `<button class="lnk" data-act="bdacc" data-id="${acc.id}">${esc(acc.name || c.name || 'Open account')}</button><span class="small muted"> · ${(acc.contacts || []).length} contacts</span>` : '')}
-      ${kv('Location', esc([r.location, r.subregion].filter(Boolean).join(', ')))}${kv('Salary', esc(r.salary || ''))}${kv('Openings', String(r.openings || 1))}${kv('Fee per hire', feeOfRole(r) ? money(feeOfRole(r)) : '')}
+      ${kv('Location', esc([r.location, r.subregion].filter(Boolean).join(', ')))}${kv('Salary', esc(r.salary || ''))}${kv('Openings', openTxt(r))}${kv('Fee per hire', feeOfRole(r) ? money(feeOfRole(r)) : '')}
       ${kv('Hiring manager', esc(r.hiringManager || ''))}${kv('Interviewers', ivs.map(w => esc(w.name) + (w.title ? ` <span class="muted">(${esc(w.title)})</span>` : '')).join(', '))}
       ${kv('Opened', r.openedOn ? fmtDate(r.openedOn) : '')}${kv('Target', r.targetDate ? fmtDate(r.targetDate) : '')}${kv('Vacancy', r.link ? `<a class="lnk" href="${esc(r.link)}" target="_blank" rel="noopener">Open link</a>` : '')}
       ${kv('In process', `${live.length} candidate${live.length === 1 ? '' : 's'}`)}</section>
@@ -5737,7 +5753,7 @@ function roleCardHTML(m) { const r = MR.get(m.r); if (!r) return ''; const c = M
     <section class="rc-sec"><div class="rc-h">Manage</div>
       <div class="rc-kv"><span>Grade</span><span class="segc rc-seg rc-sm">${['A', 'B', 'C'].map(g => `<button class="${(r.priority || 'B') === g ? 'on' : ''}" data-act="rcset" data-r="${r.id}" data-k="priority" data-v="${g}">${g}</button>`).join('')}</span></div>
       <div class="rc-kv"><span>Sourcing</span><span>${srcSwitch(r, r.srcSet || (r.covered ? 'enough' : ''))}</span></div>
-      <div class="rc-kv"><span>Open positions</span><span><input class="inp sm num" type="number" min="1" max="99" style="width:70px" value="${r.openings || 1}" data-bind="role|${r.id}|openings|num"> <span class="small muted">${(n => n.placedN ? `${n.placedN} filled, ${n.openLeft} open · ` : '')(roleHealth(r))}Nimble wants ${roleHealth(r).target} in sourcing</span></span></div>
+      <div class="rc-kv"><span>Open positions</span><span>${openAll(r) ? '' : `<input class="inp sm num" type="number" min="1" max="99" style="width:70px" value="${r.openings || 1}" data-bind="role|${r.id}|openings|num"> `}<label class="check" style="display:inline-flex;margin-right:8px"><input type="checkbox" ${openAll(r) ? 'checked' : ''} data-bind="role|${r.id}|openAll|bool"> No limit</label><span class="small muted">${(n => n.placedN ? `${n.placedN} filled${openAll(r) ? '' : `, ${n.openLeft} open`} · ` : '')(roleHealth(r))}Nimble wants ${roleHealth(r).target} in sourcing</span></span></div>
       <div class="rc-kv"><span>Status</span><span class="segc rc-seg rc-sm">${['active', 'paused', 'filled', 'closed'].map(g => `<button class="${r.status === g ? 'on' : ''}" data-act="rcset" data-r="${r.id}" data-k="status" data-v="${g}">${g[0].toUpperCase() + g.slice(1)}</button>`).join('')}</span></div>
       <div class="rc-btns"><button class="btn sm quiet" data-act="matches" data-r="${r.id}">Find matches in talent pool</button><button class="btn sm quiet" data-act="pin" data-r="${r.id}">${S.settings.pins.includes(r.id) ? 'Unpin' : 'Pin to top'}</button><button class="btn sm quiet" data-act="addrole" data-c="${r.clientId}" data-rg="${esc(r.region || '')}">Another role at ${esc(c.name || 'this client')}</button><button class="btn sm quiet" data-act="duprole" data-r="${r.id}">Duplicate</button><button class="btn sm quiet danger" data-act="delrole" data-r="${r.id}">Delete…</button></div></section>
   </div><div class="rc-col">
@@ -7041,6 +7057,14 @@ function modalHTML() {
       <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="hoksave">Mark healthy</button></div>`;
   } else if (m.kind === 'donenext') { const a = appById(m.a); if (!a) { MODAL = null; return ''; } wide = 'wide';
     inner = `<h3>${m.stage ? esc(personOf(a).name) + ': ' + esc(m.t) : 'Done: ' + esc(m.t)}</h3><p class="small muted" style="margin-top:-6px">${m.stage ? esc(roleName(a)) + '. What happened, and what\'s next?' : esc(personOf(a).name) + ' · ' + esc(roleName(a)) + ' · ' + esc(stageOf(a).label) + '. Anything to add, and what\'s next?'}</p>${recUpdHTML(a, 'rm')}<div class="acts" style="margin-top:10px"><button class="btn quiet" data-act="donenone" data-a="${a.id}">Skip</button></div>`;
+  } else if (m.kind === 'offerseat') { const a = appById(m.a), si = a && seatInfo(a); if (!si) { MODAL = null; return ''; } const fn = esc(firstName(personOf(a).name)), others = si.offers.filter(x => x.id !== a.id), more = m.more ?? (si.more ? null : false);
+    inner = `<h3>${fn} goes to offer</h3><p class="small muted" style="margin-top:-6px">${esc(roleName(a))} · ${si.left === 1 ? 'one open position' : si.left + ' open positions'}${si.placed ? `, ${si.placed} already filled` : ''}.</p>
+      ${si.more ? `<div class="iv-step"><div class="ib-sh"><span class="u3-n">1</span>${others.map(x => esc(firstName(personOf(x).name))).join(' and ')} ${others.length > 1 ? 'are' : 'is'} already on offer. Did the client open another position?</div>
+        <div class="segc"><button class="${more === true ? 'on' : ''}" data-act="seatmore" data-v="1">Yes, make it ${si.placed + si.offers.length} position${si.placed + si.offers.length > 1 ? 's' : ''}</button><button class="${more === false ? 'on' : ''}" data-act="seatmore" data-v="0">No, still ${si.left === 1 ? 'one' : si.left}: only one of them gets it</button></div></div>` : ''}
+      ${si.rest.length ? `<div class="iv-step"><div class="ib-sh"><span class="u3-n">${si.more ? 2 : 1}</span>Put the other candidates on hold?</div><p class="small muted" style="margin:-2px 0 8px">While ${fn}'s offer runs, the others wait. Their open tasks go, and each gets one task: send a keep-warm message.</p>
+        <div class="seat-l">${si.rest.map(x => `<label class="check"><input type="checkbox" class="seat-h" value="${x.id}" checked> <b>${esc(personOf(x).name)}</b> <span class="small muted">${esc(stageOf(x).label)}</span></label>`).join('')}</div>
+        <label class="field" style="margin-top:10px;max-width:260px">Send the keep-warm message on<input type="date" id="seat_d" value="${addWorkdays(TODAY, 3)}"></label></div>` : ''}
+      <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Not now</button>${si.rest.length ? `<button class="btn" data-act="seatsave" data-hold="0">Keep them going</button><button class="btn primary" data-act="seatsave" data-hold="1">Put them on hold</button>` : `<button class="btn primary" data-act="seatsave" data-hold="0">Done</button>`}</div>`;
   } else if (m.kind === 'firsttask') { const L = (m.ids || []).map(id => ftFind(id)).filter(t => t && !t.done); if (!L.length) { MODAL = null; return ''; }
     inner = `<h3>${L.length > 1 ? 'Next steps' : esc(L[0].text) + ': when?'}</h3>${L.map(t => { const a = t.appId && appById(t.appId), d = t.dealId && dealById(t.dealId), k = a ? stageOf(a).kind : '', lastScreen = a && k === 'cv' ? S.apps.filter(x => x.roleId === a.roleId && x.id !== a.id && isLive(x) && ['source', 'screen', 'cvwait'].includes(stageOf(x).kind) && isISO(x.nextInterview) && x.nextInterview >= TODAY).map(x => x.nextInterview).sort().pop() : null, waitN = a && k === 'cv' ? S.apps.filter(x => x.roleId === a.roleId && x.id !== a.id && isLive(x) && ['screen', 'cvwait'].includes(stageOf(x).kind)).length : 0;
       return `<div class="ft-row">${L.length > 1 ? `<div><b>${esc(t.text)}</b><div class="small muted">${a ? esc(personOf(a).name) : d ? esc(d.title || 'Opportunity') : ''}</div></div>` : `<div class="small muted">${a ? esc(personOf(a).name) + ', ' + esc(stageOf(a).label) : d ? esc(d.title || 'Opportunity') : ''}</div>`}<div class="chips">${[[0, 'Today'], [1, 'Tomorrow'], [7, 'Next week']].map(([n, l]) => `<button class="qchip ${t.due === dueIn(n) && !t.waitCvs ? 'on' : ''}" data-act="ftdue" data-t="${t.id}" data-n="${n}">${l}${chipDay(n)}</button>`).join('')}${k === 'cv' && waitN ? `<button class="qchip ${t.waitCvs ? 'on' : ''}" data-act="ftwait" data-t="${t.id}" data-d="${lastScreen ? addWorkdays(lastScreen, 1) : ''}">Wait for the other CVs${lastScreen ? ' <small class="cd">· day after the last phone screen, ' + fmtDate(addWorkdays(lastScreen, 1)) + '</small>' : ''}</button>` : ''}<input type="date" class="inp cu-date" min="${TODAY}" value="${esc(t.due || '')}" data-act-change="ftdate" data-t="${t.id}"><button class="qchip ft-skip" data-act="ftskip" data-t="${t.id}">Skip</button></div></div>`; }).join('')}<div class="acts" style="margin-top:12px"><button class="btn primary" data-act="modalclose">Done</button></div>`;
@@ -7104,7 +7128,7 @@ function modalHTML() {
       <label class="field">Location / office<input id="er_loc" value="${esc(r.location || '')}" placeholder="e.g. Utrecht, hybrid"></label>
       <label class="field">Status<select id="er_status">${['active', 'paused', 'filled', 'closed'].map(x => `<option ${r.status === x ? 'selected' : ''}>${x}</option>`).join('')}</select></label>
       <label class="field">Grade<select id="er_pri">${['A', 'B', 'C'].map(x => `<option ${r.priority === x ? 'selected' : ''}>${x}</option>`).join('')}</select></label>
-      <label class="field">Openings<input id="er_open" type="number" min="1" value="${r.openings || 1}"></label>
+      <label class="field">Openings<span style="display:flex;gap:10px;align-items:center"><input id="er_open" type="number" min="1" value="${r.openings || 1}" style="width:90px"><label class="check"><input type="checkbox" id="er_openall" ${openAll(r) ? 'checked' : ''}> No limit</label></span></label>
       <label class="field">Fee per hire<input id="er_fee" type="number" min="0" step="500" value="${r.fee ?? ''}" placeholder="${MC.get(r.clientId).fee ? 'client: ' + MC.get(r.clientId).fee : ''}"></label>
       <label class="field">Salary range<input id="er_sal" value="${esc(r.salary || '')}" placeholder="e.g. 70-85k + bonus"></label>
       <label class="field">Healthy sourcing at<input id="er_target" type="number" min="1" value="${r.sourcingTarget ?? ''}" placeholder="default ${S.settings.sourcingTarget}"></label>
@@ -8116,6 +8140,13 @@ const ACT = {
   moveinskip: () => { S.settings.movedIn = TODAY; save(); MODAL = null; render(); },
   oddsp: el => { MODAL.why = (document.getElementById('odds_why') || {}).value; MODAL.p = +el.dataset.v; render(); },
   oddsst: el => { MODAL.why = (document.getElementById('odds_why') || {}).value; MODAL.st = el.dataset.v; render(); },
+  seatmore: el => { MODAL.more = el.dataset.v === '1'; const ck = [...document.querySelectorAll('.seat-h')].map(i => [i.value, i.checked]), d = (document.getElementById('seat_d') || {}).value; render(); for (const [v, c] of ck) { const i = document.querySelector(`.seat-h[value="${v}"]`); if (i) i.checked = c; } if (d && document.getElementById('seat_d')) document.getElementById('seat_d').value = d; },
+  seatsave: el => { const m = MODAL, a = appById(m.a), si = a && seatInfo(a); if (!si) { MODAL = null; render(); return; } snapshot(); const msg = [];
+    if (si.more && m.more) { const n = si.placed + si.offers.length; si.r.openings = n; addLog(a, 'system', `Open positions raised to ${n} (client hires more)`); msg.push(`${si.r.title} now has ${n} open positions`); }
+    if (el.dataset.hold === '1') { const due = (document.getElementById('seat_d') || {}).value || addWorkdays(TODAY, 3), ids = [...document.querySelectorAll('.seat-h')].filter(i => i.checked).map(i => i.value);
+      for (const id of ids) { const x = appById(id); if (!x) continue; x.onHold = true; holdClear(x); addLog(x, 'system', `Put on hold: ${personOf(a).name} is on offer`); S.tasks.push({ id: uid('t'), appId: x.id, text: `Send ${firstName(personOf(x).name)} a keep-warm message`, due, done: false, created: TODAY, keepWarm: true }); }
+      if (ids.length) msg.push(`${ids.length} on hold, keep-warm message${ids.length > 1 ? 's' : ''} on ${fmtDate(due)}`); }
+    MODAL = null; commit(); if (msg.length) toast(msg.join('. '), true); },
   oddsopen: el => { const a = appById(el.dataset.a); if (!a || !moneyStage(a)) return; CTX = null; MODAL = { kind: 'odds', a: a.id }; render(); },
   oddsback: () => { const a = appById(MODAL && MODAL.a); if (!a || !a.prevStage) return; snapshot(); MODAL = null; setStage(a, a.prevStage); ASK = null; commit(); toast(`${personOf(a).name} is back at ${stageOf(a).label}`); },
   oddssave: () => { const a = appById(MODAL && MODAL.a); if (!a) return; const why = ((document.getElementById('odds_why') || {}).value || '').trim(), ms = moneyStage(a), def = oddsDefault(a);
@@ -8436,7 +8467,7 @@ const ACT = {
     snapshot();
     const st = v('er_status'); if (st !== r.status) r.pausedSince = st === 'paused' ? TODAY : null;
     Object.assign(r, { title: v('er_title'), clientId: v('er_client'), region: v('er_region') || 'Other', subregion: v('er_sub'), location: v('er_loc'), status: st, priority: v('er_pri'),
-      openings: +v('er_open') || 1, fee: v('er_fee') === '' ? null : +v('er_fee'), salary: v('er_sal'), sourcingTarget: v('er_target') === '' ? null : +v('er_target'),
+      openings: +v('er_open') || 1, openAll: !!(document.getElementById('er_openall') || {}).checked, fee: v('er_fee') === '' ? null : +v('er_fee'), salary: v('er_sal'), sourcingTarget: v('er_target') === '' ? null : +v('er_target'),
       hiringManager: v('er_hm'), ...(document.getElementById('er_mgr') ? { mgrId: v('er_mgr') === clientOwnerId(MC.get(v('er_client'))) ? undefined : v('er_mgr') } : {}), keywords: v('er_kw'), openedOn: v('er_opened') || null, targetDate: v('er_target_date') || null, link: v('er_link'), notes: document.getElementById('er_notes').value });
     MODAL = null; if (SEL.role === r.id) SEL = { region: r.region, sub: null, client: r.clientId, role: r.id }; commit(); toast('Role saved', true);
   },
