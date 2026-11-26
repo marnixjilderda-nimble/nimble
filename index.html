@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-m0l2jJOww2WWJw1CWF21wzuFEmIUZ8jGDgEobuQEg3k=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://api.apollo.io https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-WZhpS0NV1yZzzwUtVyG+70YW1YOlBv0D7mFct7Lw4Fs=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://api.apollo.io https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -7740,7 +7740,7 @@ const REC_GROUPS = [
 const ftFind = id => S.tasks.find(x => x.id === id) || (S.bdTasks || []).find(x => x.id === id);
 const recKey = a => { const st = a && stageOf(a); if (!st) return ''; if (st.kind === 'interview' && !isISO(a.nextInterview)) return 'ivsched'; return st.kind === 'source' ? ruleKey(st) : st.kind; };
 const REC_FLOW = {
-  source: [['They replied', 'Candidate replied', fn => [['Answer ' + fn, 0]]], ['I replied', 'I replied', () => [['Follow up', 2]]]],
+  source: [['They replied', 'Candidate replied', fn => [['Answer ' + fn, 0]]], ['I replied', 'I replied', () => [['Follow up', 2]]], ['I followed up', 'I followed up', () => [['Follow up', 3]]]],
   planning: [['I sent my availability', 'Sent my availability', () => [['Follow up if no reply', 2]]], ['I asked for their availability', 'Asked for their availability', () => [['Follow up if no reply', 2]]], ['They asked for my availability', 'They asked for my availability', () => [['Send my availability', 0]]], ['Asked phone and email', 'Asked for their phone number and email', () => [['Follow up if no reply', 1]]]],
   screen: [['Needs rescheduling', 'Call needs rescheduling', () => [['Send new availability', 0]]], ['No-show', 'No-show on the call', () => [['Reach out to reschedule', 0]]]],
   cvwait: [['Chased for the CV', 'Chased for the CV', () => [['Chase CV again', 2]]], ['They have questions', 'Candidate has questions', fn => [['Answer ' + fn, 0]]]],
