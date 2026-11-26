@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-A3KtI5NDTJaTNBUSE5BolTp3hbkeYCbJa2k/4ln6y8I=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://api.apollo.io https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-8u6crrbI0PAWWYwVz0nCZlvrHDGNv23y2qBcI1kS5fA=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://api.apollo.io https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1965,7 +1965,10 @@ body.treers-drag{cursor:col-resize;user-select:none}}
 .drawer .dpart2{padding-top:14px;margin-top:14px;border-top:1px solid color-mix(in srgb,var(--ink) 8%,transparent)}.drawer .dpart2.dtodo{border-top:0;margin-top:6px}
 .drawer .dl.system .dl-t{opacity:.62;font-size:12.5px}.drawer .dl.system .dl-d{opacity:.6}
 .drawer .dti{field-sizing:content;min-width:70px}
-.ctrydd{position:fixed;z-index:9999;max-height:260px;overflow:auto;background:var(--card,#fff);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:4px;font-size:13.5px}.ctrydd button{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;border:0;background:none;padding:6px 10px;border-radius:7px;cursor:pointer;color:var(--ink)}.ctrydd button.on,.ctrydd button:hover{background:color-mix(in srgb,var(--cl,#5B33D6) 14%,transparent)}.ctrydd .k{color:var(--muted,#888);font-size:12px}.ctrydd .none{padding:8px 10px;color:var(--muted,#888)}
+.ctrydd{position:absolute;z-index:60;max-height:248px;overflow:auto;overscroll-behavior:contain;display:grid;padding:4px;border:1px solid var(--line);border-radius:12px;background:var(--panel);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:0 14px 34px rgba(0,0,0,.22);font-size:13.5px;animation:ddIn .12s ease-out}
+.ctrydd button{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:none;color:inherit;font:inherit;padding:7px 10px;border-radius:8px;cursor:pointer}
+.ctrydd{color:var(--ink);font-weight:500}.ctrydd button:hover{background:color-mix(in srgb,var(--ink) 6%,transparent)}.ctrydd button.on{background:color-mix(in srgb,var(--ink) 11%,transparent);font-weight:650}.ctrydd .k{color:var(--muted);font-size:11.5px}.ctrydd .ch{font-size:11px;font-weight:650;color:var(--muted);padding:8px 10px 3px}.ctrydd .ch:first-child{padding-top:4px}
+.ctrydd .none{padding:10px;color:var(--muted)}.ctrydd.flow{position:static;margin-top:6px;max-height:220px;box-shadow:0 6px 18px rgba(0,0,0,.10);background:color-mix(in srgb,var(--ink) 3%,var(--panel))}@keyframes ddIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){.ctrydd{animation:none}}
 .col,.vrow{position:relative}.stgap{position:absolute;z-index:3;top:50%;margin-top:-9px;right:-12px;width:18px;height:18px;border-radius:50%;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);font-size:13px;line-height:15px;padding:0;cursor:pointer;opacity:0;transition:opacity .12s}.col:hover>.stgap,.stgap:focus-visible{opacity:1}.col:last-child>.stgap{right:-4px}.stgap:hover{background:var(--cl,#5B33D6);color:#fff;border-color:transparent}.stgap.vgap{top:auto;margin-top:0;bottom:-10px;right:auto;left:14px}.vrow:hover>.stgap{opacity:1}
 /* one look for every dropdown: own chevron, never wider than its box, long names cut off with … */
 select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238b8a9b' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:right 9px center!important;background-size:10px 6px!important;padding-right:26px!important;max-width:100%;min-width:0;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;cursor:pointer}
@@ -2040,6 +2043,8 @@ select.inp:hover,.field select:hover{border-color:color-mix(in srgb,var(--ink) 2
 .camp-kpi{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:14px}.camp-kpi div{display:grid;padding:10px 12px;border:1px solid var(--line);border-radius:12px}.camp-kpi b{font-size:22px}.camp-kpi span{font-size:12px;color:var(--muted)}.cp-r2{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto}
 .camp-today{padding:12px 14px;border-radius:14px;margin-bottom:14px}.ct-r{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line);flex-wrap:wrap}.ct-w{min-width:0;flex:1 1 300px}.ct-a{display:flex;gap:6px;flex-wrap:wrap}
 @media (max-width:800px){.cs-seq{grid-template-columns:1fr}.camp-kpi{grid-template-columns:repeat(3,1fr)}.cp-r{grid-template-columns:auto 1fr 1fr}}
+.tq{display:flex;gap:6px;align-items:center}.tq .inp{flex:1;min-width:0}.tq-add{flex:0 0 auto;border:1px solid var(--line);background:color-mix(in srgb,var(--ink) 5%,transparent);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:6px 10px;border-radius:9px;cursor:pointer;white-space:nowrap}.tq-add:hover{background:color-mix(in srgb,var(--accent) 16%,transparent);border-color:transparent}
+.ctry-q{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}.ctry-q .small{margin-right:2px}
 </style>
 <div id="wall"></div>
 <div id="app"></div>
@@ -2062,7 +2067,7 @@ select.inp:hover,.field select:hover{border-color:color-mix(in srgb,var(--ink) 2
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:3f284a28ec*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:e295f318ef*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -3630,10 +3635,10 @@ function treeHTML() {
   const xClient = (rg, cn, list) => { const key = 'xcl:' + rg + '/' + cn, open = q ? true : !isCollapsed(key, list.some(c => SEL.xrole === c.owner + '|' + c.roleId) || list.length <= 4); return `<button class="tn client xclient" data-act="togglekey" data-key="${esc(key)}">${car(open)}<span class="lab">${esc(cn)}</span><span class="cnt">${list.reduce((n, c) => n + c.apps.filter(a => a.o === 'active').length, 0)}</span></button>${open ? `<div class="tkids roles">${list.map(xNode).join('')}</div>` : ''}`; };
   const xRegion = (rg, list) => { const key = 'xrg:' + rg, open = q ? true : !isCollapsed(key, true), byC = [...new Set(list.map(c => c.client))].sort(); return `<div class="tbox glass country xcountry"><button class="tn region" data-act="togglekey" data-key="${esc(key)}">${car(open)}<span class="lab">${esc(rg)}</span><span class="cnt">${list.reduce((n, c) => n + c.apps.filter(a => a.o === 'active').length, 0)}</span></button>${open ? `<div class="tkids">${byC.map(cn => xClient(rg, cn, list.filter(c => c.client === cn))).join('')}</div>` : ''}</div>`; };
   const sw = srcAllN ? `<div class="tsw">${mode === 'split' ? `<div class="tsw-seg"><button class="${side === 'mine' ? 'on' : ''}" data-act="treeside" data-v="mine">My roles</button><button class="${side === 'src' ? 'on' : ''}" data-act="treeside" data-v="src">Sourcing for <span>${srcAllN}</span></button></div>` : '<span class="tsw-l">My roles and sourcing</span>'}<button class="tsw-m" data-act="treemode" title="${mode === 'split' ? 'Show colleagues\' roles mixed in with yours' : 'Show My roles and Sourcing for separately'}" aria-label="Change how colleagues' roles show">${mode === 'split' ? '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h10M3 8h10M3 12h10"/></svg>' : '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="5" height="10" rx="1.5"/><rect x="9" y="3" width="5" height="10" rx="1.5"/></svg>'}</button></div>` : '';
-  if (side === 'src') { let hs = `<div class="tbox glass">${sw}<input class="inp" placeholder="Filter roles" id="treeq" value="${esc(TREE_Q)}"></div>`; const rgs = [...new Set(xr.map(c => c.region || 'Other'))].sort();
+  if (side === 'src') { let hs = `<div class="tbox glass">${sw}<div class="tq"><input class="inp" placeholder="Filter roles" id="treeq" value="${esc(TREE_Q)}"><button class="tq-add" data-act="addcountry" title="Add a country">+ Country</button></div></div>`; const rgs = [...new Set(xr.map(c => c.region || 'Other'))].sort();
     hs += rgs.map(rg => xRegion(rg, xr.filter(c => (c.region || 'Other') === rg))).join('') || '<div class="tbox glass"><div class="small muted" style="padding:6px 10px">No roles match.</div></div>';
     hs += `<div class="tbox glass tfoot"><button class="btn quiet" style="justify-content:flex-start;padding-left:2px" data-act="view" data-v="teamroles">Find more roles in the Marketplace</button></div>`; return `<nav class="tree">${hs}</nav>`; }
-  let h = `<div class="tbox glass">${sw}<input class="inp" placeholder="Filter roles" id="treeq" value="${esc(TREE_Q)}">
+  let h = `<div class="tbox glass">${sw}<div class="tq"><input class="inp" placeholder="Filter roles" id="treeq" value="${esc(TREE_Q)}"><button class="tq-add" data-act="addcountry" title="Add a country">+ Country</button></div>
     <button class="tn all ${!SEL.region && !SEL.client && !SEL.role ? 'on' : ''}" data-act="selall"><span class="lab">Everything live</span><span class="cnt">${S.apps.filter(isLive).length}</span></button>`;
   const pins = S.settings.pins.map(id => MR.get(id)).filter(Boolean);
   if (pins.length && !q) h += `<div class="tsec">Pinned</div>${pins.map(r => roleNode(r, true)).join('')}`;
@@ -3671,7 +3676,7 @@ function treeHTML() {
   if (false && xr.length) { const mgd = xr.filter(c => c.mgrId === myUid()), hlp = xr.filter(c => c.mgrId !== myUid()); const node = c => `<button class="tn role xrole ${SEL.xrole === c.owner + '|' + c.roleId ? 'on' : ''}" data-act="selxrole" data-k="${esc(c.owner + '|' + c.roleId)}"><span class="bul"></span><span class="lab xlab"><span class="xt">${esc(c.client)} ${esc(c.title)}</span><span class="tn-who x" title="${esc(c.ownerName)}'s role">${esc(initials(c.ownerName))}</span></span><span class="cnt">${c.apps.filter(a => a.o === 'active').length}</span></button>`;
     h += `<div class="tbox glass xbox"><div class="xhead">${ICON.team || ''}<span>Colleagues' roles</span><span class="xn">${xr.length}</span></div><div class="xsub">Roles your team shared with you</div>${mgd.length ? `<div class="xgrp">You manage</div>${mgd.map(node).join('')}` : ''}${hlp.length ? `<div class="xgrp">You source for</div>${hlp.map(node).join('')}` : ''}</div>`; }
   const pausedN = S.roles.filter(r => !rOn(r)).length;
-  h += `<div class="tbox glass tfoot"><button class="btn quiet" style="justify-content:flex-start;padding-left:2px" data-act="addcountry">+ Add country</button>${pausedN ? `<button class="btn quiet" style="justify-content:flex-start;padding-left:2px" data-act="view" data-v="inactive">${pausedN} inactive role${pausedN > 1 ? 's' : ''}, see Inactive</button>` : ''}
+  h += `<div class="tbox glass tfoot">${pausedN ? `<button class="btn quiet" style="justify-content:flex-start;padding-left:2px" data-act="view" data-v="inactive">${pausedN} inactive role${pausedN > 1 ? 's' : ''}, see Inactive</button>` : ''}
     <div class="small muted">Drag to reorder; A grades sit on top. Paused roles and inactive clients move to Inactive.</div></div>`;
   return `<nav class="tree">${h}</nav>`;
 }
@@ -7306,7 +7311,7 @@ function modalHTML() {
       <p class="small muted">Renames it for every role in this country. Using an existing name merges the two.</p>
       <div class="acts" style="margin-top:12px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="saverename">Rename</button></div>`;
   } else if (m.kind === 'reccountry') {
-    inner = `<h3>Add country</h3><p class="small muted" style="margin-top:-6px">Just the country. Add clients and roles in it later.</p><div class="fgrid"><label class="field wide">Country or region<input class="inp" id="rc_name" data-ctry autocomplete="off" placeholder="Type to search, e.g. Spain"></label></div>
+    inner = `<h3>Add a country</h3><p class="small muted" style="margin-top:-6px">It shows in your tree straight away. Add clients and roles in it later.</p><div class="fgrid"><label class="field wide">Country or region<input class="inp" id="rc_name" data-ctry autocomplete="off" placeholder="Start typing, e.g. Spain"></label></div>${ctryQuick(regionsList(), 'rc_name')}
       <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="savereccountry">Add country</button></div>`;
   } else if (m.kind === 'addcountry') {
     inner = `<h3>${m.rg ? 'Add client and role in ' + esc(m.rg) : 'Add country'}</h3><p class="small muted" style="margin-top:-6px">${m.rg ? 'The first client and role for this country.' : 'A country shows in the tree once it has a role, so add the first client and role with it.'}</p><div class="fgrid">
@@ -8831,7 +8836,7 @@ function bdTreeHTML() {
   const q = BDTREE_Q.trim().toLowerCase(), car = open => `<span class="car">${open ? '▾' : '▸'}</span>`;
   const accMatch = a => !q || (a.name + ' ' + (a.market || '') + ' ' + (a.contacts || []).map(c => c.name).join(' ') + ' ' + S.deals.filter(d => d.accountId === a.id).map(d => d.title || '').join(' ')).toLowerCase().includes(q);
   const total = S.accounts.filter(a => isBD(a) && realOpp(a)).length;
-  let h = `<div class="tbox glass"><input class="inp" placeholder="Filter companies" id="bdtreeq" value="${esc(BDTREE_Q)}">
+  let h = `<div class="tbox glass"><div class="tq"><input class="inp" placeholder="Filter companies" id="bdtreeq" value="${esc(BDTREE_Q)}"><button class="tq-add" data-act="bdaddcountry" title="Add a country">+ Country</button></div>
     <button class="tn all ${!BDSEL.market && !BDSEL.acc ? 'on' : ''}" data-act="bdsel" data-m="" data-a=""><span class="lab">All opportunities</span><span class="cnt" title="Real opportunities: a meeting scheduled or held">${total}</span></button></div>`;
   for (const m of bdMarkets()) {
     const accMo = a => Math.max(0, ...openDeals(a).map(d => dealMomentum(d).score)); const inMk = a => openDeals(a).filter(d => dealMarket(d) === m); const accs = S.accounts.filter(a => isBD(a) && accMatch(a) && inMk(a).some(d => dealIdx(d) >= meetIdx())).sort((x, y) => (PRI[x.grade] ?? 1) - (PRI[y.grade] ?? 1) || accMo(y) - accMo(x) || openDeals(y).length - openDeals(x).length || x.name.localeCompare(y.name));
@@ -8860,7 +8865,7 @@ function bdTreeHTML() {
     }
     h += `</div>`;
   }
-  h += `<div class="tbox glass tfoot"><button class="btn quiet" style="justify-content:flex-start;padding-left:2px" data-act="bdaddcountry">+ Add country</button>
+  h += `<div class="tbox glass tfoot">
     <div class="small muted">Drag countries to reorder. Drop a company on a country to move it. A grades sit on top. Right-click for more.</div></div>`;
   return `<nav class="tree bdtree">${h}</nav>`;
 }
@@ -10016,7 +10021,7 @@ function bdModalHTML(m) {
       <div class="field" style="margin-top:10px">When<div class="chips">${quick.map(([l, dt]) => `<button class="${m.due === dt ? 'on' : ''}" data-act="bdtaskdue" data-v="${dt}">${l}</button>`).join('')}<input type="date" class="inp" style="width:auto" id="bt_due" value="${m.due || ''}"></div></div>
       <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="bdsavetask">Add task</button></div>`; }
   if (m.kind === 'bdcountry') return `<h3>${m.rename ? 'Rename ' + esc(m.rename) : m.moveAcc ? 'Move ' + esc((accById(m.moveAcc) || {}).name || '') + ' to a new country' : 'Add country'}</h3><p class="small muted" style="margin-top:-6px">${m.rename ? 'Every company in it moves along.' : 'The country shows in the BD tree right away, also before it has companies.'}</p><div class="fgrid">
-      <label class="field wide">Country or region<input class="inp" id="nb_country" data-ctry autocomplete="off" placeholder="Type to search, e.g. Germany"></label></div>
+      <label class="field wide">Country or region<input class="inp" id="nb_country" data-ctry autocomplete="off" placeholder="Start typing, e.g. Germany"></label></div>${m.rename ? '' : ctryQuick(bdMarkets(), 'nb_country')}
       <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="bdsavecountry">${m.rename ? 'Rename' : m.moveAcc ? 'Move' : 'Add country'}</button></div>`;
   if (m.kind === 'bdacc') { const f = m.f || (m.f = { link: '', name: '', market: BDSEL.market || '', industry: '', website: '', linkedin: '', size: '', hq: '', founded: '', specialties: '', about: '', grade: 'B', paste: '' });
     return `<h3>Add company</h3><p class="small muted" style="margin-top:-6px">Paste their LinkedIn company page or website and Nimble fills in what it can find. Check it, then save.</p>
@@ -10271,6 +10276,7 @@ const BD_ACT = {
   cof: el => { COF.who = el.dataset.v; render(); },
   bdwizcofm: el => { COF.market = el.value; render(); },
   clashask: () => { const m = MODAL, h = m.hits[0], t = ((document.getElementById('clash_msg') || {}).value || '').trim(); if (!t) return; snapshot(); pushBDNotice(h.owner, t); MODAL = null; commit(); scheduleTeam(); toast(`Sent to ${firstName(h.ownerName)}. They see it in their inbox`, true); },
+  ctryq: el => { const i = document.getElementById(el.dataset.id); if (!i) return; i.value = el.dataset.v; i.dataset.ctryOk = el.dataset.v; document.querySelectorAll('.ctry-q .qchip').forEach(b => b.classList.toggle('on', b === el)); i.focus(); },
   comulti: () => { COF.sel = !COF.sel; if (!COF.sel) COF.ids = []; render(); },
   comulti0: () => { COF.ids = []; render(); },
   cotick: el => { const k = el.dataset.k, L = COF.ids; COF.ids = L.includes(k) ? L.filter(x => x !== k) : [...L, k]; render(); },
@@ -10952,21 +10958,28 @@ const CTRY_ALIAS = { 'united kingdom': 'UK', 'great britain': 'UK', 'britain': '
 const ctryLow = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
 function ctryAll() { const base = [...WORLD, ...CTRY_REG], low = new Set(base.map(ctryLow)); const used = [...new Set([...(typeof regionsList === 'function' ? regionsList() : []), ...(typeof bdMarkets === 'function' ? bdMarkets() : [])])].filter(x => x && x !== 'Other' && !low.has(ctryLow(x)) && !CTRY_ALIAS[ctryLow(x)] && !CTRY_ALIAS[(x || '').toLowerCase().trim()]); return [...base, ...used]; }
 function ctryCanon(v) { const l = ctryLow(v); if (!l) return ''; const all = ctryAll(), hit = all.find(x => ctryLow(x) === l); if (hit) return hit; const al = CTRY_ALIAS[(v || '').toLowerCase().trim()] || Object.entries(CTRY_ALIAS).find(([k]) => ctryLow(k) === l)?.[1]; return al || ''; }
-function ctryMatches(q) { const l = ctryLow(q), all = ctryAll(); if (!l) return all.filter(x => !CTRY_REG.includes(x)).map(n => ({ n })).concat(CTRY_REG.map(n => ({ n, k: 'region' }))); const out = [], seen = new Set(), add = (n, k) => { if (!seen.has(n)) { seen.add(n); out.push({ n, k }); } };
+function ctryMatches(q) { const l = ctryLow(q), all = ctryAll(); if (!l) { const used = [...new Set([...(typeof regionsList === 'function' ? regionsList() : []), ...(typeof bdMarkets === 'function' ? bdMarkets() : [])])].filter(x => all.includes(x)); return [...used.map(n => ({ n, k: 'yours' })), ...all.filter(x => !CTRY_REG.includes(x) && !used.includes(x)).map(n => ({ n })), ...CTRY_REG.filter(x => !used.includes(x)).map(n => ({ n, k: 'region' }))]; } const out = [], seen = new Set(), add = (n, k) => { if (!seen.has(n)) { seen.add(n); out.push({ n, k }); } };
   all.filter(x => ctryLow(x).startsWith(l)).forEach(x => add(x, CTRY_REG.includes(x) ? 'region' : ''));
   Object.entries(CTRY_ALIAS).filter(([k]) => ctryLow(k).startsWith(l)).forEach(([k, n]) => add(n, k));
   all.filter(x => ctryLow(x).split(/[\s-]+/).some(w => w.startsWith(l))).forEach(x => add(x, CTRY_REG.includes(x) ? 'region' : ''));
   if (l.length > 2) all.filter(x => ctryLow(x).includes(l)).forEach(x => add(x, '')); return out; }
 const CTRYDD = { el: null, inp: null, i: 0, list: [], start: '' };
 function ctryClose() { if (CTRYDD.el) CTRYDD.el.remove(); CTRYDD.el = null; CTRYDD.inp = null; }
-function ctryDraw() { const inp = CTRYDD.inp; if (!inp || !document.body.contains(inp)) { ctryClose(); return; } if (!CTRYDD.el) { CTRYDD.el = document.createElement('div'); CTRYDD.el.className = 'ctrydd'; document.body.appendChild(CTRYDD.el);
-    CTRYDD.el.addEventListener('mousedown', e => { e.preventDefault(); const b = e.target.closest('button[data-n]'); if (b) ctryPick(b.dataset.n); }); }
-  const r = inp.getBoundingClientRect(), below = window.innerHeight - r.bottom; Object.assign(CTRYDD.el.style, { left: r.left + 'px', width: Math.max(r.width, 220) + 'px', top: below > 200 ? r.bottom + 4 + 'px' : '', bottom: below > 200 ? '' : (window.innerHeight - r.top + 4) + 'px' });
-  CTRYDD.list = ctryMatches(inp.value); if (CTRYDD.i >= CTRYDD.list.length) CTRYDD.i = 0;
-  CTRYDD.el.innerHTML = CTRYDD.list.length ? CTRYDD.list.map((x, i) => `<button type="button" data-n="${esc(x.n)}" class="${i === CTRYDD.i ? 'on' : ''}"><span>${esc(x.n)}</span>${x.k ? `<span class="k">${esc(x.k)}</span>` : ''}</button>`).join('') : '<div class="none">No country with that name. Check the spelling.</div>';
-  const on = CTRYDD.el.querySelector('.on'); on && on.scrollIntoView({ block: 'nearest' }); }
+function ctryDraw() { const inp = CTRYDD.inp; if (!inp || !document.body.contains(inp)) { ctryClose(); return; } const par = inp.parentElement;
+  if (!CTRYDD.el) { CTRYDD.el = document.createElement('div'); CTRYDD.el.className = 'ctrydd'; CTRYDD.el.setAttribute('role', 'listbox'); CTRYDD.el.addEventListener('mousedown', e => { e.preventDefault(); e.stopPropagation(); const b = e.target.closest('button[data-n]'); if (b) ctryPick(b.dataset.n); }); CTRYDD.el.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); }); }
+  const flow = !!inp.closest('.modal'); CTRYDD.el.classList.toggle('flow', flow);
+  if (flow) { if (CTRYDD.el.previousElementSibling !== inp) inp.insertAdjacentElement('afterend', CTRYDD.el); Object.assign(CTRYDD.el.style, { left: '', top: '', width: '' }); }
+  else { if (getComputedStyle(par).position === 'static') par.style.position = 'relative'; if (CTRYDD.el.parentElement !== par) par.appendChild(CTRYDD.el); Object.assign(CTRYDD.el.style, { left: inp.offsetLeft + 'px', top: (inp.offsetTop + inp.offsetHeight + 4) + 'px', width: Math.max(inp.offsetWidth, 240) + 'px' }); }
+  CTRYDD.list = ctryMatches(inp.value); if (CTRYDD.i >= CTRYDD.list.length) CTRYDD.i = 0; let prevK = null;
+  CTRYDD.el.innerHTML = CTRYDD.list.length ? CTRYDD.list.slice(0, 250).map((x, i) => { const head = !inp.value.trim() && x.k !== prevK && (x.k === 'yours' || (prevK === 'yours' && !x.k) || x.k === 'region') ? `<div class="ch">${x.k === 'yours' ? 'Your countries' : x.k === 'region' ? 'Regions' : 'All countries'}</div>` : ''; prevK = x.k;
+      return `${head}<button type="button" role="option" data-n="${esc(x.n)}" class="${i === CTRYDD.i ? 'on' : ''}"><span>${esc(x.n)}</span>${x.k && x.k !== 'yours' && inp.value.trim() ? `<span class="k">${esc(x.k)}</span>` : ''}</button>`; }).join('') : '<div class="none">No country with that name. Check the spelling.</div>';
+  const on = CTRYDD.el.querySelector('.on'); if (on) { const t = on.offsetTop, b = t + on.offsetHeight; if (t < CTRYDD.el.scrollTop) CTRYDD.el.scrollTop = t - 30; else if (b > CTRYDD.el.scrollTop + CTRYDD.el.clientHeight) CTRYDD.el.scrollTop = b - CTRYDD.el.clientHeight + 4; } }
+/* one-click picks for the countries most used, minus the ones you already have */
+const CTRY_TOP = ['Netherlands', 'Spain', 'UK', 'Germany', 'Belgium', 'France', 'United States', 'Portugal', 'Italy', 'Ireland', 'Switzerland'];
+const ctryQuick = (have, id) => { const L = CTRY_TOP.filter(x => !(have || []).includes(x)).slice(0, 8); return L.length ? `<div class="ctry-q"><span class="small muted">Quick pick</span>${L.map(x => `<button class="qchip" data-act="ctryq" data-id="${id}" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>` : ''; };
 function ctryPick(n) { const inp = CTRYDD.inp; if (!inp) return; inp.value = n; inp.dataset.ctryOk = n; ctryClose(); inp.dispatchEvent(new Event('input', { bubbles: true })); inp.dispatchEvent(new Event('change', { bubbles: true })); }
-document.addEventListener('focusin', e => { const t = e.target; if (!t.matches || !t.matches('input[data-ctry]')) return; CTRYDD.inp = t; CTRYDD.i = 0; CTRYDD.start = t.value; if (t.value) t.select(); ctryDraw(); });
+document.addEventListener('focusin', e => { const t = e.target; if (!t.matches || !t.matches('input[data-ctry]')) return; CTRYDD.inp = t; CTRYDD.i = 0; CTRYDD.start = t.value; });
+document.addEventListener('mousedown', e => { const t = e.target; if (!t.matches || !t.matches('input[data-ctry]')) return; CTRYDD.inp = t; if (CTRYDD.start == null) CTRYDD.start = t.value; setTimeout(() => { if (document.activeElement === t) { if (t.value && t.dataset.ctryOk === t.value) t.select(); ctryDraw(); } }, 0); }, true);
 document.addEventListener('input', e => { if (e.target === CTRYDD.inp) { CTRYDD.i = 0; ctryDraw(); } else if (e.target.matches && e.target.matches('input[data-ctry]')) { CTRYDD.inp = e.target; ctryDraw(); } }, true);
 document.addEventListener('keydown', e => { const t = e.target; if (!t.matches || !t.matches('input[data-ctry]')) return; if (!CTRYDD.el) { if (e.key === 'ArrowDown') { CTRYDD.inp = t; ctryDraw(); e.preventDefault(); } return; }
   if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); CTRYDD.i = Math.max(0, Math.min(CTRYDD.list.length - 1, CTRYDD.i + (e.key === 'ArrowDown' ? 1 : -1))); ctryDraw(); }
@@ -10976,7 +10989,7 @@ document.addEventListener('focusout', e => { if (e.target === CTRYDD.inp) ctryCl
 /* Typed text that is not exactly a country snaps to the best match, or goes back if nothing matches. */
 document.addEventListener('change', e => { const t = e.target; if (!t.matches || !t.matches('input[data-ctry]')) return; const v = t.value.trim(); if (!v || v === t.dataset.ctryOk) return; const c = ctryCanon(v) || (ctryMatches(v)[0] || {}).n; if (c) { if (c !== t.value) t.value = c; t.dataset.ctryOk = c; return; }
   e.stopImmediatePropagation(); t.value = CTRYDD.start || ''; toast(`"${v}" is not a country in the list. Pick one from the dropdown.`); }, true);
-window.addEventListener('resize', () => CTRYDD.el && ctryDraw()); document.addEventListener('scroll', e => { if (CTRYDD.el && !CTRYDD.el.contains(e.target)) ctryDraw(); }, true);
+window.addEventListener('resize', () => CTRYDD.el && ctryDraw());
 
 </script>
 
