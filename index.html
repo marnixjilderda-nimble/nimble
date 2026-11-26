@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-WZhpS0NV1yZzzwUtVyG+70YW1YOlBv0D7mFct7Lw4Fs=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://api.apollo.io https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-IIwsddItB+Kwg5FgRZxirGec0deiA8z32dDaGaXefwg=' blob:; worker-src 'self' blob:; manifest-src 'self'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.anthropic.com https://api.apollo.io https://r.jina.ai; media-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E9EEF3">
 <link rel="manifest" href="manifest.webmanifest">
@@ -2025,6 +2025,7 @@ select.inp:hover,.field select:hover{border-color:color-mix(in srgb,var(--ink) 2
 .co-bulk{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px 14px;border-radius:12px;margin:-4px 0 12px}.acctbl tr.co-on td{background:color-mix(in srgb,var(--ink) 7%,transparent)}
 .apo-seq{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0}.apo-l{display:grid;gap:4px;max-height:320px;overflow:auto;border-top:1px solid var(--line);padding-top:8px}
 .apo-r{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) 110px 110px;gap:10px;align-items:center;font-size:13px}.apo-r select{width:100%}.st-ok{color:var(--win)}.st-err,.st-noemail{color:var(--urgent)}
+.acc-ctry{font-size:12px;font-weight:650;margin:10px 0 4px;color:var(--muted)}.acc-team{border-left:3px solid #C88A1E}.cc-ctry{max-width:200px;height:28px;padding:3px 8px}
 </style>
 <div id="wall"></div>
 <div id="app"></div>
@@ -2047,7 +2048,7 @@ select.inp:hover,.field select:hover{border-color:color-mix(in srgb,var(--ink) 2
 <script>
 'use strict';
 /* ================= basics ================= */
-/*css:5987aa13ea*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
+/*css:2bedf4b5aa*/ const APP_V = (() => { try { const t = (document.currentScript || {}).textContent || ''; let h = 7; for (let i = 0; i < t.length; i += 3) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + t.length.toString(36); } catch (e) { return ''; } })();
 const HOSTED = window.PT_HOSTED === true;   /* true in the claude.ai page build */
 const WEB = !HOSTED && (location.protocol === 'https:' || window.PT_WEBTEST === true);   /* the installable app on its own web address */
 const WEB_BASE = WEB ? location.origin + location.pathname.replace(/[^/]*$/, '') : '';
@@ -7064,7 +7065,7 @@ function modalHTML() {
     inner = `<h3>Give these companies a sector</h3><p class="small muted" style="margin-top:-6px">${list.length ? `${list.length} compan${list.length === 1 ? 'y' : 'ies'}${m.m ? ' in ' + esc(m.m) : ''} without a sector. Nimble could not tell from the name or company info. Pick one per company; leave it empty to keep it under No sector.` : 'Every company has a sector.'}</p>
       <div class="secfix">${list.map(a => `<div class="sf-row"><div class="sf-n"><b>${esc(a.name)}</b><span class="small muted">${esc([a.market, a.status === 'client' ? 'client' : '', (a.contacts || []).length ? (a.contacts || []).length + ' contact' + ((a.contacts || []).length === 1 ? '' : 's') : ''].filter(Boolean).join(' · '))}</span></div><select class="inp" data-sf="${a.id}"><option value="">No sector</option>${sectorList().map(x => `<option ${(m.pick || {})[a.id] === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></div>`).join('')}</div>
       <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button>${list.length ? '<button class="btn primary" data-act="secfixsave">Save sectors</button>' : ''}</div>`; }
-  else if (m.kind === 'bdacc' || m.kind === 'bddeal' || m.kind === 'bdcoadd' || m.kind === 'bdbulk' || m.kind === 'copause' || m.kind === 'bdplan' || m.kind === 'editlog' || m.kind === 'edittask' || m.kind === 'bdcountry' || m.kind === 'bdtask' || m.kind === 'bdmeet') { inner = bdModalHTML(m); }
+  else if (m.kind === 'bdacc' || m.kind === 'bdclash' || m.kind === 'bddeal' || m.kind === 'bdcoadd' || m.kind === 'bdbulk' || m.kind === 'copause' || m.kind === 'bdplan' || m.kind === 'editlog' || m.kind === 'edittask' || m.kind === 'bdcountry' || m.kind === 'bdtask' || m.kind === 'bdmeet') { inner = bdModalHTML(m); }
   else if (m.kind === 'bdmsg') { const d = dealById(m.d), keys = Object.keys(TPL).filter(k => TPL[k].bd);
     inner = `<h3>Message about ${esc((accById(d.accountId) || {}).name || '')}</h3><label class="field" style="margin-bottom:10px">Template<select id="bdtplsel">${keys.map(k => `<option value="${k}" ${k === m.tpl ? 'selected' : ''}>${TPL[k].label}</option>`).join('')}</select></label>
       <textarea class="msg" id="msgtext">${esc(tplText(m.tpl, bdCtx(d)))}</textarea><div class="acts" style="margin-top:12px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn" data-act="copy">Copy</button><button class="btn primary" data-act="bdcopylog" data-d="${d.id}">Copy and log</button></div>`; }
@@ -8870,6 +8871,7 @@ const CO_OPEN = new Set();
 function contactCardHTML(a, c, canDelete) {
   const tel = (c.phone || '').replace(/[^\d+]/g, ''), b = f => `contact|${a.id}:${c.id}|${f}|text`;
   return `<div class="cocard"><div class="cc-h">${BDD && BDD.contact === a.id + ':' + c.id ? `<b>${esc(c.name || 'No name yet')}</b>` : `<button class="tname" style="font-weight:700" data-act="bdco" data-k="${a.id}:${c.id}" title="Open ${esc(c.name || '')}'s card">${esc(c.name || 'No name yet')} ›</button>`}${c.title ? `<span class="muted"> · ${esc(c.title)}</span>` : ''}${canDelete ? `<button class="ib" style="margin-left:auto" data-act="codel" data-acc="${a.id}" data-id="${c.id}" title="Remove contact">×</button>` : ''}</div>
+    <div class="cc-l"><span class="cc-k">Country</span><input class="inp sm cc-ctry" data-ctry autocomplete="off" value="${esc(c.market || '')}" placeholder="${esc(a.market || 'Pick a country')}" data-bind="${b('market')}"></div>
     <div class="cc-l"><span class="cc-k">Email</span>${c.email ? `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a><button class="ib" data-act="copyco" data-v="${esc(c.email)}" title="Copy email">${ICO_COPY}</button>` : '<span class="muted">not added</span>'}</div>
     <div class="cc-l"><span class="cc-k">Phone</span>${c.phone ? `<a href="tel:${esc(tel)}">${esc(c.phone)}</a><button class="ib" data-act="copyco" data-v="${esc(c.phone)}" title="Copy phone">${ICO_COPY}</button>` : '<span class="muted">not added</span>'}</div>
     <div class="cc-l"><span class="cc-k">LinkedIn</span>${c.linkedin ? `<a href="${esc(/^https?:/.test(c.linkedin) ? c.linkedin : 'https://' + c.linkedin)}" target="_blank" rel="noopener">Open profile</a><button class="ib" data-act="copyco" data-v="${esc(c.linkedin)}" title="Copy link">${ICO_COPY}</button>${c.profile ? '' : `<button class="btn sm" style="margin-left:6px" data-act="coliread" data-k="${a.id}:${c.id}">Read profile</button>`}` : `<span style="display:flex;gap:6px;flex:1"><input class="inp sm" id="coli_${c.id}" placeholder="Paste LinkedIn link"><button class="btn sm" data-act="coliread" data-k="${a.id}:${c.id}">Read</button></span>`}</div>
@@ -9577,9 +9579,10 @@ function bulkParse(what, text) { const cols = BULK_COLS[what], lines = String(te
   return rows.map(r => { const o = {}; cols.forEach(([k], i) => { const j = map[i]; o[k] = j >= 0 && j < r.length ? r[j] : ''; });
     if (what === 'co') for (const v of r) { if (!o.email && /@/.test(v)) o.email = v; if (!o.linkedin && /linkedin\.com/i.test(v)) o.linkedin = v; if (/@/.test(o.title)) o.title = ''; if (/linkedin\.com/i.test(o.company)) o.company = ''; }
     return o; }).filter(o => (o.name || '').trim()); }
-function bulkFindAcc(name) { const n = String(name || '').trim().toLowerCase(); return n ? S.accounts.find(a => a.name.trim().toLowerCase() === n) : null; }
+function bulkFindAcc(name) { const k = accKey(name); return k ? S.accounts.find(a => accKey(a.name) === k) : null; }
 function bulkHTML(m) { const what = m.w, cols = BULK_COLS[what], rows = bulkParse(what, m.text), mk = bdMarkets();
-  const status = o => { if (what === 'acc') return bulkFindAcc(o.name) ? ['dup', 'already there'] : ['new', 'new']; const a = bulkFindAcc(o.company) || (m.acc && accById(m.acc));
+  const status = o => { if (what === 'acc' && !bulkFindAcc(o.name)) { const h = accClash(o.name); if (h.length) return ['dup', 'with ' + firstName(h[0].ownerName)]; } if (what !== 'acc') { const h = coClash({ name: o.name, email: o.email, linkedin: o.linkedin, company: o.company }); if (h.length) return ['dup', 'with ' + firstName(h[0].ownerName)]; if (o.company && !bulkFindAcc(o.company)) { const h2 = accClash(o.company); if (h2.length) return ['dup', 'company with ' + firstName(h2[0].ownerName)]; } }
+    if (what === 'acc') return bulkFindAcc(o.name) ? ['dup', 'already there'] : ['new', 'new']; const a = bulkFindAcc(o.company) || (m.acc && accById(m.acc));
     if (!a) return o.company ? ['new', 'new company too'] : ['bad', 'no company']; return (a.contacts || []).some(c => (c.name || '').trim().toLowerCase() === o.name.trim().toLowerCase()) ? ['dup', 'already there'] : ['new', 'new']; };
   const st = rows.map(status), nNew = st.filter(x => x[0] === 'new').length;
   return `<h3>Add ${what === 'acc' ? 'companies' : 'contacts'} in bulk</h3><p class="small muted" style="margin-top:-6px">Copy rows from Excel, Sales Navigator or a list and paste them here, one per line. Columns: <b>${cols.map(c => c[1]).join(', ')}</b>. A header row is recognised, so the order doesn't matter then. Or load a CSV file.</p>
@@ -9594,6 +9597,31 @@ const coOpps = (a, c) => S.deals.filter(d => d.accountId === a.id && dealCoIds(d
 function coLastTouch(a, c) { const ds = coOpps(a, c); return [...(c.log || []).map(l => l.date), ...ds.flatMap(d => (d.log || []).filter(l => l.type !== 'system').map(l => l.date))].filter(isISO).sort().pop() || ''; }
 const NOTYET = 'Not approached yet';
 const apoKey = () => { try { return localStorage.getItem('nimble.apolloKey') || ''; } catch (e) { return ''; } };
+/* ---------- one company, one owner: the whole team's BD, so nobody approaches the same company or person twice ---------- */
+const coNorm = n => ' ' + String(n || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ') + ' ';
+const accKey = n => coNorm(n).replace(/ (b ?v|n ?v|s ?l ?u?|s ?a|ltd|limited|llc|llp|lp|inc|corp|corporation|co|gmbh|ag|plc|bv|nv|sl|sa|srl|spa|group|groep|grupo|holding|holdings|international|global|nederland|netherlands|the netherlands|benelux|espana|spain|iberia|uk|usa|us|europe|emea|bank|the)(?= )/g, ' ').replace(/\s+/g, ' ').trim();
+const liKey = u => String(u || '').toLowerCase().replace(/^https?:\/\/(www\.)?/, '').replace(/\?.*$/, '').replace(/\/+$/, '');
+const coLastDate = (a, c) => { let d = ''; for (const l of c.log || []) if (l.date > d) d = l.date; for (const t of S.bdTasks || []) if (t.coId === c.id && t.done && (t.doneOn || '') > d) d = t.doneOn; return d; };
+function teamBD() { const me = myUid(), out = [];
+  for (const m of teamDataSets()) { if (!m.ds || !m.ds.accounts) continue; const mine = m.me || m.userId === me, owner = mine ? me : m.userId, ownerName = mine ? (S.settings.userName || 'You') : (m.member || 'A colleague');
+    const run = () => { for (const a of S.accounts || []) { const deals = (S.deals || []).filter(d => d.accountId === a.id); const mk = new Set([a.market, ...deals.map(d => d.market), ...(a.contacts || []).map(c => c.market)].filter(Boolean));
+      let last = ''; for (const c of a.contacts || []) { const d = coLastDate(a, c); if (d > last) last = d; } for (const d of deals) for (const l of d.log || []) if (l.date > last) last = l.date;
+      out.push({ mine, owner, ownerName, acc: { id: a.id, name: a.name, status: a.status }, key: accKey(a.name), markets: [...mk], last, open: deals.filter(d => d.outcome === 'open').length,
+        contacts: (a.contacts || []).filter(c => !c.inactive).map(c => ({ id: c.id, name: c.name || '', email: String(c.email || '').toLowerCase().trim(), li: liKey(c.linkedin), title: c.title || '', market: c.market || a.market || '', last: coLastDate(a, c) })) }); } };
+    if (mine) run(); else withData(m.ds, run); }
+  return out; }
+/* colleagues (not you) who already have this company */
+function accClash(name) { const k = accKey(name); if (!k || k.length < 2) return []; return teamBD().filter(x => !x.mine && x.key === k); }
+/* colleagues who already have this person: same email, same LinkedIn, or same name at the same company */
+function coClash({ name, email, linkedin, company }) { const em = String(email || '').toLowerCase().trim(), li = liKey(linkedin), nm = coNorm(name).trim(), ck = accKey(company), hits = [];
+  for (const x of teamBD()) { if (x.mine) continue; for (const c of x.contacts) if ((em && c.email === em) || (li && li.length > 12 && c.li === li) || (nm && coNorm(c.name).trim() === nm && (!ck || x.key === ck))) hits.push({ ...x, co: c }); }
+  return hits; }
+function clashHTML(m) { const h = m.hits[0], who = esc(firstName(h.ownerName)), co = h.co;
+  return `<h3>${co ? esc(co.name) : esc(h.acc.name)} is already with ${who}</h3><p style="margin-top:-4px">${co ? `${esc(co.name)}${co.title ? ', ' + esc(co.title) : ''}, at ${esc(h.acc.name)}` : esc(h.acc.name)} is in ${who}'s BD${h.markets.length ? ' (' + esc(h.markets.join(', ')) + ')' : ''}${h.open ? `, ${h.open} open opportunit${h.open === 1 ? 'y' : 'ies'}` : ''}${(co ? co.last : h.last) ? `, last activity ${fmtDate(co ? co.last : h.last)}` : ''}.</p>
+    <p class="small muted">So you don't both approach them, Nimble doesn't add it a second time. Work it out together with ${who}: ask to take a country or a contact, or to join in.</p>
+    <label class="field">Message to ${who}<textarea class="inp" id="clash_msg" rows="3">${esc(m.msg || `Hi ${firstName(h.ownerName)}, I'd like to approach ${co ? co.name + ' at ' : ''}${h.acc.name.replace(/\.+$/, '')}${m.market ? ' for ' + m.market : ''}. Shall we do this together, or can I take it on?`)}</textarea></label>
+    <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="clashask">Send to ${who}</button></div>`; }
+function pushBDNotice(to, text) { S.notices = S.notices || []; S.notices.push({ id: uid('nt'), to, at: new Date().toISOString(), by: S.settings.userName || '', byId: myUid(), kind: 'bd', appId: '', roleId: '', home: myUid(), cand: '', role: '', client: 'BD', text, task: null }); }
 function contactsHTML() {
   ensureAccounts();
   const q = COF.q.trim().toLowerCase();
@@ -9724,9 +9752,10 @@ function bdPanelInner() {
     <div class="bp-h"><div style="min-width:0"><h2>${esc(a.name)}</h2><div class="sub">${esc([a.market, a.industry].filter(Boolean).join(' · ') || 'Add a market and industry below')}</div></div><button class="btn quiet" data-act="bdclose">Close</button></div>
     <div class="bp-row"><label class="mini">Status<select class="inp" data-bind="acc|${a.id}|status|text">${[['prospect', 'Prospect'], ['client', 'Client'], ['former', 'Former client']].map(([k, l]) => `<option value="${k}" ${a.status === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
       <label class="mini">Grade<select class="inp" data-bind="acc|${a.id}|grade|text">${['A', 'B', 'C'].map(g => `<option ${a.grade === g ? 'selected' : ''}>${g}</option>`).join('')}</select></label>
-      <label class="mini">Market<input class="inp" list="bdmk" value="${esc(a.market || '')}" data-bind="acc|${a.id}|market|text"></label>
+      <label class="mini">Main country<input class="inp" data-ctry autocomplete="off" value="${esc(a.market || '')}" data-bind="acc|${a.id}|market|text"></label>
       <label class="mini">Sector<select class="inp" data-bind="acc|${a.id}|sector|text"><option value="">${sectorOf(a) && !a.sector ? esc(sectorOf(a)) + ' (auto)' : 'No sector'}</option>${sectorList().map(x => `<option ${a.sector === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></label><datalist id="bdmk">${[...new Set([...bdMarkets(), ...S.roles.map(x => x.region)])].map(m => `<option value="${esc(m)}">`).join('')}</datalist></div>
     <div class="bp-stats"><div><b>${openDeals(a).length}</b><span>open opportunities</span></div><div><b>${(a.contacts || []).filter(c => !c.inactive).length}</b><span>contacts</span></div><div><b>${a.clientId ? r.liveRoles : '–'}</b><span>live roles</span></div><div><b>${r.placed.length}</b><span>placed</span></div><div><b>${money(r.fees)}</b><span>recruitment fees</span></div></div>
+    ${(() => { const others = teamBD().filter(x => !x.mine && x.key === accKey(a.name)); return others.length ? `<div class="dproc acc-team"><div class="dbh">Also in the team</div>${others.map(x => `<div class="small"><b>${esc(x.ownerName)}</b> has ${esc(x.acc.name)}${x.markets.length ? ' in ' + esc(x.markets.join(', ')) : ''}${x.contacts.length ? ': ' + x.contacts.slice(0, 4).map(c => esc(c.name)).join(', ') + (x.contacts.length > 4 ? ' +' + (x.contacts.length - 4) : '') : ''}${x.last ? ` · last activity ${fmtDate(x.last)}` : ''}</div>`).join('')}<div class="small muted" style="margin-top:4px">Agree who approaches whom before reaching out.</div></div>` : ''; })()}
     <div class="dproc"><div class="dbh">Opportunities <button class="btn sm" data-act="bdadddeal" data-acc="${a.id}" style="margin-left:auto">+ New opportunity</button></div>
       ${deals.map(d => `<button class="bp-deal ${d.outcome}" data-act="bddeal" data-id="${d.id}" data-ctx="bdopp"><span><b>${esc(d.title || d.service)}</b>${oneService() ? '' : svcChip(d.service)}</span><span>${d.outcome === 'open' ? `<span class="chip">${esc(dealStage(d).label)}</span>${nextChip(d)}` : `<span class="chip ${d.outcome === 'won' ? 's-win' : ''}">${d.outcome === 'won' ? 'Won' : d.outcome === 'parked' ? 'Parked until ' + fmtDate(d.parkedUntil) : 'Lost'}</span>`}</span></button>`).join('') || '<div class="small muted">No opportunities yet.</div>'}</div>
     <div class="dproc"><div class="dbh">Company</div>
@@ -9735,8 +9764,9 @@ function bdPanelInner() {
       <div class="cfacts">${[['Industry', a.industry], ['Size', a.size], ['Headquarters', a.hq], ['Founded', a.founded], ['Countries mentioned', a.offices], ['Hiring', a.hiring], ['Email', a.email], ['Phone', a.phone]].filter(x => x[1]).map(([k, v]) => `<div><span>${k}</span>${k === 'Hiring' && a.careers ? `<a href="${esc(a.careers)}" target="_blank" rel="noopener">${esc(v)}</a>` : k === 'Email' ? `<a href="mailto:${esc(v)}">${esc(v)}</a>` : esc(v)}</div>`).join('')}${a.website ? `<div><span>Website</span><a href="${esc(/^https?:/.test(a.website) ? a.website : 'https://' + a.website)}" target="_blank" rel="noopener">${esc(a.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''))}</a></div>` : ''}${a.linkedin ? `<div><span>LinkedIn</span><a href="${esc(a.linkedin)}" target="_blank" rel="noopener">Company page</a></div>` : ''}</div>
       <div class="cam-pdf" style="margin-top:8px"><input class="inp" id="accl_${a.id}" value="${esc(a.linkedin || a.website || '')}" placeholder="LinkedIn company page or website" style="flex:1;min-width:200px"><button class="btn sm" data-act="accrefresh" data-acc="${a.id}">${a.about || a.industry ? 'Update from link' : 'Fill in from link'}</button>${a.infoRead ? `<span class="small muted">Read ${fmtDate(a.infoRead)} from ${esc(a.infoFrom || 'link')}</span>` : ''}</div></div>
     <div class="dproc"><div class="dbh">About ${esc(a.name)}</div><textarea class="inp" rows="3" placeholder="What matters here: who decides, hiring plans, which agencies or ATS they use, how they like to be approached" data-bind="acc|${a.id}|notes|text">${esc(a.notes || '')}</textarea></div>
-    <div class="dproc"><div class="dbh">Contacts</div>
-      ${(a.contacts || []).map(c => contactCardHTML(a, c, true)).join('') || '<div class="small muted" style="margin-bottom:8px">No contacts yet.</div>'}
+    <div class="dproc"><div class="dbh">Contacts${(() => { const n = new Set((a.contacts || []).map(c => c.market || a.market || '')).size; return n > 1 ? ' <span class="small muted" style="font-weight:400">per country</span>' : ''; })()}</div>
+      ${(() => { const L = a.contacts || []; if (!L.length) return '<div class="small muted" style="margin-bottom:8px">No contacts yet.</div>'; const g = new Map(); for (const c of L) { const k = c.market || a.market || 'No country'; if (!g.has(k)) g.set(k, []); g.get(k).push(c); }
+        return g.size < 2 ? L.map(c => contactCardHTML(a, c, true)).join('') : [...g.entries()].sort((x, y) => (x[0] === a.market ? -1 : y[0] === a.market ? 1 : x[0].localeCompare(y[0]))).map(([k, cs]) => `<div class="acc-ctry">${esc(k)} <span class="muted">${cs.length}</span></div>${cs.map(c => contactCardHTML(a, c, true)).join('')}`).join(''); })()}
       <div class="dtask add"><span class="plus">+</span><input class="dt-text" id="nco_${a.id}" placeholder="Add a contact: name, e.g. Lisa de Vries"><input class="dt-text" id="ncot_${a.id}" placeholder="Title, e.g. HR Director"><button class="btn sm" data-act="coadd" data-acc="${a.id}">Add</button></div></div>
     <div class="dproc"><div class="dbh">Recruitment</div>
       ${a.clientId ? `${r.roles.length ? r.roles.map(x => `<div class="bp-role"><button class="cl" data-act="bdgorole" data-r="${x.id}">${esc(x.title)}</button><span class="small muted">${esc(x.region)} · ${rState(x)}</span><span class="small">${S.apps.filter(p => p.roleId === x.id && isLive(p)).length} in process</span></div>`).join('') : '<div class="small muted">No roles yet.</div>'}
@@ -9840,6 +9870,7 @@ function bdModalHTML(m) {
         <label class="field wide">What they do<textarea class="inp" rows="3" data-wz="about">${esc(f.about)}</textarea></label></div>
       <div class="acts" style="margin-top:14px"><button class="btn" data-act="modalclose">Cancel</button><button class="btn primary" data-act="bdsaveacc">Add company</button></div>`; }
   if (m.kind === 'bdcoadd') return bdCoAddHTML(m);
+  if (m.kind === 'bdclash') return clashHTML(m);
   if (m.kind === 'bdbulk') return bulkHTML(m);
   if (m.kind === 'editlog') { const [aid, cid] = m.k.split(':'), c = coById(aid, cid) || {}, l = (c.log || []).find(x => x.id === m.l) || {};
     return `<h3>Edit update</h3><p class="small muted" style="margin-top:-6px">${esc(c.name || '')}</p><div class="fgrid"><label class="field wide">What happened<input class="inp" id="el_text" value="${esc(l.text || '')}"></label><label class="field">Date<input class="inp" type="date" id="el_date" value="${l.date || TODAY}"></label></div>
@@ -9972,7 +10003,8 @@ const BD_ACT = {
       commit(); toast(`Read from ${info.read.join(' and ')}. Empty fields filled in.`, true); }
     catch (e) { toast('Could not reach the reader. Check the link or your connection.'); render(); } },
   bdsaveacc: () => { bdWizRead(); const f = MODAL.f, n = (f.name || '').trim(); if (!n) { toast('Add the company name, or paste a link and press Read'); const i = document.getElementById('na_name'); i && i.focus(); return; }
-    const ex = S.accounts.find(a => a.name.toLowerCase() === n.toLowerCase()); if (ex) { MODAL = null; bdOpenPanel({ acc: ex.id }); render(); toast(`${n} already exists, opened it`); return; }
+    const ex = S.accounts.find(a => accKey(a.name) === accKey(n)); if (ex) { MODAL = null; bdOpenPanel({ acc: ex.id }); render(); toast(`${ex.name} is already in your BD, opened it`); return; }
+    { const h = accClash(n); if (h.length) { MODAL = { kind: 'bdclash', hits: h, market: (f.market || '').trim() }; render(); return; } }
     snapshot(); const a = { id: uid('ac'), name: n, market: (f.market || '').trim(), industry: (f.industry || '').trim(), website: (f.website || '').trim(), linkedin: (f.linkedin || '').trim(), size: (f.size || '').trim(), hq: (f.hq || '').trim(), founded: f.founded || '', specialties: f.specialties || '', sector: f.sector || guessSector(f.industry || '', f.about || '', f.specialties || '', f.services || '', n), about: (f.about || '').trim(), offices: f.offices || '', email: f.email || '', phone: f.phone || '', careers: f.careers || '', hiring: f.hiring || '', services: f.services || '', infoRead: f.infoRead || '', infoFrom: f.infoFrom || '', status: 'prospect', grade: f.grade || 'B', notes: '', contacts: [], log: [], created: TODAY };
     if (a.market && !bdMarkets().includes(a.market)) S.settings.bdMarkets = [...(S.settings.bdMarkets || []), a.market];
     S.accounts.push(a); MODAL = null; BDD = null; bdOpenPanel({ acc: a.id }); commit(); toast(`${n} added`, true); },
@@ -9999,6 +10031,8 @@ const BD_ACT = {
   bdwiztask: el => { bdWizRead(); MODAL.f.task = el.dataset.v; render(); },
   bdwizdue: el => { bdWizRead(); MODAL.f.due = el.dataset.v; render(); },
   bdwizsave: () => { bdWizRead(); const f = MODAL.f; if (!f.acc) { toast('Pick a company first'); return; } if (f.acc === '_new' && !f.newAcc.trim()) { toast('Type the company name'); return; }
+    if (f.acc === '_new') { const ex = S.accounts.find(x => accKey(x.name) === accKey(f.newAcc)); if (ex) f.acc = ex.id; else { const h = accClash(f.newAcc); if (h.length) { MODAL = { kind: 'bdclash', hits: h, market: (f.oppMarket || f.market || '').trim() }; render(); return; } } }
+    if (f.coName && (!f.co || f.co === '_new')) { const h = coClash({ name: f.coName, email: f.coEmail, linkedin: f.coLinkedin, company: f.acc === '_new' ? f.newAcc : (accById(f.acc) || {}).name }); if (h.length) { MODAL = { kind: 'bdclash', hits: h, market: (f.oppMarket || f.market || '').trim() }; render(); return; } }
     snapshot(); let a = f.acc !== '_new' ? accById(f.acc) : S.accounts.find(x => x.name.toLowerCase() === f.newAcc.trim().toLowerCase() && (x.market || '').toLowerCase() === (f.market || '').trim().toLowerCase());
     if (!a) { a = { id: uid('ac'), name: f.newAcc.trim(), market: f.market.trim(), sector: (f.sector || '').trim(), industry: '', website: '', status: 'prospect', grade: 'B', notes: '', contacts: [], log: [], created: TODAY }; S.accounts.push(a); if (a.market && !bdMarkets().includes(a.market)) S.settings.bdMarkets = [...(S.settings.bdMarkets || []), a.market]; }
     if (f.accInfo && f.acc === '_new') { coApplyInfo(a, f.accInfo, false); if (f.accInfo.website && !a.website) a.website = f.accInfo.website; }
@@ -10026,9 +10060,11 @@ const BD_ACT = {
   bdcaopen: el => { CTX = null; MODAL = { kind: 'bdcoadd', d: el.dataset.d || '', acc: el.dataset.acc || '' }; bdCoAddInit(MODAL); render(); },
   bdcasave: () => { bdWizRead(); const f = MODAL.f, d = MODAL.d ? dealById(MODAL.d) : null;
     if (!f.acc) { toast('Pick a company first'); return; } if (f.acc === '_new' && !f.newAcc.trim()) { toast('Type the company name'); return; }
-    let a = d ? accById(d.accountId) : f.acc !== '_new' ? accById(f.acc) : S.accounts.find(x => x.name.toLowerCase() === f.newAcc.trim().toLowerCase() && (x.market || '').toLowerCase() === (f.market || '').trim().toLowerCase());
+    let a = d ? accById(d.accountId) : f.acc !== '_new' ? accById(f.acc) : S.accounts.find(x => accKey(x.name) === accKey(f.newAcc));
+    if (!a && f.acc === '_new') { const h = accClash(f.newAcc); if (h.length) { MODAL = { kind: 'bdclash', hits: h, market: (f.market || '').trim() }; render(); return; } }
     const free = a ? (a.contacts || []).filter(c => !c.inactive && !(d && dealCoIds(d).includes(c.id))) : [], isNew = f.co === '_new' || !free.length;
     if (!isNew && !f.co) { toast('Choose a contact, or pick "+ New contact"'); return; } if (isNew && !f.coName.trim()) { toast('Add the contact name, or upload their LinkedIn PDF'); const i = document.querySelector('[data-wz=coName]'); i && i.focus(); return; }
+    if (isNew) { const h = coClash({ name: f.coName, email: f.coEmail, linkedin: f.coLinkedin, company: a ? a.name : f.newAcc }); if (h.length) { MODAL = { kind: 'bdclash', hits: h, market: (f.market || (a || {}).market || '').trim() }; render(); return; } }
     snapshot();
     if (!a) { a = { id: uid('ac'), name: f.newAcc.trim(), market: f.market.trim(), sector: (f.sector || '').trim(), industry: '', website: '', status: 'prospect', grade: 'B', notes: '', contacts: [], log: [], created: TODAY }; S.accounts.push(a); if (a.market && !bdMarkets().includes(a.market)) S.settings.bdMarkets = [...(S.settings.bdMarkets || []), a.market]; }
     a.contacts = a.contacts || []; let c = isNew ? null : a.contacts.find(x => x.id === f.co);
@@ -10068,6 +10104,7 @@ const BD_ACT = {
   conote: el => { const [aid, cid] = el.dataset.k.split(':'), a = accById(aid), c = a && a.contacts.find(x => x.id === cid), i = document.getElementById('cn_' + cid), tx = i && i.value.trim(); if (!c || !tx) return; snapshot(); c.log = c.log || []; c.log.unshift({ id: uid('l'), date: TODAY, type: 'note', text: tx }); commit(); toast('Note saved', true); },
   cof: el => { COF.who = el.dataset.v; render(); },
   bdwizcofm: el => { COF.market = el.value; render(); },
+  clashask: () => { const m = MODAL, h = m.hits[0], t = ((document.getElementById('clash_msg') || {}).value || '').trim(); if (!t) return; snapshot(); pushBDNotice(h.owner, t); MODAL = null; commit(); scheduleTeam(); toast(`Sent to ${firstName(h.ownerName)}. They see it in their inbox`, true); },
   comulti: () => { COF.sel = !COF.sel; if (!COF.sel) COF.ids = []; render(); },
   comulti0: () => { COF.ids = []; render(); },
   cotick: el => { const k = el.dataset.k, L = COF.ids; COF.ids = L.includes(k) ? L.filter(x => x !== k) : [...L, k]; render(); },
@@ -10107,8 +10144,8 @@ const BD_ACT = {
     const mkAcc = (name, market, extra) => { let a = bulkFindAcc(name); if (a) return [a, false]; a = { id: uid('ac'), name: String(name).trim(), market: (market || m.market || '').trim(), sector: '', industry: '', website: '', status: 'prospect', grade: 'B', notes: '', contacts: [], log: [], created: TODAY, ...extra };
       if (!a.sector) a.sector = guessSector(a.name, a.website || '') || ''; S.accounts.push(a); if (a.market && !bdMarkets().includes(a.market)) S.settings.bdMarkets = [...(S.settings.bdMarkets || []), a.market]; return [a, true]; };
     let nA = 0, nC = 0;
-    if (m.w === 'acc') for (const o of rows) { if (bulkFindAcc(o.name)) continue; mkAcc(o.name, o.market, { sector: o.sector || '', website: o.website || '' }); nA++; }
-    else for (const o of rows) { let a = bulkFindAcc(o.company) || (m.acc && accById(m.acc)); if (!a) { if (!o.company) continue; const r = mkAcc(o.company, o.market, {}); a = r[0]; if (r[1]) nA++; }
+    if (m.w === 'acc') for (const o of rows) { if (bulkFindAcc(o.name) || accClash(o.name).length) continue; mkAcc(o.name, o.market, { sector: o.sector || '', website: o.website || '' }); nA++; }
+    else for (const o of rows) { if (coClash({ name: o.name, email: o.email, linkedin: o.linkedin, company: o.company }).length || (o.company && !bulkFindAcc(o.company) && accClash(o.company).length)) continue; let a = bulkFindAcc(o.company) || (m.acc && accById(m.acc)); if (!a) { if (!o.company) continue; const r = mkAcc(o.company, o.market, {}); a = r[0]; if (r[1]) nA++; }
       a.contacts = a.contacts || []; if (a.contacts.some(c => (c.name || '').trim().toLowerCase() === o.name.trim().toLowerCase())) continue;
       a.contacts.push({ id: uid('co'), created: TODAY, name: o.name.trim(), title: o.title || '', email: o.email || '', phone: o.phone || '', linkedin: o.linkedin || '' }); nC++; }
     MODAL = null; commit(); toast(m.w === 'acc' ? `${nA} compan${nA === 1 ? 'y' : 'ies'} added` : `${nC} contact${nC === 1 ? '' : 's'} added${nA ? ` and ${nA} new compan${nA === 1 ? 'y' : 'ies'}` : ''}`, true); },
@@ -10158,7 +10195,7 @@ const BD_ACT = {
   dealmove: el => { const d = dealById(el.dataset.d); snapshot(); d.nextDate = addDays(TODAY, +el.dataset.n); commit(); toast(`Moved to ${fmtDate(d.nextDate)}`, true); },
   dealnote: el => { const d = dealById(el.dataset.d), i = document.getElementById('dn_' + d.id), t = i && i.value.trim(); if (!t) return; snapshot(); bdLog(d, 'note', t); commit(); },
   accnote: el => { const a = accById(el.dataset.acc), i = document.getElementById('an_' + a.id), t = i && i.value.trim(); if (!t) return; snapshot(); bdLog(a, 'note', t); commit(); },
-  coadd: el => { const a = accById(el.dataset.acc), n = document.getElementById('nco_' + a.id).value.trim(); if (!n) return; snapshot(); a.contacts = a.contacts || []; a.contacts.push({ id: uid('co'), created: TODAY, name: n, title: document.getElementById('ncot_' + a.id).value.trim(), email: '', phone: '' }); commit(); },
+  coadd: el => { const a = accById(el.dataset.acc), n = document.getElementById('nco_' + a.id).value.trim(); if (!n) return; { const h = coClash({ name: n, company: a.name }); if (h.length) { MODAL = { kind: 'bdclash', hits: h, market: a.market || '' }; render(); return; } } snapshot(); a.contacts = a.contacts || []; a.contacts.push({ id: uid('co'), created: TODAY, name: n, title: document.getElementById('ncot_' + a.id).value.trim(), email: '', phone: '' }); commit(); },
   codel: el => ACT.codelask({ dataset: { k: el.dataset.acc + ':' + el.dataset.id } }),
   dealwon: el => { const d = dealById(el.dataset.d), a = accById(d.accountId); snapshot(); d.outcome = 'won'; d.closedOn = TODAY; bdLog(d, 'system', 'Won'); if (a.status !== 'client') a.status = 'client';
     let c = null; if (isRecService(d.service)) { c = makeClient(a); }
